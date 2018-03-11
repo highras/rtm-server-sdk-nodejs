@@ -3,8 +3,8 @@
 const defer = require('co-defer');
 const conf = require('./FPConfig');
 
-const cbMap = {}
-const exMap = {}
+const cbMap = {};
+const exMap = {};
 
 class FPCallback{
 
@@ -30,6 +30,12 @@ class FPCallback{
         delayRemoveCallback.call(self, key);
     }
 
+    removeAll(){
+        for (let key in cbMap){
+            delayCallback.call(this, key, { code:conf.ERROR_CODE.FPNN_EC_CORE_TIMEOUT, ex:'FPNN_EC_CORE_TIMEOUT' });
+        }
+    }
+
     findCallback(key){
         return cbMap[key];
     }
@@ -43,8 +49,10 @@ function checkExpire(){
     let self = this;
     defer.setInterval(function *(){
         for (let key in self.exMap){
-            if (self.exMap[key] < Date.now()) continue;
-            delayCallback.call(this, { code:conf.ERROR_CODE.FPNN_EC_CORE_TIMEOUT, ex:'FPNN_EC_CORE_TIMEOUT' });
+            if (self.exMap[key] < Date.now()){
+                continue;
+            } 
+            delayCallback.call(this, key, { code:conf.ERROR_CODE.FPNN_EC_CORE_TIMEOUT, ex:'FPNN_EC_CORE_TIMEOUT' });
         }
     }, conf.CHECK_CBS_INTERVAL);
 }

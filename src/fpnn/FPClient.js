@@ -3,7 +3,7 @@
 const Emitter = require('events').EventEmitter;
 const defer = require('co-defer');
 const wait = require('co-wait');
-const msgpack = require('msgpack5')();
+const msgpack = require("msgpack-lite");
 
 const conf = require('./FPConfig');
 const FPSocket = require('./FPSocket');
@@ -14,7 +14,7 @@ const FPEncryptor = require('./FPEncryptor');
 class FPClient{
     constructor(options){
         this._buffer = Buffer.allocUnsafe(16);
-        this._autoReconnect = options ? options.autoReconnect : true;
+        this._autoReconnect = options ? options.autoReconnect : false;
         this._conn = new FPSocket(options);
 
         this._conn.on('connect', () => {
@@ -156,6 +156,13 @@ function onClose(){
             self.connect();
         }); 
     }
+
+    this._seq = 0;
+    this._wpos = 0;
+    this._peekData = null;
+
+    this._buffer = Buffer.allocUnsafe(conf.READ_BUFFER_LEN);
+    this._cbs.removeAll();
 
     this.emit('error', { code:conf.ERROR_CODE.FPNN_EC_CORE_CONNECTION_CLOSED, ex:'FPNN_EC_CORE_CONNECTION_CLOSED' });
 }

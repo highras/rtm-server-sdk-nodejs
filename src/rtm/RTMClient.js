@@ -3,7 +3,8 @@
 const Emitter = require('events').EventEmitter;
 const fs = require('fs');
 const crypto = require('crypto');
-const Uint64LE = require("int64-buffer").Uint64LE;
+const msgpack = require("msgpack-lite");
+const Uint64BE = require("int64-buffer").Uint64BE;
 
 const conf = require('../fpnn/FPConfig');
 const FPClient = require('../fpnn/FPClient');
@@ -42,6 +43,10 @@ class RTMClient{
         this._client.on('error', (err) => {
             this.emit('error', err);
         });
+
+        this._msgOptions = { 
+            codec: msgpack.createCodec({ int64: true }) 
+        };
     }
 
     enableConnect(){
@@ -90,8 +95,8 @@ class RTMClient{
 
     /**
      * 
-     * @param {Uint64LE} from 
-     * @param {Uint64LE} to 
+     * @param {Uint64BE} from 
+     * @param {Uint64BE} to 
      * @param {number} mtype 
      * @param {string} msg 
      * @param {string} attrs 
@@ -99,6 +104,8 @@ class RTMClient{
      * @param {number} timeout 
      * 
      * @callback
+     * @param {object} err
+     * @param {object} data
      */
     sendMessage(from, to, mtype, msg, attrs, callback, timeout){
         let salt = genSalt.call(this);
@@ -106,11 +113,11 @@ class RTMClient{
         let payload = {
             pid: this._pid,
             sign: genSign.call(this, salt.toString()),
-            salt: salt.toBuffer(),
+            salt: salt,
             mtype: mtype,
-            from: from.toBuffer(),
-            to: to.toBuffer(),
-            mid: genMid.call(this).toBuffer(),
+            from: from,
+            to: to,
+            mid: genMid.call(this),
             msg: msg,
             attrs: attrs
         };
@@ -118,20 +125,16 @@ class RTMClient{
         let options = {
             flag: 1,
             method: 'sendmsg',
-            payload: msgpack.encode(payload)
+            payload: msgpack.encode(payload, this._msgOptions)
         };
 
-        this._client.sendQuest(options, (data) => {
-            if (callback){
-                callback(data.payload || data);
-            }
-        }, timeout);
+        sendQuest.call(this, this._client, options, callback, timeout);
     }
 
     /**
      * 
-     * @param {Uint64LE} from 
-     * @param {array<Uint64LE>} tos
+     * @param {Uint64BE} from 
+     * @param {array<Uint64BE>} tos
      * @param {number} mtype 
      * @param {string} msg 
      * @param {string} attrs 
@@ -139,23 +142,20 @@ class RTMClient{
      * @param {number} timeout 
      * 
      * @callback
+     * @param {object} err
+     * @param {object} data
      */
     sendMessages(from, tos, mtype, msg, attrs, callback, timeout){
         let salt = genSalt.call(this);
 
-        let btos = [];
-        tos.forEach((item, index) => {  
-            btos[index] = item.toBuffer();
-        });  
-
         let payload = {
             pid: this._pid,
             sign: genSign.call(this, salt.toString()),
-            salt: salt.toBuffer(),
+            salt: salt,
             mtype: mtype,
-            from: from.toBuffer(),
-            tos: btos,
-            mid: genMid.call(this).toBuffer(),
+            from: from,
+            tos: tos,
+            mid: genMid.call(this),
             msg: msg,
             attrs: attrs
         };
@@ -163,20 +163,16 @@ class RTMClient{
         let options = {
             flag: 1,
             method: 'sendmsgs',
-            payload: msgpack.encode(payload)
+            payload: msgpack.encode(payload, this._msgOptions)
         };
 
-        this._client.sendQuest(options, (data) => {
-            if (callback){
-                callback(data.payload || data);
-            }
-        }, timeout);
+        sendQuest.call(this, this._client, options, callback, timeout);
     }
 
     /**
      * 
-     * @param {Uint64LE} from 
-     * @param {Uint64LE} gid
+     * @param {Uint64BE} from 
+     * @param {Uint64BE} gid
      * @param {number} mtype 
      * @param {string} msg 
      * @param {string} attrs 
@@ -184,6 +180,8 @@ class RTMClient{
      * @param {number} timeout 
      * 
      * @callback
+     * @param {object} err
+     * @param {object} data
      */
     sendGroupMessage(from, gid, mtype, msg, attrs, callback, timeout){
         let salt = genSalt.call(this);
@@ -191,11 +189,11 @@ class RTMClient{
         let payload = {
             pid: this._pid,
             sign: genSign.call(this, salt.toString()),
-            salt: salt.toBuffer(),
+            salt: salt,
             mtype: mtype,
-            from: from.toBuffer(),
-            gid: gid.toBuffer(),
-            mid: genMid.call(this).toBuffer(),
+            from: from,
+            gid: gid,
+            mid: genMid.call(this),
             msg: msg,
             attrs: attrs
         };
@@ -203,20 +201,16 @@ class RTMClient{
         let options = {
             flag: 1,
             method: 'sendgroupmsg',
-            payload: msgpack.encode(payload)
+            payload: msgpack.encode(payload, this._msgOptions)
         };
 
-        this._client.sendQuest(options, (data) => {
-            if (callback){
-                callback(data.payload || data);
-            }
-        }, timeout);
+        sendQuest.call(this, this._client, options, callback, timeout);
     }
 
     /**
      * 
-     * @param {Uint64LE} from 
-     * @param {Uint64LE} rid
+     * @param {Uint64BE} from 
+     * @param {Uint64BE} rid
      * @param {number} mtype 
      * @param {string} msg 
      * @param {string} attrs 
@@ -224,6 +218,8 @@ class RTMClient{
      * @param {number} timeout 
      * 
      * @callback
+     * @param {object} err
+     * @param {object} data
      */
     sendRoomMessage(from, rid, mtype, msg, attrs, callback, timeout){
         let salt = genSalt.call(this);
@@ -231,11 +227,11 @@ class RTMClient{
         let payload = {
             pid: this._pid,
             sign: genSign.call(this, salt.toString()),
-            salt: salt.toBuffer(),
+            salt: salt,
             mtype: mtype,
-            from: from.toBuffer(),
-            rid: rid.toBuffer(),
-            mid: genMid.call(this).toBuffer(),
+            from: from,
+            rid: rid,
+            mid: genMid.call(this),
             msg: msg,
             attrs: attrs
         };
@@ -243,19 +239,15 @@ class RTMClient{
         let options = {
             flag: 1,
             method: 'sendroommsg',
-            payload: msgpack.encode(payload)
+            payload: msgpack.encode(payload, this._msgOptions)
         };
 
-        this._client.sendQuest(options, (data) => {
-            if (callback){
-                callback(data.payload || data);
-            }
-        }, timeout);
+        sendQuest.call(this, this._client, options, callback, timeout);
     }
 
     /**
      * 
-     * @param {Uint64LE} from 
+     * @param {Uint64BE} from 
      * @param {number} mtype 
      * @param {string} msg 
      * @param {string} attrs 
@@ -263,6 +255,8 @@ class RTMClient{
      * @param {number} timeout 
      * 
      * @callback
+     * @param {object} err
+     * @param {object} data
      */
     broadcastMessage(from, mtype, msg, attrs, callback, timeout){
         let salt = genSalt.call(this);
@@ -270,10 +264,10 @@ class RTMClient{
         let payload = {
             pid: this._pid,
             sign: genSign.call(this, salt.toString()),
-            salt: salt.toBuffer(),
+            salt: salt,
             mtype: mtype,
-            from: from.toBuffer(),
-            mid: genMid.call(this).toBuffer(),
+            from: from,
+            mid: genMid.call(this),
             msg: msg,
             attrs: attrs
         };
@@ -281,100 +275,83 @@ class RTMClient{
         let options = {
             flag: 1,
             method: 'broadcastmsg',
-            payload: msgpack.encode(payload)
+            payload: msgpack.encode(payload, this._msgOptions)
         };
 
-        this._client.sendQuest(options, (data) => {
-            if (callback){
-                callback(data.payload || data);
-            }
-        }, timeout);
+        sendQuest.call(this, this._client, options, callback, timeout);
     }
 
     /**
      * 
-     * @param {Uint64LE} uid 
-     * @param {array<Uint64LE>} friends 
+     * @param {Uint64BE} uid 
+     * @param {array<Uint64BE>} friends 
      * @param {function} callback 
      * @param {number} timeout 
      * 
      * @callback
+     * @param {object} err
+     * @param {object} data
      */
     addfriends(uid, friends, callback, timeout){
         let salt = genSalt.call(this);
 
-        let bfs = [];
-        friends.forEach((item, index) => {
-            bfs[index] = item.toBuffer();
-        });
-
         let payload = {
             pid: this._pid,
             sign: genSign.call(this, salt.toString()),
-            salt: salt.toBuffer(),
-            uid: uid.toBuffer(),
-            friends: bfs
+            salt: salt,
+            uid: uid,
+            friends: friends
         };
 
         let options = {
             flag: 1,
             method: 'addfriends',
-            payload: msgpack.encode(payload)
+            payload: msgpack.encode(payload, this._msgOptions)
         };
 
-        this._client.sendQuest(options, (data) => {
-            if (callback){
-                callback(data.payload || data);
-            }
-        }, timeout);
+        sendQuest.call(this, this._client, options, callback, timeout);
     }
 
     /**
      * 
-     * @param {Uint64LE} uid 
-     * @param {array<Uint64LE>} friends 
+     * @param {Uint64BE} uid 
+     * @param {array<Uint64BE>} friends 
      * @param {function} callback 
      * @param {number} timeout 
      * 
      * @callback
+     * @param {object} err
+     * @param {object} data
      */
     delFriends(uid, friends, callback, timeout){
         let salt = genSalt.call(this);
 
-        let bfs = [];
-        friends.forEach((item, index) => {
-            bfs[index] = item.toBuffer();
-        });
-
         let payload = {
             pid: this._pid,
             sign: genSign.call(this, salt.toString()),
-            salt: salt.toBuffer(),
-            uid: uid.toBuffer(),
-            friends: bfs
+            salt: salt,
+            uid: uid,
+            friends: friends
         };
 
         let options = {
             flag: 1,
             method: 'delfriends',
-            payload: msgpack.encode(payload)
+            payload: msgpack.encode(payload, this._msgOptions)
         };
 
-        this._client.sendQuest(options, (data) => {
-            if (callback){
-                callback(data.payload || data);
-            }
-        }, timeout);
+        sendQuest.call(this, this._client, options, callback, timeout);
     }
 
     /**
      * 
-     * @param {Uint64LE} uid 
+     * @param {Uint64BE} uid 
      * @param {function} callback 
      * @param {number} timeout 
      * 
      * @callback
-     * @param {array<Uint64LE>} uids
+     * @param {object} err
+     * @param {array<Uint64BE>} data
      */
     getFriends(uid, callback, timeout){
         let salt = genSalt.call(this);
@@ -382,42 +359,47 @@ class RTMClient{
         let payload = {
             pid: this._pid,
             sign: genSign.call(this, salt.toString()),
-            salt: salt.toBuffer(),
-            uid: uid.toBuffer()
+            salt: salt,
+            uid: uid
         };
 
         let options = {
             flag: 1,
             method: 'getfriends',
-            payload: msgpack.encode(payload)
+            payload: msgpack.encode(payload, this._msgOptions)
         };
 
-        this._client.sendQuest(options, (data) => {
-            if (callback){
-                let buids = [];
-                if (data.payload){
-                    let uids = data.payload['uids'];
-                    uids.forEach((item, index) => {
-                        uids[index] = new Uint64LE(item);
-                    });
-
-                    data.payload = { uids: buids };
-                }
-
-                callback(data.payload || data);
+        sendQuest.call(this, this._client, options, (err, data) => {
+            if (err){
+                callback(err, null);
+                return;
             }
+
+            let uids = data['uids'];
+            if (uids){
+                let buids = [];
+                uids.forEach((item, index) => {
+                    buids[index] = new Uint64BE(item);
+                });
+
+                callback(null, buids);
+                return;
+            }
+
+            callback(null, data);
         }, timeout);
     }
 
     /**
      * 
-     * @param {Uint64LE} uid 
-     * @param {Uint64LE} fuid 
+     * @param {Uint64BE} uid 
+     * @param {Uint64BE} fuid 
      * @param {function} callback 
      * @param {number} timeout 
      * 
      * @callback
-     * @param {bool} ok 
+     * @param {object} err
+     * @param {bool} data
      */
     isFriend(uid, fuid, callback, timeout){
         let salt = genSalt.call(this);
@@ -425,155 +407,153 @@ class RTMClient{
         let payload = {
             pid: this._pid,
             sign: genSign.call(this, salt.toString()),
-            salt: salt.toBuffer(),
-            uid: uid.toBuffer(),
-            fuid: fuid.toBuffer()
+            salt: salt,
+            uid: uid,
+            fuid: fuid
         };
 
         let options = {
             flag: 1,
             method: 'isfriend',
-            payload: msgpack.encode(payload)
+            payload: msgpack.encode(payload, this._msgOptions)
         };
 
-        this._client.sendQuest(options, (data) => {
-            if (callback){
-                callback(data.payload || data);
+        sendQuest.call(this, this._client, options, (err, data) => {
+            if (err){
+                callback(err, null);
+                return;
             }
+
+            let ok = data['ok'];
+            if (ok !== undefined){
+                callback(null, ok);
+                return;
+            }
+
+            callback(null, data);
         }, timeout);
     }
 
     /**
      * 
-     * @param {Uint64LE} uid 
-     * @param {array<Uint64LE>} fuids 
+     * @param {Uint64BE} uid 
+     * @param {array<Uint64BE>} fuids 
      * @param {function} callback 
      * @param {number} timeout 
      * 
      * @callback
-     * @param {array<Uint64LE>} fuids
+     * @param {object} err
+     * @param {array<Uint64BE>} data
      */
     isFriends(uid, fuids, callback, timeout){
         let salt = genSalt.call(this);
 
-        let bfuids = [];
-        fuids.forEach((item, index) => {
-            bfuids[index] = item.toBuffer();
-        });
-
         let payload = {
             pid: this._pid,
             sign: genSign.call(this, salt.toString()),
-            salt: salt.toBuffer(),
-            uid: uid.toBuffer(),
-            fuids: bfuids
+            salt: salt,
+            uid: uid,
+            fuids: fuids
         };
 
         let options = {
             flag: 1,
             method: 'isfriends',
-            payload: msgpack.encode(payload)
+            payload: msgpack.encode(payload, this._msgOptions)
         };
 
-        this._client.sendQuest(options, (data) => {
-            if (callback){
-                let bfuids = [];
-                if (data.payload){
-                    let fuids = data.payload['fuids'];
-                    fuids.forEach((item, index) => {
-                        bfuids[index] = new Uint64LE(item);
-                    });
-
-                    data.payload = { fuids: bfuids };
-                }
-                callback(data.payload || data);
+        sendQuest.call(this, this._client, options, (err, data) => {
+            if (err){
+                callback(err, null);
+                return;
             }
+
+            let fuids = data['fuids'];
+            if (fuids){
+                let bfuids = [];
+                fuids.forEach((item, index) => {
+                    bfuids[index] = new Uint64BE(item);
+                });
+
+                callback(null, bfuids);
+                return;
+            }
+
+            callback(null, data);
         }, timeout);
     }
 
     /**
      * 
-     * @param {Uint64LE} gid 
-     * @param {array<Uint64LE>} uids 
+     * @param {Uint64BE} gid 
+     * @param {array<Uint64BE>} uids 
      * @param {function} callback 
      * @param {number} timeout 
      * 
      * @callback
+     * @param {object} err
+     * @param {object} data
      */
     addGroupMembers(gid, uids, callback, timeout){
         let salt = genSalt.call(this);
 
-        let buids = [];
-        uids.forEach((item, index) => {
-            buids[index] = item.toBuffer();
-        });
-
         let payload = {
             pid: this._pid,
             sign: genSign.call(this, salt.toString()),
-            salt: salt.toBuffer(),
-            gid: gid.toBuffer(),
-            uids: buids
+            salt: salt,
+            gid: gid,
+            uids: uids
         };
 
         let options = {
             flag: 1,
             method: 'addgroupmembers',
-            payload: msgpack.encode(payload)
+            payload: msgpack.encode(payload, this._msgOptions)
         };
-
-        this._client.sendQuest(options, (data) => {
-            if (callback){
-                callback(data.payload || data);
-            }
-        }, timeout);
+        
+        sendQuest.call(this, this._client, options, callback, timeout);
     }
 
     /**
      * 
-     * @param {Uint64LE} gid 
-     * @param {array<Uint64LE>} uids 
+     * @param {Uint64BE} gid 
+     * @param {array<Uint64BE>} uids 
      * @param {function} callback 
      * @param {number} timeout 
      * 
      * @callback
+     * @param {object} err
+     * @param {object} data
      */
     deleteGroupMembers(gid, uids, callback, timeout){
         let salt = genSalt.call(this);
 
-        let buids = [];
-        uids.forEach((item, index) => {
-            buids[index] = item.toBuffer();
-        });
-
         let payload = {
             pid: this._pid,
             sign: genSign.call(this, salt.toString()),
-            salt: salt.toBuffer(),
-            gid: gid.toBuffer(),
-            uids: buids
+            salt: salt,
+            gid: gid,
+            uids: uids
         };
 
         let options = {
             flag: 1,
             method: 'delgroupmembers',
-            payload: msgpack.encode(payload)
+            payload: msgpack.encode(payload, this._msgOptions)
         };
 
-        this._client.sendQuest(options, (data) => {
-            if (callback){
-                callback(data.payload || data);
-            }
-        }, timeout);
+        sendQuest.call(this, this._client, options, callback, timeout);
     }
 
     /**
      * 
-     * @param {Uint64LE} gid 
+     * @param {Uint64BE} gid 
      * @param {function} callback 
      * @param {number} timeout 
      * 
      * @callback
+     * @param {object} err
+     * @param {object} data
      */
     deleteGroup(gid, callback, timeout){
         let salt = genSalt.call(this);
@@ -581,31 +561,28 @@ class RTMClient{
         let payload = {
             pid: this._pid,
             sign: genSign.call(this, salt.toString()),
-            salt: salt.toBuffer(),
-            gid: gid.toBuffer()
+            salt: salt,
+            gid: gid
         };
 
         let options = {
             flag: 1,
             method: 'delgroup',
-            payload: msgpack.encode(payload)
+            payload: msgpack.encode(payload, this._msgOptions)
         };
 
-        this._client.sendQuest(options, (data) => {
-            if (callback){
-                callback(data.payload || data);
-            }
-        }, timeout);
+        sendQuest.call(this, this._client, options, callback, timeout);
     }
 
     /**
      * 
-     * @param {Uint64LE} gid 
+     * @param {Uint64BE} gid 
      * @param {function} callback 
      * @param {number} timeout 
      * 
      * @callback
-     * @param {array<Uint64LE>} uids
+     * @param {object} err
+     * @param {array<Uint64BE>} data
      */
     getGroupMembers(gid, callback, timeout){
         let salt = genSalt.call(this);
@@ -613,41 +590,47 @@ class RTMClient{
         let payload = {
             pid: this._pid,
             sign: genSign.call(this, salt.toString()),
-            salt: salt.toBuffer(),
-            gid: gid.toBuffer()
+            salt: salt,
+            gid: gid
         };
 
         let options = {
             flag: 1,
             method: 'getgroupmembers',
-            payload: msgpack.encode(payload)
+            payload: msgpack.encode(payload, this._msgOptions)
         };
 
-        this._client.sendQuest(options, (data) => {
-            if (callback){
-                let buids = [];
-                if (data.payload){
-                    let uids = data.payload['uids'];
-                    uids.forEach((item, index) => {
-                        buids[index] = new Uint64LE(item);
-                    });
-
-                    data.payload = { uids: buids };
-                }
-                callback(data.payload || data);
+        sendQuest.call(this, this._client, options, (err, data) => {
+            if (err){
+                callback(err, null);
+                return;
             }
+
+            let uids = data['uids'];
+            if (uids){
+                let buids = [];
+                uids.forEach((item, index) => {
+                    buids[index] = new Uint64BE(item);
+                });
+
+                callback(null, buids);
+                return;
+            }
+
+            callback(null, data);
         }, timeout);
     }
 
     /**
      * 
-     * @param {Uint64LE} gid 
-     * @param {Uint64LE} uid 
+     * @param {Uint64BE} gid 
+     * @param {Uint64BE} uid 
      * @param {function} callback 
      * @param {number} timeout 
      * 
      * @callback
-     * @param {bool} ok 
+     * @param {object} err
+     * @param {bool} data
      */
     isGroupMember(gid, uid, callback, timeout){
         let salt = genSalt.call(this);
@@ -655,32 +638,42 @@ class RTMClient{
         let payload = {
             pid: this._pid,
             sign: genSign.call(this, salt.toString()),
-            salt: salt.toBuffer(),
-            gid: gid.toBuffer(),
-            uid: uid.toBuffer()
+            salt: salt,
+            gid: gid,
+            uid: uid
         };
 
         let options = {
             flag: 1,
             method: 'isgroupmember',
-            payload: msgpack.encode(payload)
+            payload: msgpack.encode(payload, this._msgOptions)
         };
 
-        this._client.sendQuest(options, (data) => {
-            if (callback){
-                callback(data.payload || data);
+        sendQuest.call(this, this._client, options, (err, data) => {
+            if (err){
+                callback(err, null);
+                return;
             }
+
+            let ok = data['ok'];
+            if (ok !== undefined){
+                callback(null, ok);
+                return;
+            }
+
+            callback(null, data);
         }, timeout);
     }
 
     /**
      * 
-     * @param {Uint64LE} uid 
+     * @param {Uint64BE} uid 
      * @param {function} callback 
      * @param {number} timeout 
      * 
      * @callback
-     * @param {array<Uint64LE>} gids 
+     * @param {object} err
+     * @param {array<Uint64BE>} data
      */
     getUserGroups(uid, callback, timeout){
         let salt = genSalt.call(this);
@@ -688,39 +681,45 @@ class RTMClient{
         let payload = {
             pid: this._pid,
             sign: genSign.call(this, salt.toString()),
-            salt: salt.toBuffer(),
-            uid: uid.toBuffer()
+            salt: salt,
+            uid: uid
         };
 
         let options = {
             flag: 1,
             method: 'getusergroups',
-            payload: msgpack.encode(payload)
+            payload: msgpack.encode(payload, this._msgOptions)
         };
 
-        this._client.sendQuest(options, (data) => {
-            if (callback){
-                let bgids = [];
-                if (data.payload){
-                    let gids = data.payload['gids'];
-                    gids.forEach((item, index) => {
-                        bgids[index] = new Uint64LE(item);
-                    });
-
-                    data.payload = { gids: bgids };
-                }
-                callback(data.payload || data);
+        sendQuest.call(this, this._client, options, (err, data) => {
+            if (err){
+                callback(err, null);
+                return;
             }
+
+            let gids = data['gids'];
+            if (gids){
+                let bgids = [];
+                gids.forEach((item, index) => {
+                    bgids[index] = new Uint64BE(item);
+                });
+
+                callback(null, bgids);
+                return;
+            }
+
+            callback(null, data);
         }, timeout);
     }
 
     /**
      * 
-     * @param {Uint64LE} uid 
+     * @param {Uint64BE} uid 
      * @param {function} callback 
      * @param {number} timeout 
      * 
      * @callback
+     * @param {object} err
      * @param {string} token 
      */
     getToken(uid, callback, timeout){
@@ -729,78 +728,90 @@ class RTMClient{
         let payload = {
             pid: this._pid,
             sign: genSign.call(this, salt.toString()),
-            salt: salt.toBuffer(),
-            uid: uid.toBuffer()
+            salt: salt,
+            uid: uid
         };
 
         let options = {
             flag: 1,
             method: 'gettoken',
-            payload: msgpack.encode(payload)
+            payload: msgpack.encode(payload, this._msgOptions)
         };
 
-        this._client.sendQuest(options, (data) => {
-            if (callback){
-                callback(data.payload || data);
+        sendQuest.call(this, this._client, options, (err, data) => {
+            if (err){
+                callback(err, null);
+                return;
             }
+
+            let token = data['token'];
+            if (token !== undefined){
+                callback(null, token);
+                return;
+            }
+
+            callback(null, data);
         }, timeout);
     }
 
     /**
      * 
-     * @param {array<Uint64LE>} uids 
+     * @param {array<Uint64BE>} uids 
      * @param {function} callback 
      * @param {number} timeout 
      * 
      * @callback
-     * @param {array<Uint64LE>} uids 
+     * @param {object} err
+     * @param {array<Uint64BE>} uids 
      */
     getOnlineUsers(uids, callback, timeout){
         let salt = genSalt.call(this);
 
-        let buids = [];
-        uids.forEach((item, index) => {
-            buids[index] = new Uint64LE(item);
-        });
-
         let payload = {
             pid: this._pid,
             sign: genSign.call(this, salt.toString()),
-            salt: salt.toBuffer(),
-            uids: buids
+            salt: salt,
+            uids: uids
         };
 
         let options = {
             flag: 1,
             method: 'getonlineusers',
-            payload: msgpack.encode(payload)
+            payload: msgpack.encode(payload, this._msgOptions)
         };
 
-        this._client.sendQuest(options, (data) => {
-            if (callback){
-                let buids = [];
-                if (data.payload){
-                    let uids = data.payload['uids'];
-                    uids.forEach((item, index) => {
-                        buids[index] = new Uint64LE(item);
-                    });
-
-                    data.payload = { uids: buids };
-                }
-                callback(data.payload || data);
+        sendQuest.call(this, this._client, options, (err, data) => {
+            if (err){
+                callback(err, null);
+                return;
             }
+
+            let uids = data['uids'];
+            if (uids){
+                let buids = [];
+                uids.forEach((item, index) => {
+                    buids[index] = new Uint64BE(item);
+                });
+
+                callback(null, buids);
+                return;
+            }
+
+            callback(null, data);
         }, timeout);
     }
 
     /**
      * 
-     * @param {Uint64LE} gid 
-     * @param {Uint64LE} uid 
+     * @param {Uint64BE} gid 
+     * @param {Uint64BE} uid 
      * @param {number} btime 
      * @param {function} callback 
      * @param {number} timeout 
      * 
      * @callback
+     * @param {object} err
+     * @param {object} data
      */
     addGroupBan(gid, uid, btime, callback, timeout){
         let salt = genSalt.call(this);
@@ -808,33 +819,31 @@ class RTMClient{
         let payload = {
             pid: this._pid,
             sign: genSign.call(this, salt.toString()),
-            salt: salt.toBuffer(),
-            gid: gid.toBuffer(),
-            uid: uid.toBuffer(),
+            salt: salt,
+            gid: gid,
+            uid: uid,
             btime: btime 
         };
 
         let options = {
             flag: 1,
             method: 'addgroupban',
-            payload: msgpack.encode(payload)
+            payload: msgpack.encode(payload, this._msgOptions)
         };
 
-        this._client.sendQuest(options, (data) => {
-            if (callback){
-                callback(data.payload || data);
-            }
-        }, timeout);
+        sendQuest.call(this, this._client, options, callback, timeout);
     }
 
     /**
      * 
-     * @param {Uint64LE} gid 
-     * @param {Uint64LE} uid 
+     * @param {Uint64BE} gid 
+     * @param {Uint64BE} uid 
      * @param {function} callback 
      * @param {number} timeout 
      * 
      * @callback
+     * @param {object} err
+     * @param {object} data
      */
     removeGroupBan(gid, uid, callback, timeout){
         let salt = genSalt.call(this);
@@ -842,33 +851,31 @@ class RTMClient{
         let payload = {
             pid: this._pid,
             sign: genSign.call(this, salt.toString()),
-            salt: salt.toBuffer(),
-            gid: gid.toBuffer(),
-            uid: uid.toBuffer()
+            salt: salt,
+            gid: gid,
+            uid: uid
         };
 
         let options = {
             flag: 1,
             method: 'removegroupban',
-            payload: msgpack.encode(payload)
+            payload: msgpack.encode(payload, this._msgOptions)
         };
 
-        this._client.sendQuest(options, (data) => {
-            if (callback){
-                callback(data.payload || data);
-            }
-        }, timeout);
+        sendQuest.call(this, this._client, options, callback, timeout);
     }
 
     /**
      * 
-     * @param {Uint64LE} rid 
-     * @param {Uint64LE} uid 
+     * @param {Uint64BE} rid 
+     * @param {Uint64BE} uid 
      * @param {number} btime 
      * @param {function} callback 
      * @param {number} timeout 
      * 
      * @callback
+     * @param {object} err
+     * @param {object} data
      */
     addRoomBan(rid, uid, btime, callback, timeout){
         let salt = genSalt.call(this);
@@ -876,33 +883,31 @@ class RTMClient{
         let payload = {
             pid: this._pid,
             sign: genSign.call(this, salt.toString()),
-            salt: salt.toBuffer(),
-            rid: rid.toBuffer(),
-            uid: uid.toBuffer(),
+            salt: salt,
+            rid: rid,
+            uid: uid,
             btime: btime
         };
 
         let options = {
             flag: 1,
             method: 'addroomban',
-            payload: msgpack.encode(payload)
+            payload: msgpack.encode(payload, this._msgOptions)
         };
 
-        this._client.sendQuest(options, (data) => {
-            if (callback){
-                callback(data.payload || data);
-            }
-        }, timeout);
+        sendQuest.call(this, this._client, options, callback, timeout);
     }
 
     /**
      * 
-     * @param {Uint64LE} rid 
-     * @param {Uint64LE} uid 
+     * @param {Uint64BE} rid 
+     * @param {Uint64BE} uid 
      * @param {function} callback 
      * @param {number} timeout 
      * 
      * @callback
+     * @param {object} err
+     * @param {object} data
      */
     removeRoomBan(rid, uid, callback, timeout){
         let salt = genSalt.call(this);
@@ -910,32 +915,30 @@ class RTMClient{
         let payload = {
             pid: this._pid,
             sign: genSign.call(this, salt.toString()),
-            salt: salt.toBuffer(),
-            rid: rid.toBuffer(),
-            uid: uid.toBuffer()
+            salt: salt,
+            rid: rid,
+            uid: uid
         };
 
         let options = {
             flag: 1,
             method: 'removeroomban',
-            payload: msgpack.encode(payload)
+            payload: msgpack.encode(payload, this._msgOptions)
         };
 
-        this._client.sendQuest(options, (data) => {
-            if (callback){
-                callback(data.payload || data);
-            }
-        }, timeout);
+        sendQuest.call(this, this._client, options, callback, timeout);
     }
 
     /**
      * 
-     * @param {Uint64LE} uid 
+     * @param {Uint64BE} uid 
      * @param {number} btime 
      * @param {function} callback 
      * @param {number} timeout 
      * 
      * @callback
+     * @param {object} err
+     * @param {object} data
      */
     addProjectBlack(uid, btime, callback, timeout){
         let salt = genSalt.call(this);
@@ -943,31 +946,29 @@ class RTMClient{
         let payload = {
             pid: this._pid,
             sign: genSign.call(this, salt.toString()),
-            salt: salt.toBuffer(),
-            uid: uid.toBuffer(),
+            salt: salt,
+            uid: uid,
             btime: btime
         };
 
         let options = {
             flag: 1,
             method: 'addprojectblack',
-            payload: msgpack.encode(payload)
+            payload: msgpack.encode(payload, this._msgOptions)
         };
 
-        this._client.sendQuest(options, (data) => {
-            if (callback){
-                callback(data.payload || data);
-            }
-        }, timeout);
+        sendQuest.call(this, this._client, options, callback, timeout);
     }
 
     /**
      * 
-     * @param {Uint64LE} uid 
+     * @param {Uint64BE} uid 
      * @param {function} callback 
      * @param {number} timeout 
      * 
      * @callback
+     * @param {object} err
+     * @param {object} data
      */
     removeProjectBlack(uid, callback, timeout){
         let salt = genSalt.call(this);
@@ -975,32 +976,29 @@ class RTMClient{
         let payload = {
             pid: this._pid,
             sign: genSign.call(this, salt.toString()),
-            salt: salt.toBuffer(),
-            uid: uid.toBuffer()
+            salt: salt,
+            uid: uid
         };
 
         let options = {
             flag: 1,
             method: 'removeprojectblack',
-            payload: msgpack.encode(payload)
+            payload: msgpack.encode(payload, this._msgOptions)
         };
 
-        this._client.sendQuest(options, (data) => {
-            if (callback){
-                callback(data.payload || data);
-            }
-        }, timeout);
+        sendQuest.call(this, this._client, options, callback, timeout);
     }
 
     /**
      * 
-     * @param {Uint64LE} gid 
-     * @param {Uint64LE} uid 
+     * @param {Uint64BE} gid 
+     * @param {Uint64BE} uid 
      * @param {function} callback 
      * @param {number} timeout 
      * 
      * @callback
-     * @param {bool} ok
+     * @param {object} err
+     * @param {bool} data
      */
     isBanOfGroup(gid, uid, callback, timeout){
         let salt = genSalt.call(this);
@@ -1008,33 +1006,43 @@ class RTMClient{
         let payload = {
             pid: this._pid,
             sign: genSign.call(this, salt.toString()),
-            salt: salt.toBuffer(),
-            gid: gid.toBuffer(),
-            uid: uid.toBuffer()
+            salt: salt,
+            gid: gid,
+            uid: uid
         };
 
         let options = {
             flag: 1,
             method: 'isbanofgroup',
-            payload: msgpack.encode(payload)
+            payload: msgpack.encode(payload, this._msgOptions)
         };
 
-        this._client.sendQuest(options, (data) => {
-            if (callback){
-                callback(data.payload || data);
+        sendQuest.call(this, this._client, options, (err, data) => {
+            if (err){
+                callback(err, null);
+                return;
             }
+
+            let ok = data['ok'];
+            if (ok !== undefined){
+                callback(null, ok);
+                return;
+            }
+
+            callback(null, data);
         }, timeout);
     }
 
     /**
      * 
-     * @param {Uint64LE} rid 
-     * @param {Uint64LE} uid 
+     * @param {Uint64BE} rid 
+     * @param {Uint64BE} uid 
      * @param {function} callback 
      * @param {number} timeout 
      * 
      * @callback
-     * @param {bool} ok
+     * @param {object} err
+     * @param {bool} data
      */
     isBanOfRoom(rid, uid, callback, timeout){
         let salt = genSalt.call(this);
@@ -1042,32 +1050,42 @@ class RTMClient{
         let payload = {
             pid: this._pid,
             sign: genSign.call(this, salt.toString()),
-            salt: salt.toBuffer(),
-            rid: rid.toBuffer(),
-            uid: uid.toBuffer()
+            salt: salt,
+            rid: rid,
+            uid: uid
         };
 
         let options = {
             flag: 1,
             method: 'isbanofroom',
-            payload: msgpack.encode(payload)
+            payload: msgpack.encode(payload, this._msgOptions)
         };
 
-        this._client.sendQuest(options, (data) => {
-            if (callback){
-                callback(data.payload || data);
+        sendQuest.call(this, this._client, options, (err, data) => {
+            if (err){
+                callback(err, null);
+                return;
             }
+
+            let ok = data['ok'];
+            if (ok !== undefined){
+                callback(null, ok);
+                return;
+            }
+
+            callback(null, data);
         }, timeout);
     }
 
     /**
      * 
-     * @param {Uint64LE} uid 
+     * @param {Uint64BE} uid 
      * @param {function} callback 
      * @param {number} timeout 
      * 
      * @callback
-     * @param {bool} ok
+     * @param {object} err
+     * @param {bool} data 
      */
     isProjectBlack(uid, callback, timeout){
         let salt = genSalt.call(this);
@@ -1075,31 +1093,42 @@ class RTMClient{
         let payload = {
             pid: this._pid,
             sign: genSign.call(this, salt.toString()),
-            salt: salt.toBuffer(),
-            uid: uid.toBuffer()
+            salt: salt,
+            uid: uid
         };
 
         let options = {
             flag: 1,
             method: 'isprojectblack',
-            payload: msgpack.encode(payload)
+            payload: msgpack.encode(payload, this._msgOptions)
         };
 
-        this._client.sendQuest(options, (data) => {
-            if (callback){
-                callback(data.payload || data);
+        sendQuest.call(this, this._client, options, (err, data) => {
+            if (err){
+                callback(err, null);
+                return;
             }
+
+            let ok = data['ok'];
+            if (ok !== undefined){
+                callback(null, ok);
+                return;
+            }
+
+            callback(null, data);
         }, timeout);
     }
 
     /**
      * 
-     * @param {Uint64LE} uid 
+     * @param {Uint64BE} uid 
      * @param {string} pushname 
      * @param {function} callback 
      * @param {number} timeout 
      * 
      * @callback
+     * @param {object} err
+     * @param {object} data 
      */
     setPushName(uid, pushname, callback, timeout){
         let salt = genSalt.call(this);
@@ -1107,33 +1136,30 @@ class RTMClient{
         let payload = {
             pid: this._pid,
             sign: genSign.call(this, salt.toString()),
-            salt: salt.toBuffer(),
-            uid: uid.toBuffer(),
+            salt: salt,
+            uid: uid,
             pushname: pushname
         };
 
         let options = {
             flag: 1,
             method: 'setpushname',
-            payload: msgpack.encode(payload)
+            payload: msgpack.encode(payload, this._msgOptions)
         };
 
-        this._client.sendQuest(options, (data) => {
-            if (callback){
-                callback(data.payload || data);
-            }
-        }, timeout);
+        sendQuest.call(this, this._client, options, callback, timeout);
     }
 
     /**
      * 
-     * @param {Uint64LE} uid 
+     * @param {Uint64BE} uid 
      * @param {string} pushname 
      * @param {function} callback 
      * @param {number} timeout 
      * 
      * @callback
-     * @param {string} pushname
+     * @param {object} err
+     * @param {string} data 
      */
     getPushName(uid, callback, timeout){
         let salt = genSalt.call(this);
@@ -1141,32 +1167,43 @@ class RTMClient{
         let payload = {
             pid: this._pid,
             sign: genSign.call(this, salt.toString()),
-            salt: salt.toBuffer(),
-            uid: uid.toBuffer()
+            salt: salt,
+            uid: uid
         };
 
         let options = {
             flag: 1,
             method: 'getpushname',
-            payload: msgpack.encode(payload)
+            payload: msgpack.encode(payload, this._msgOptions)
         };
 
-        this._client.sendQuest(options, (data) => {
-            if (callback){
-                callback(data.payload || data);
+        sendQuest.call(this, this._client, options, (err, data) => {
+            if (err){
+                callback(err, null);
+                return;
             }
+
+            let pushname = data['pushname'];
+            if (pushname !== undefined){
+                callback(null, pushname);
+                return;
+            }
+
+            callback(null, data);
         }, timeout);
     }
 
     /**
      * 
-     * @param {Uint64LE} uid 
+     * @param {Uint64BE} uid 
      * @param {number} lat 
      * @param {number} lng 
      * @param {function} callback 
      * @param {number} timeout 
      * 
      * @callback
+     * @param {object} err
+     * @param {object} data 
      */
     setGeo(uid, lat, lng, callback, timeout){
         let salt = genSalt.call(this);
@@ -1174,8 +1211,8 @@ class RTMClient{
         let payload = {
             pid: this._pid,
             sign: genSign.call(this, salt.toString()),
-            salt: salt.toBuffer(),
-            uid: uid.toBuffer(),
+            salt: salt,
+            uid: uid,
             lat: lat,
             lng: lng
         };
@@ -1183,25 +1220,21 @@ class RTMClient{
         let options = {
             flag: 1,
             method: 'setgeo',
-            payload: msgpack.encode(payload)
+            payload: msgpack.encode(payload, this._msgOptions)
         };
 
-        this._client.sendQuest(options, (data) => {
-            if (callback){
-                callback(data.payload || data);
-            }
-        }, timeout);
+        sendQuest.call(this, this._client, options, callback, timeout);
     }
 
     /**
      * 
-     * @param {Uint64LE} uid 
+     * @param {Uint64BE} uid 
      * @param {function} callback 
      * @param {number} timeout 
      * 
      * @callback
-     * @param {number} lat 
-     * @param {number} lng 
+     * @param {object} err
+     * @param {object<lat:number, lng:number>} data 
      */
     getGeo(uid, callback, timeout){
         let salt = genSalt.call(this);
@@ -1209,85 +1242,88 @@ class RTMClient{
         let payload = {
             pid: this._pid,
             sign: genSign.call(this, salt.toString()),
-            salt: salt.toBuffer(),
-            uid: uid.toBuffer()
+            salt: salt,
+            uid: uid
         };
 
         let options = {
             flag: 1,
             method: 'getgeo',
-            payload: msgpack.encode(payload)
+            payload: msgpack.encode(payload, this._msgOptions)
         };
 
-        this._client.sendQuest(options, (data) => {
-            if (callback){
-                callback(data.payload || data);
-            }
-        }, timeout);
+        sendQuest.call(this, this._client, options, callback, timeout);
     }
 
     /**
      * 
-     * @param {array<Uint64LE>} uids
+     * @param {array<Uint64BE>} uids
      * @param {function} callback 
      * @param {number} timeout 
      * 
      * @callback
-     * @param {array<uid:Uint64LE,lat:number,lng:number>} list
+     * @param {object} err
+     * @param {array<array<uid:Uint64BE,lat:number,lng:number>>} data 
      */
     getGeos(uids, callback, timeout){
         let salt = genSalt.call(this);
 
-        let buids = [];
-        uids.forEach((item, index) => {
-            buids[index] = new Uint64LE(item);
-        });
-
         let payload = {
             pid: this._pid,
             sign: genSign.call(this, salt.toString()),
-            salt: salt.toBuffer(),
-            uids: buids
+            salt: salt,
+            uids: uids
         };
 
         let options = {
             flag: 1,
             method: 'getgeos',
-            payload: msgpack.encode(payload)
+            payload: msgpack.encode(payload, this._msgOptions)
         };
 
-        this._client.sendQuest(options, (data) => {
-            if (callback){
-                let blist = [];
-                if (data.payload){
-                    let list = data.payload['list'];
-                    list.forEach((item, index) => {
-                        item[0] = new Uint64LE(item[0]);
-                        blist[index] = item;
-                    });
-
-                    data.payload = { list: blist };
-                }
-                callback(data.payload || data);
+        sendQuest.call(this, this._client, options, (err, data) => {
+            if (err){
+                callback(err, null);
+                return;
             }
+
+            let geos = data['geos'];
+            if (geos){
+                let bgeos = [];
+                geos.forEach((item, index) => {
+                    item[0] = new Uint64BE(item[0]);
+                    bgeos[index] = item;
+                });
+                callback(null, bgeos);
+                return;
+            }
+
+            callback(null, data);
         }, timeout);
     }
 
     /**
      * 
-     * @param {Uint64LE} from 
-     * @param {Uint64LE} to 
+     * @param {Uint64BE} from 
+     * @param {Uint64BE} to 
      * @param {number} mtype 
      * @param {string} filePath 
      * @param {function} callback 
      * @param {number} timeout 
      * 
      * @callback
+     * @param {object} err
+     * @param {object} data 
      */
     sendFile(from, to, mtype, filePath, callback, timeout){
         let self = this;
 
-        filetoken.call(this, from, to, (data) => {
+        filetoken.call(this, from, to, (err, data) => {
+            if (err){
+                self.emit('error', err);
+                return;
+            }
+
             let token = data["token"];
             let endpoint = data["endpoint"];
             let ipport = endpoint.split(':');
@@ -1301,11 +1337,12 @@ class RTMClient{
                 let sign = md5.call(self, md5.call(self, data) + ':' + token);
                 let client = new FPClient({ 
                     host: ipport[0], 
-                    port: ipport[1], 
+                    port: +ipport[1], 
                     autoReconnect: false,
                     connectionTimeout: timeout
                 });
 
+                client.connect();
                 client.on('connect', () => {
                     let options = {
                         token: token,
@@ -1316,6 +1353,9 @@ class RTMClient{
                         data: data
                     };
                     sendfile.call(self, client, options, callback, timeout);
+                });
+                client.on('error', (err) => {
+                    self.emit('error', {src: 'file client', err: err });
                 });
             });
         }, timeout);
@@ -1328,23 +1368,19 @@ function filetoken(from, to, callback, timeout){
     let payload = {
         pid: this._pid,
         sign: genSign.call(this, salt.toString()),
-        salt: salt.toBuffer(),
+        salt: salt,
         cmd: 'sendfile',
-        from: from.toBuffer(),
-        to: to.toBuffer()
+        from: from,
+        to: to
     };
 
     let options = {
         flag: 1,
         method: 'filetoken',
-        payload: msgpack.encode(payload)
+        payload: msgpack.encode(payload, this._msgOptions)
     };
 
-    this._client.sendQuest(options, (data) => {
-        if (callback){
-            callback(data.payload || data);
-        }
-    }, timeout);
+    sendQuest.call(this, this._client, options, callback, timeout);
 }
 
 function sendfile(client, ops, callback, timeout){
@@ -1352,9 +1388,9 @@ function sendfile(client, ops, callback, timeout){
         pid: this._pid,
         token: ops.token,
         mtype: ops.mtype,
-        from: ops.from.toBuffer(),
-        to: ops.to.toBuffer(),
-        mid: genMid.call(this).toBuffer(),
+        from: ops.from,
+        to: ops.to,
+        mid: genMid.call(this),
         file: ops.data,
         attrs: JSON.stringify({ sign: ops.sign })
     };
@@ -1362,24 +1398,20 @@ function sendfile(client, ops, callback, timeout){
     let options = {
         flag: 1,
         method: 'sendfile',
-        payload: msgpack.encode(payload)
+        payload: msgpack.encode(payload, this._msgOptions)
     };
 
-    client.sendQuest(options, (data) => {
-        if (callback){
-            callback(data.payload || data);
-        }
-    }, timeout);
+    sendQuest.call(this, client, options, callback, timeout);
 }
 
 function genMid(){
     let timestamp = Math.floor(Date.now() / 1000);
-    return new Uint64LE(timestamp, this._midSeq++);
+    return new Uint64BE(timestamp, this._midSeq++);
 }
 
 function genSalt(){
     let timestamp = Math.floor(Date.now() / 1000);
-    return new Uint64LE(timestamp, this._saltSeq++);
+    return new Uint64BE(timestamp, this._saltSeq++);
 }
 
 function genSign(salt){
@@ -1389,7 +1421,36 @@ function genSign(salt){
 function md5(data){
     let hash = crypto.createHash('md5');
     hash.update(data);
-    return hash.digest();
+    return hash.digest('hex');
+}
+
+function isException(data){
+    if (data === undefined){
+        return false;
+    }
+    return data.hasOwnProperty('code') && data.hasOwnProperty('ex');
+}
+
+function sendQuest(client, options, callback, timeout){
+    let self = this;
+    client.sendQuest(options, (data) => {
+        if (!callback){
+            return;
+        }
+
+        if (data.payload){
+            let payload = msgpack.decode(data.payload, this._msgOptions);
+            if (isException.call(self, payload)){
+                callback(payload, null);
+                return;
+            }
+
+            callback(null, payload);
+            return;
+        }
+
+        callback(null, data);
+    }, timeout);
 }
 
 Object.setPrototypeOf(RTMClient.prototype, Emitter.prototype);

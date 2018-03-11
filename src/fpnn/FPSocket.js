@@ -10,6 +10,10 @@ class FPSocket{
         this._port = options ? options.port : 0;
         this._connectionTimeout = options ? options.connectionTimeout : 30 * 1000;
 
+        if (this._connectionTimeout === undefined){
+            this._connectionTimeout = 30 * 1000;
+        }
+
         this._client = null;
         this._isConnect = false;
     }

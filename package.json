@@ -13,7 +13,7 @@
     "co-defer": "^1.0.0",
     "co-wait": "0.0.0",
     "int64-buffer": "^0.1.10",
-    "msgpack5": "^4.0.1",
+    "msgpack-lite": "^0.1.26",
     "thunkify": "^2.1.2"
   }
 }
