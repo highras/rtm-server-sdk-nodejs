@@ -40,9 +40,32 @@ const ERROR_CODE = {
 	RTM_EC_UNKNOWN_ERROR: 200999
 };
 
+const SERVER_PUSH = {
+	recvMessage: 'pushmsg',
+	recvGroupMessage: 'pushgroupmsg',
+	recvRoomMessage: 'pushroommsg',
+	recvFile: 'pushfile',
+	recvGroupFile: 'pushgroupfile',
+	recvRoomFile: 'pushroomfile',
+	recvEvents: 'pushevents',
+	ping: 'ping'
+};
+
 class RTMConfig{
 	static get ERROR_CODE(){
 		return ERROR_CODE;
+	}
+
+	static get PING_INTERVAL(){
+		return 10 * 1000;
+	}
+
+	static get SERVER_PUSH(){
+		return SERVER_PUSH;
+	}
+
+	static get MID_TTL(){
+		return 5 * 1000;
 	}
 }
 

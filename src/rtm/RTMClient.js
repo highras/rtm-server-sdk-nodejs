@@ -4,10 +4,11 @@ const Emitter = require('events').EventEmitter;
 const fs = require('fs');
 const crypto = require('crypto');
 const msgpack = require("msgpack-lite");
-const Uint64BE = require("int64-buffer").Uint64BE;
+const Int64BE = require("int64-buffer").Int64BE;
 
-const conf = require('../fpnn/FPConfig');
 const FPClient = require('../fpnn/FPClient');
+const RTMConfig = require('./RTMConfig');
+const RTMProcessor = require('./RTMProcessor');
 
 class RTMClient{
     /**
@@ -36,17 +37,25 @@ class RTMClient{
             connectionTimeout: options.connectionTimeout
         });
 
+        let self = this;
         this._client.on('connect', () => {
-            this.emit('connect');
+            self._client.processor = self._processor;
+            self.emit('connect', { processor: self._processor, services: RTMConfig.SERVER_PUSH });
         });
 
         this._client.on('error', (err) => {
-            this.emit('error', err);
+            self.emit('error', err);
         });
 
-        this._msgOptions = { 
-            codec: msgpack.createCodec({ int64: true }) 
+        this._client.on('close', () => {
+            self.emit('close');
+        });
+
+        this._msgOptions = {
+            codec: msgpack.createCodec({ int64: true })
         };
+
+        this._processor = new RTMProcessor(this._msgOptions);
     }
 
     enableConnect(){
@@ -95,8 +104,8 @@ class RTMClient{
 
     /**
      * 
-     * @param {Uint64BE} from 
-     * @param {Uint64BE} to 
+     * @param {Int64BE} from 
+     * @param {Int64BE} to 
      * @param {number} mtype 
      * @param {string} msg 
      * @param {string} attrs 
@@ -133,8 +142,8 @@ class RTMClient{
 
     /**
      * 
-     * @param {Uint64BE} from 
-     * @param {array<Uint64BE>} tos
+     * @param {Int64BE} from 
+     * @param {array<Int64BE>} tos
      * @param {number} mtype 
      * @param {string} msg 
      * @param {string} attrs 
@@ -171,8 +180,8 @@ class RTMClient{
 
     /**
      * 
-     * @param {Uint64BE} from 
-     * @param {Uint64BE} gid
+     * @param {Int64BE} from 
+     * @param {Int64BE} gid
      * @param {number} mtype 
      * @param {string} msg 
      * @param {string} attrs 
@@ -209,8 +218,8 @@ class RTMClient{
 
     /**
      * 
-     * @param {Uint64BE} from 
-     * @param {Uint64BE} rid
+     * @param {Int64BE} from 
+     * @param {Int64BE} rid
      * @param {number} mtype 
      * @param {string} msg 
      * @param {string} attrs 
@@ -247,7 +256,7 @@ class RTMClient{
 
     /**
      * 
-     * @param {Uint64BE} from 
+     * @param {Int64BE} from 
      * @param {number} mtype 
      * @param {string} msg 
      * @param {string} attrs 
@@ -283,8 +292,8 @@ class RTMClient{
 
     /**
      * 
-     * @param {Uint64BE} uid 
-     * @param {array<Uint64BE>} friends 
+     * @param {Int64BE} uid 
+     * @param {array<Int64BE>} friends 
      * @param {function} callback 
      * @param {number} timeout 
      * 
@@ -292,7 +301,7 @@ class RTMClient{
      * @param {object} err
      * @param {object} data
      */
-    addfriends(uid, friends, callback, timeout){
+    addFriends(uid, friends, callback, timeout){
         let salt = genSalt.call(this);
 
         let payload = {
@@ -314,8 +323,8 @@ class RTMClient{
 
     /**
      * 
-     * @param {Uint64BE} uid 
-     * @param {array<Uint64BE>} friends 
+     * @param {Int64BE} uid 
+     * @param {array<Int64BE>} friends 
      * @param {function} callback 
      * @param {number} timeout 
      * 
@@ -323,7 +332,7 @@ class RTMClient{
      * @param {object} err
      * @param {object} data
      */
-    delFriends(uid, friends, callback, timeout){
+    deleteFriends(uid, friends, callback, timeout){
         let salt = genSalt.call(this);
 
         let payload = {
@@ -345,13 +354,13 @@ class RTMClient{
 
     /**
      * 
-     * @param {Uint64BE} uid 
+     * @param {Int64BE} uid 
      * @param {function} callback 
      * @param {number} timeout 
      * 
      * @callback
      * @param {object} err
-     * @param {array<Uint64BE>} data
+     * @param {array<Int64BE>} data
      */
     getFriends(uid, callback, timeout){
         let salt = genSalt.call(this);
@@ -379,7 +388,7 @@ class RTMClient{
             if (uids){
                 let buids = [];
                 uids.forEach((item, index) => {
-                    buids[index] = new Uint64BE(item);
+                    buids[index] = new Int64BE(item);
                 });
 
                 callback(null, buids);
@@ -392,8 +401,8 @@ class RTMClient{
 
     /**
      * 
-     * @param {Uint64BE} uid 
-     * @param {Uint64BE} fuid 
+     * @param {Int64BE} uid 
+     * @param {Int64BE} fuid 
      * @param {function} callback 
      * @param {number} timeout 
      * 
@@ -436,14 +445,14 @@ class RTMClient{
 
     /**
      * 
-     * @param {Uint64BE} uid 
-     * @param {array<Uint64BE>} fuids 
+     * @param {Int64BE} uid 
+     * @param {array<Int64BE>} fuids 
      * @param {function} callback 
      * @param {number} timeout 
      * 
      * @callback
      * @param {object} err
-     * @param {array<Uint64BE>} data
+     * @param {array<Int64BE>} data
      */
     isFriends(uid, fuids, callback, timeout){
         let salt = genSalt.call(this);
@@ -472,7 +481,7 @@ class RTMClient{
             if (fuids){
                 let bfuids = [];
                 fuids.forEach((item, index) => {
-                    bfuids[index] = new Uint64BE(item);
+                    bfuids[index] = new Int64BE(item);
                 });
 
                 callback(null, bfuids);
@@ -485,8 +494,8 @@ class RTMClient{
 
     /**
      * 
-     * @param {Uint64BE} gid 
-     * @param {array<Uint64BE>} uids 
+     * @param {Int64BE} gid 
+     * @param {array<Int64BE>} uids 
      * @param {function} callback 
      * @param {number} timeout 
      * 
@@ -516,8 +525,8 @@ class RTMClient{
 
     /**
      * 
-     * @param {Uint64BE} gid 
-     * @param {array<Uint64BE>} uids 
+     * @param {Int64BE} gid 
+     * @param {array<Int64BE>} uids 
      * @param {function} callback 
      * @param {number} timeout 
      * 
@@ -547,7 +556,7 @@ class RTMClient{
 
     /**
      * 
-     * @param {Uint64BE} gid 
+     * @param {Int64BE} gid 
      * @param {function} callback 
      * @param {number} timeout 
      * 
@@ -576,13 +585,13 @@ class RTMClient{
 
     /**
      * 
-     * @param {Uint64BE} gid 
+     * @param {Int64BE} gid 
      * @param {function} callback 
      * @param {number} timeout 
      * 
      * @callback
      * @param {object} err
-     * @param {array<Uint64BE>} data
+     * @param {array<Int64BE>} data
      */
     getGroupMembers(gid, callback, timeout){
         let salt = genSalt.call(this);
@@ -610,7 +619,7 @@ class RTMClient{
             if (uids){
                 let buids = [];
                 uids.forEach((item, index) => {
-                    buids[index] = new Uint64BE(item);
+                    buids[index] = new Int64BE(item);
                 });
 
                 callback(null, buids);
@@ -623,8 +632,8 @@ class RTMClient{
 
     /**
      * 
-     * @param {Uint64BE} gid 
-     * @param {Uint64BE} uid 
+     * @param {Int64BE} gid 
+     * @param {Int64BE} uid 
      * @param {function} callback 
      * @param {number} timeout 
      * 
@@ -667,13 +676,13 @@ class RTMClient{
 
     /**
      * 
-     * @param {Uint64BE} uid 
+     * @param {Int64BE} uid 
      * @param {function} callback 
      * @param {number} timeout 
      * 
      * @callback
      * @param {object} err
-     * @param {array<Uint64BE>} data
+     * @param {array<Int64BE>} data
      */
     getUserGroups(uid, callback, timeout){
         let salt = genSalt.call(this);
@@ -701,7 +710,7 @@ class RTMClient{
             if (gids){
                 let bgids = [];
                 gids.forEach((item, index) => {
-                    bgids[index] = new Uint64BE(item);
+                    bgids[index] = new Int64BE(item);
                 });
 
                 callback(null, bgids);
@@ -714,7 +723,7 @@ class RTMClient{
 
     /**
      * 
-     * @param {Uint64BE} uid 
+     * @param {Int64BE} uid 
      * @param {function} callback 
      * @param {number} timeout 
      * 
@@ -756,13 +765,13 @@ class RTMClient{
 
     /**
      * 
-     * @param {array<Uint64BE>} uids 
+     * @param {array<Int64BE>} uids 
      * @param {function} callback 
      * @param {number} timeout 
      * 
      * @callback
      * @param {object} err
-     * @param {array<Uint64BE>} uids 
+     * @param {array<Int64BE>} uids 
      */
     getOnlineUsers(uids, callback, timeout){
         let salt = genSalt.call(this);
@@ -790,7 +799,7 @@ class RTMClient{
             if (uids){
                 let buids = [];
                 uids.forEach((item, index) => {
-                    buids[index] = new Uint64BE(item);
+                    buids[index] = new Int64BE(item);
                 });
 
                 callback(null, buids);
@@ -803,8 +812,8 @@ class RTMClient{
 
     /**
      * 
-     * @param {Uint64BE} gid 
-     * @param {Uint64BE} uid 
+     * @param {Int64BE} gid 
+     * @param {Int64BE} uid 
      * @param {number} btime 
      * @param {function} callback 
      * @param {number} timeout 
@@ -836,8 +845,8 @@ class RTMClient{
 
     /**
      * 
-     * @param {Uint64BE} gid 
-     * @param {Uint64BE} uid 
+     * @param {Int64BE} gid 
+     * @param {Int64BE} uid 
      * @param {function} callback 
      * @param {number} timeout 
      * 
@@ -867,8 +876,8 @@ class RTMClient{
 
     /**
      * 
-     * @param {Uint64BE} rid 
-     * @param {Uint64BE} uid 
+     * @param {Int64BE} rid 
+     * @param {Int64BE} uid 
      * @param {number} btime 
      * @param {function} callback 
      * @param {number} timeout 
@@ -900,8 +909,8 @@ class RTMClient{
 
     /**
      * 
-     * @param {Uint64BE} rid 
-     * @param {Uint64BE} uid 
+     * @param {Int64BE} rid 
+     * @param {Int64BE} uid 
      * @param {function} callback 
      * @param {number} timeout 
      * 
@@ -931,7 +940,7 @@ class RTMClient{
 
     /**
      * 
-     * @param {Uint64BE} uid 
+     * @param {Int64BE} uid 
      * @param {number} btime 
      * @param {function} callback 
      * @param {number} timeout 
@@ -962,7 +971,7 @@ class RTMClient{
 
     /**
      * 
-     * @param {Uint64BE} uid 
+     * @param {Int64BE} uid 
      * @param {function} callback 
      * @param {number} timeout 
      * 
@@ -991,8 +1000,8 @@ class RTMClient{
 
     /**
      * 
-     * @param {Uint64BE} gid 
-     * @param {Uint64BE} uid 
+     * @param {Int64BE} gid 
+     * @param {Int64BE} uid 
      * @param {function} callback 
      * @param {number} timeout 
      * 
@@ -1035,8 +1044,8 @@ class RTMClient{
 
     /**
      * 
-     * @param {Uint64BE} rid 
-     * @param {Uint64BE} uid 
+     * @param {Int64BE} rid 
+     * @param {Int64BE} uid 
      * @param {function} callback 
      * @param {number} timeout 
      * 
@@ -1079,7 +1088,7 @@ class RTMClient{
 
     /**
      * 
-     * @param {Uint64BE} uid 
+     * @param {Int64BE} uid 
      * @param {function} callback 
      * @param {number} timeout 
      * 
@@ -1121,7 +1130,7 @@ class RTMClient{
 
     /**
      * 
-     * @param {Uint64BE} uid 
+     * @param {Int64BE} uid 
      * @param {string} pushname 
      * @param {function} callback 
      * @param {number} timeout 
@@ -1152,7 +1161,7 @@ class RTMClient{
 
     /**
      * 
-     * @param {Uint64BE} uid 
+     * @param {Int64BE} uid 
      * @param {string} pushname 
      * @param {function} callback 
      * @param {number} timeout 
@@ -1195,7 +1204,7 @@ class RTMClient{
 
     /**
      * 
-     * @param {Uint64BE} uid 
+     * @param {Int64BE} uid 
      * @param {number} lat 
      * @param {number} lng 
      * @param {function} callback 
@@ -1228,7 +1237,7 @@ class RTMClient{
 
     /**
      * 
-     * @param {Uint64BE} uid 
+     * @param {Int64BE} uid 
      * @param {function} callback 
      * @param {number} timeout 
      * 
@@ -1257,13 +1266,13 @@ class RTMClient{
 
     /**
      * 
-     * @param {array<Uint64BE>} uids
+     * @param {array<Int64BE>} uids
      * @param {function} callback 
      * @param {number} timeout 
      * 
      * @callback
      * @param {object} err
-     * @param {array<array<uid:Uint64BE,lat:number,lng:number>>} data 
+     * @param {array<array<uid:Int64BE,lat:number,lng:number>>} data 
      */
     getGeos(uids, callback, timeout){
         let salt = genSalt.call(this);
@@ -1291,7 +1300,7 @@ class RTMClient{
             if (geos){
                 let bgeos = [];
                 geos.forEach((item, index) => {
-                    item[0] = new Uint64BE(item[0]);
+                    item[0] = new Int64BE(item[0]);
                     bgeos[index] = item;
                 });
                 callback(null, bgeos);
@@ -1304,8 +1313,8 @@ class RTMClient{
 
     /**
      * 
-     * @param {Uint64BE} from 
-     * @param {Uint64BE} to 
+     * @param {Int64BE} from 
+     * @param {Int64BE} to 
      * @param {number} mtype 
      * @param {string} filePath 
      * @param {function} callback 
@@ -1355,7 +1364,7 @@ class RTMClient{
                     sendfile.call(self, client, options, callback, timeout);
                 });
                 client.on('error', (err) => {
-                    self.emit('error', {src: 'file client', err: err });
+                    self.emit('error', { src: 'file client', err: err });
                 });
             });
         }, timeout);
@@ -1401,17 +1410,20 @@ function sendfile(client, ops, callback, timeout){
         payload: msgpack.encode(payload, this._msgOptions)
     };
 
-    sendQuest.call(this, client, options, callback, timeout);
+    sendQuest.call(this, client, options, (err, data) => {
+        callback && callback(err, data);
+        client.close(); 
+    }, timeout);
 }
 
 function genMid(){
     let timestamp = Math.floor(Date.now() / 1000);
-    return new Uint64BE(timestamp, this._midSeq++);
+    return new Int64BE(timestamp, this._midSeq++);
 }
 
 function genSalt(){
     let timestamp = Math.floor(Date.now() / 1000);
-    return new Uint64BE(timestamp, this._saltSeq++);
+    return new Int64BE(timestamp, this._saltSeq++);
 }
 
 function genSign(salt){
@@ -1439,7 +1451,7 @@ function sendQuest(client, options, callback, timeout){
         }
 
         if (data.payload){
-            let payload = msgpack.decode(data.payload, this._msgOptions);
+            let payload = msgpack.decode(data.payload, self._msgOptions);
             if (isException.call(self, payload)){
                 callback(payload, null);
                 return;

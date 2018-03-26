@@ -3,21 +3,21 @@
 #### 安装依赖 ####
 
 ```
-npm install co --save
-npm install co-defer --save
-npm install co-wait --save
-
 npm install int64-buffer --save
 npm install msgpack-lite --save
+```
+
+or
+
+```
+yarn add int64-buffer
+yarn add msgpack-lite
 ```
 
 ` package.json `:
 
 ```
 "dependencies": {
-    "co": "^4.6.0",
-    "co-defer": "^1.0.0",
-    "co-wait": "0.0.0",
     "int64-buffer": "^0.1.10",
     "msgpack-lite": "^0.1.26"
 }
@@ -62,6 +62,20 @@ client.on('error', (err) => {
     console.error(err);
 });
 
+```
+
+#### 测试 ####
+
+```
+npm install
+npm test
+```
+
+or
+
+```
+yarn install
+yarn test
 ```
 
 #### 接口 ####
@@ -146,7 +160,7 @@ client.on('error', (err) => {
         * `data`: **(object)** 
     * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `5 * 1000`
 
-* `addfriends(uid, friends, callback, timeout)`: 添加好友
+* `addFriends(uid, friends, callback, timeout)`: 添加好友
     * `uid`: **(Required | Uint64BE)** 用户 id
     * `friends`: **(Required | array[Uint64BE])** 多个好友 id
     * `callback`: **(Optional | function)** 回调方法, `callback(err, data)`
@@ -154,7 +168,7 @@ client.on('error', (err) => {
         * `data`: **(object)** 
     * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `5 * 1000`
 
-* `delFriends(uid, friends, callback, timeout)`: 删除好友
+* `deleteFriends(uid, friends, callback, timeout)`: 删除好友
     * `uid`: **(Required | Uint64BE)** 用户 id
     * `friends`: **(Required | array[Uint64BE])** 多个好友 id
     * `callback`: **(Optional | function)** 回调方法, `callback(err, data)`
