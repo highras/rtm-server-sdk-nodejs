@@ -48,17 +48,17 @@ let client = new RTMClient(options);
 client.enableConnect();
 
 // 连接成功并发送消息
-client.on('connect', () => {
+client.on('connect', function(){
     let from = new Uint64BE(0, 778898);
     let to = new Uint64BE(0, 778899);
 
-    client.sendMessage(from, to, 8, 'hello !', '', (err, data) => {
+    client.sendMessage(from, to, 8, 'hello !', '', function(err, data){
         console.log(data, err);
     });
 });
 
 // 异常
-client.on('error', (err) => {
+client.on('error', function(err){
     console.error(err);
 });
 

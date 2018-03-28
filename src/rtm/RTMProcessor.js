@@ -169,7 +169,7 @@ function checkMid(mid){
 
 function checkExpire(){
     let self = this;
-    setInterval(() => {
+    setInterval(function(){
         for (let key in self._map){
             if (self._map[key] > Date.now()){
                 continue;
@@ -181,7 +181,7 @@ function checkExpire(){
 
 function delayRemove(key){
     let self = this;
-    setTimeout(() => {
+    setTimeout(function(){
         delete self._map[key];
     }, 0);
 }

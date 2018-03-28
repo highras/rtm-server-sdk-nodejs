@@ -38,16 +38,16 @@ class RTMClient{
         });
 
         let self = this;
-        this._client.on('connect', () => {
+        this._client.on('connect', function(){
             self._client.processor = self._processor;
             self.emit('connect', { processor: self._processor, services: RTMConfig.SERVER_PUSH });
         });
 
-        this._client.on('error', (err) => {
+        this._client.on('error', function(err){
             self.emit('error', err);
         });
 
-        this._client.on('close', () => {
+        this._client.on('close', function(){
             self.emit('close');
         });
 
@@ -93,7 +93,7 @@ class RTMClient{
     enableEncryptorByFile(peerPubPath, options){
         let self = this;
 
-        fs.readFile(peerPubPath, (err, data) => {
+        fs.readFile(peerPubPath, function(err, data){
             if (err){
                 self.emit('error', err);
                 return;
@@ -378,7 +378,7 @@ class RTMClient{
             payload: msgpack.encode(payload, this._msgOptions)
         };
 
-        sendQuest.call(this, this._client, options, (err, data) => {
+        sendQuest.call(this, this._client, options, function(err, data){
             if (err){
                 callback(err, null);
                 return;
@@ -387,7 +387,7 @@ class RTMClient{
             let uids = data['uids'];
             if (uids){
                 let buids = [];
-                uids.forEach((item, index) => {
+                uids.forEach(function(item, index){
                     buids[index] = new Int64BE(item);
                 });
 
@@ -427,7 +427,7 @@ class RTMClient{
             payload: msgpack.encode(payload, this._msgOptions)
         };
 
-        sendQuest.call(this, this._client, options, (err, data) => {
+        sendQuest.call(this, this._client, options, function(err, data){
             if (err){
                 callback(err, null);
                 return;
@@ -471,7 +471,7 @@ class RTMClient{
             payload: msgpack.encode(payload, this._msgOptions)
         };
 
-        sendQuest.call(this, this._client, options, (err, data) => {
+        sendQuest.call(this, this._client, options, function(err, data){
             if (err){
                 callback(err, null);
                 return;
@@ -480,7 +480,7 @@ class RTMClient{
             let fuids = data['fuids'];
             if (fuids){
                 let bfuids = [];
-                fuids.forEach((item, index) => {
+                fuids.forEach(function(item, index){
                     bfuids[index] = new Int64BE(item);
                 });
 
@@ -609,7 +609,7 @@ class RTMClient{
             payload: msgpack.encode(payload, this._msgOptions)
         };
 
-        sendQuest.call(this, this._client, options, (err, data) => {
+        sendQuest.call(this, this._client, options, function(err, data){
             if (err){
                 callback(err, null);
                 return;
@@ -618,7 +618,7 @@ class RTMClient{
             let uids = data['uids'];
             if (uids){
                 let buids = [];
-                uids.forEach((item, index) => {
+                uids.forEach(function(item, index){
                     buids[index] = new Int64BE(item);
                 });
 
@@ -658,7 +658,7 @@ class RTMClient{
             payload: msgpack.encode(payload, this._msgOptions)
         };
 
-        sendQuest.call(this, this._client, options, (err, data) => {
+        sendQuest.call(this, this._client, options, function(err, data){
             if (err){
                 callback(err, null);
                 return;
@@ -700,7 +700,7 @@ class RTMClient{
             payload: msgpack.encode(payload, this._msgOptions)
         };
 
-        sendQuest.call(this, this._client, options, (err, data) => {
+        sendQuest.call(this, this._client, options, function(err, data){
             if (err){
                 callback(err, null);
                 return;
@@ -709,7 +709,7 @@ class RTMClient{
             let gids = data['gids'];
             if (gids){
                 let bgids = [];
-                gids.forEach((item, index) => {
+                gids.forEach(function(item, index){
                     bgids[index] = new Int64BE(item);
                 });
 
@@ -747,7 +747,7 @@ class RTMClient{
             payload: msgpack.encode(payload, this._msgOptions)
         };
 
-        sendQuest.call(this, this._client, options, (err, data) => {
+        sendQuest.call(this, this._client, options, function(err, data){
             if (err){
                 callback(err, null);
                 return;
@@ -789,7 +789,7 @@ class RTMClient{
             payload: msgpack.encode(payload, this._msgOptions)
         };
 
-        sendQuest.call(this, this._client, options, (err, data) => {
+        sendQuest.call(this, this._client, options, function(err, data){
             if (err){
                 callback(err, null);
                 return;
@@ -798,7 +798,7 @@ class RTMClient{
             let uids = data['uids'];
             if (uids){
                 let buids = [];
-                uids.forEach((item, index) => {
+                uids.forEach(function(item, index){
                     buids[index] = new Int64BE(item);
                 });
 
@@ -1026,7 +1026,7 @@ class RTMClient{
             payload: msgpack.encode(payload, this._msgOptions)
         };
 
-        sendQuest.call(this, this._client, options, (err, data) => {
+        sendQuest.call(this, this._client, options, function(err, data){
             if (err){
                 callback(err, null);
                 return;
@@ -1070,7 +1070,7 @@ class RTMClient{
             payload: msgpack.encode(payload, this._msgOptions)
         };
 
-        sendQuest.call(this, this._client, options, (err, data) => {
+        sendQuest.call(this, this._client, options, function(err, data){
             if (err){
                 callback(err, null);
                 return;
@@ -1112,7 +1112,7 @@ class RTMClient{
             payload: msgpack.encode(payload, this._msgOptions)
         };
 
-        sendQuest.call(this, this._client, options, (err, data) => {
+        sendQuest.call(this, this._client, options, function(err, data){
             if (err){
                 callback(err, null);
                 return;
@@ -1186,7 +1186,7 @@ class RTMClient{
             payload: msgpack.encode(payload, this._msgOptions)
         };
 
-        sendQuest.call(this, this._client, options, (err, data) => {
+        sendQuest.call(this, this._client, options, function(err, data){
             if (err){
                 callback(err, null);
                 return;
@@ -1290,7 +1290,7 @@ class RTMClient{
             payload: msgpack.encode(payload, this._msgOptions)
         };
 
-        sendQuest.call(this, this._client, options, (err, data) => {
+        sendQuest.call(this, this._client, options, function(err, data){
             if (err){
                 callback(err, null);
                 return;
@@ -1299,7 +1299,7 @@ class RTMClient{
             let geos = data['geos'];
             if (geos){
                 let bgeos = [];
-                geos.forEach((item, index) => {
+                geos.forEach(function(item, index){
                     item[0] = new Int64BE(item[0]);
                     bgeos[index] = item;
                 });
@@ -1327,7 +1327,7 @@ class RTMClient{
     sendFile(from, to, mtype, filePath, callback, timeout){
         let self = this;
 
-        filetoken.call(this, from, to, (err, data) => {
+        filetoken.call(this, from, to, function(err, data){
             if (err){
                 self.emit('error', err);
                 return;
@@ -1337,7 +1337,7 @@ class RTMClient{
             let endpoint = data["endpoint"];
             let ipport = endpoint.split(':');
 
-            fs.readFile(filePath, (err, data) => {
+            fs.readFile(filePath, function(err, data){
                 if (err){
                     self.emit('error', err);
                     return;
@@ -1352,7 +1352,7 @@ class RTMClient{
                 });
 
                 client.connect();
-                client.on('connect', () => {
+                client.on('connect', function(){
                     let options = {
                         token: token,
                         from: from,
@@ -1363,7 +1363,7 @@ class RTMClient{
                     };
                     sendfile.call(self, client, options, callback, timeout);
                 });
-                client.on('error', (err) => {
+                client.on('error', function(err){
                     self.emit('error', { src: 'file client', err: err });
                 });
             });
@@ -1410,7 +1410,7 @@ function sendfile(client, ops, callback, timeout){
         payload: msgpack.encode(payload, this._msgOptions)
     };
 
-    sendQuest.call(this, client, options, (err, data) => {
+    sendQuest.call(this, client, options, function(err, data){
         callback && callback(err, data);
         client.close(); 
     }, timeout);
@@ -1445,7 +1445,7 @@ function isException(data){
 
 function sendQuest(client, options, callback, timeout){
     let self = this;
-    client.sendQuest(options, (data) => {
+    client.sendQuest(options, function(data){
         if (!callback){
             return;
         }

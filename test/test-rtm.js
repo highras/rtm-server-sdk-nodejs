@@ -30,14 +30,14 @@ let options = {
 client.enableConnect();
 // client.enableEncryptorByFile(filePath, options);
 
-client.on('connect', (data) => {
+client.on('connect', function(data){
     console.log('connect!\n\n');
 
     let step = 2;
     let index = 0;
 
-    let t = (fn, name) => {
-        setTimeout(()=>{
+    let t = function(fn, name){
+        setTimeout(function(){
             var cb = function(err, data){
                 if (err){
                     console.error('\n[ERR] ' + name + ':\n', err)
@@ -66,151 +66,151 @@ client.on('connect', (data) => {
 
     let file_path = path.resolve(__dirname, '../key/test-secp256k1-public.pem');
     
-    t((name, cb) => {
+    t(function(name, cb){
 		console.log('---------------begin!-----------------')
     });
     
-    t((name, cb) => {
+    t(function(name, cb){
 		client[name].call(client, from, to, 8, 'hello !', '', cb);
     }, 'sendMessage');
 
-    t((name, cb) => {
+    t(function(name, cb){
 		client[name].call(client, from, tos, 8, 'hello !', '', cb);
     }, 'sendMessages');
 
-    t((name, cb) => {
+    t(function(name, cb){
 		client[name].call(client, from, gid, 8, 'hello !', '', cb);
     }, 'sendGroupMessage');
 
-    t((name, cb) => {
+    t(function(name, cb){
 		client[name].call(client, from, rid, 8, 'hello !', '', cb);
     }, 'sendRoomMessage');
     
-    t((name, cb) => {
+    t(function(name, cb){
 		client[name].call(client, from, 8, 'hello !', '', cb);
     }, 'broadcastMessage');
 
-    t((name, cb) => {
+    t(function(name, cb){
 		client[name].call(client, from, friends, cb);
     }, 'addFriends');
 
-    t((name, cb) => {
+    t(function(name, cb){
 		client[name].call(client, from, [new Int64BE(0, 778899)], cb);
     }, 'deleteFriends');
 
-    t((name, cb) => {
+    t(function(name, cb){
 		client[name].call(client, from, cb);
     }, 'getFriends');
 
-    t((name, cb) => {
+    t(function(name, cb){
 		client[name].call(client, from, fuid, cb);
     }, 'isFriend');
 
-    t((name, cb) => {
+    t(function(name, cb){
 		client[name].call(client, from, friends, cb);
     }, 'isFriends');
 
-    t((name, cb) => {
+    t(function(name, cb){
 		client[name].call(client, gid, [from, to], cb);
     }, 'addGroupMembers');
 
-    t((name, cb) => {
+    t(function(name, cb){
 		client[name].call(client, gid, [to], cb);
     }, 'deleteGroupMembers');
 
-    t((name, cb) => {
+    t(function(name, cb){
 		client[name].call(client, gid, cb);
     }, 'getGroupMembers');
 
-    t((name, cb) => {
+    t(function(name, cb){
 		client[name].call(client, gid, from, cb);
     }, 'isGroupMember');
 
-    t((name, cb) => {
+    t(function(name, cb){
 		client[name].call(client, from, cb);
     }, 'getUserGroups');
 
-    t((name, cb) => {
+    t(function(name, cb){
 		client[name].call(client, gid, cb);
     }, 'deleteGroup');
 
-    t((name, cb) => {
+    t(function(name, cb){
 		client[name].call(client, from, cb);
     }, 'getToken');
 
-    t((name, cb) => {
+    t(function(name, cb){
 		client[name].call(client, tos, cb);
     }, 'getOnlineUsers');
 
-    t((name, cb) => {
+    t(function(name, cb){
 		client[name].call(client, gid, to, 1, cb);
     }, 'addGroupBan');
 
-    t((name, cb) => {
+    t(function(name, cb){
 		client[name].call(client, gid, to, cb);
     }, 'removeGroupBan');
 
-    t((name, cb) => {
+    t(function(name, cb){
 		client[name].call(client, rid, to, 1, cb);
     }, 'addRoomBan');
 
-    t((name, cb) => {
+    t(function(name, cb){
 		client[name].call(client, rid, to, cb);
     }, 'removeRoomBan');
 
-    t((name, cb) => {
+    t(function(name, cb){
 		client[name].call(client, from, 1, cb);
     }, 'addProjectBlack');
 
-    t((name, cb) => {
+    t(function(name, cb){
 		client[name].call(client, from, cb);
     }, 'removeProjectBlack');
 
-    t((name, cb) => {
+    t(function(name, cb){
 		client[name].call(client, gid, from, cb);
     }, 'isBanOfGroup');
 
-    t((name, cb) => {
+    t(function(name, cb){
 		client[name].call(client, rid, from, cb);
     }, 'isBanOfRoom');
 
-    t((name, cb) => {
+    t(function(name, cb){
 		client[name].call(client, from, cb);
     }, 'isProjectBlack');
 
-    t((name, cb) => {
+    t(function(name, cb){
 		client[name].call(client, from, 'test-user', cb);
     }, 'setPushName');
 
-    t((name, cb) => {
+    t(function(name, cb){
 		client[name].call(client, from, cb);
     }, 'getPushName');
 
-    t((name, cb) => {
+    t(function(name, cb){
 		client[name].call(client, from, lat, lng, cb);
     }, 'setGeo');
 
-    t((name, cb) => {
+    t(function(name, cb){
 		client[name].call(client, from, cb);
     }, 'getGeo');
 
-    t((name, cb) => {
+    t(function(name, cb){
 		client[name].call(client, [from, to], cb);
     }, 'getGeos');
 
-    t((name, cb) => {
+    t(function(name, cb){
 		client[name].call(client, from, to, 8, file_path, cb);
     }, 'sendFile');
 
-    t((name, cb) => {
+    t(function(name, cb){
 		console.log('---------------(' + index + ')end!-----------------');
 	});
 });
 
-client.on('error', (err) => {
+client.on('error', function(err){
     console.error(err);
 });
 
-client.on('close', () => {
+client.on('close', function(){
     console.error('closed!');
 });
