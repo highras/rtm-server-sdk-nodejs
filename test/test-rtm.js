@@ -204,7 +204,13 @@ client.on('connect', function(data){
 
     t(function(name, cb){
 		console.log('---------------(' + index + ')end!-----------------');
-	});
+    });
+    
+    //receive from server
+    let pushName = data.services.recvMessage;
+    data.processor.on(pushName, function(data){
+        console.log('\n[PUSH] ' + pushName + ':\n', data);
+    });
 });
 
 client.on('error', function(err){

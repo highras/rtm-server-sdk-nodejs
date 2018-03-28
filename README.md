@@ -3,13 +3,6 @@
 #### 安装依赖 ####
 
 ```
-npm install int64-buffer --save
-npm install msgpack-lite --save
-```
-
-or
-
-```
 yarn add int64-buffer
 yarn add msgpack-lite
 ```
@@ -48,12 +41,18 @@ let client = new RTMClient(options);
 client.enableConnect();
 
 // 连接成功并发送消息
-client.on('connect', function(){
+client.on('connect', function(data){
     let from = new Uint64BE(0, 778898);
     let to = new Uint64BE(0, 778899);
 
     client.sendMessage(from, to, 8, 'hello !', '', function(err, data){
         console.log(data, err);
+    });
+
+    //push service
+    let pushName = data.services.recvMessage;
+    data.processor.on(pushName, function(data){
+        console.log('\n[PUSH] ' + pushName + ':\n', data);
     });
 });
 
@@ -67,22 +66,77 @@ client.on('error', function(err){
 #### 测试 ####
 
 ```
-npm install
-npm test
-```
-
-or
-
-```
 yarn install
 yarn test
 ```
 
-#### 接口 ####
+#### Events ####
 
 * `event`:
     * `connect`: 连接成功 
+        * `data.processor`: **(RTMProcessor)** 监听PushService的句柄
+        * `data.services`: **(object)** 支持的PushService定义
     * `error`: 发生异常
+        * `err`: **(object)**
+    * `close`: 连接关闭
+
+#### PushService ####
+* `ping`: RTMGate主动ping
+    * `data`: **(object)**
+
+* `pushmsg`: RTMGate主动推送P2P消息
+    * `data.from`: **(Int64BE)** 发送者 id
+    * `data.mtype`: **(number)** 消息类型
+    * `data.mid`: **(Int64BE)** 消息 id, 当前链接会话内唯一
+    * `data.msg`: **(string)** 消息内容
+    * `data.attrs`: **(string)** 发送时附加的自定义内容
+
+* `pushgroupmsg`: RTMGate主动推送Group消息
+    * `data.from`: **(Int64BE)** 发送者 id
+    * `data.gid`: **(Int64BE)** Group id
+    * `data.mtype`: **(number)** 消息类型
+    * `data.mid`: **(Int64BE)** 消息 id, 当前链接会话内唯一
+    * `data.msg`: **(string)** 消息内容
+    * `data.attrs`: **(string)** 发送时附加的自定义内容
+
+* `pushroommsg`: RTMGate主动推送Room消息
+    * `data.from`: **(Int64BE)** 发送者 id
+    * `data.rid`: **(Int64BE)** Room id
+    * `data.mtype`: **(number)** 消息类型
+    * `data.mid`: **(Int64BE)** 消息 id, 当前链接会话内唯一
+    * `data.msg`: **(string)** 消息内容
+    * `data.attrs`: **(string)** 发送时附加的自定义内容
+
+* `pushfile`: RTMGate主动推送P2P文件
+    * `data.from`: **(Int64BE)** 发送者 id
+    * `data.mtype`: **(number)** 消息类型
+    * `data.ftype`: **(number)** 文件类型, 请参考 RTMConfig.FILE_TYPE成员
+    * `data.mid`: **(Int64BE)** 消息 id, 当前链接会话内唯一
+    * `data.msg`: **(string)** 文件获取地址(url)
+    * `data.attrs`: **(string)** 发送时附加的自定义内容
+
+* `pushgroupfile`: RTMGate主动推送Group文件
+    * `data.from`: **(Int64BE)** 发送者 id
+    * `data.gid`: **(Int64BE)** Group id
+    * `data.mtype`: **(number)** 消息类型
+    * `data.ftype`: **(number)** 文件类型, 请参考 RTMConfig.FILE_TYPE成员
+    * `data.mid`: **(Int64BE)** 消息 id, 当前链接会话内唯一
+    * `data.msg`: **(string)** 文件获取地址(url)
+    * `data.attrs`: **(string)** 发送时附加的自定义内容
+
+* `pushroomfile`: RTMGate主动推送Room文件
+    * `data.from`: **(Int64BE)** 发送者 id
+    * `data.rid`: **(Int64BE)** Room id
+    * `data.mtype`: **(number)** 消息类型
+    * `data.ftype`: **(number)** 文件类型, 请参考 RTMConfig.FILE_TYPE成员
+    * `data.mid`: **(Int64BE)** 消息 id, 当前链接会话内唯一
+    * `data.msg`: **(string)** 文件获取地址(url)
+    * `data.attrs`: **(string)** 发送时附加的自定义内容
+
+* `pushevents`: RTMGate主动推送事件 
+    * **coming soon**
+
+#### API ####
 
 * `constructor(options)`: 构造RTMClient
     * `options.pid`: **(Required | number)** 应用编号, RTM提供
