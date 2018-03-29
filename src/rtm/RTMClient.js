@@ -1491,7 +1491,7 @@ class RTMClient{
             events: events
         };
 
-        if (all != undefined){
+        if (all !== undefined){
             payload.all = all;
 
             payload.gids = [];
