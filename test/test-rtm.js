@@ -15,8 +15,8 @@ let client = new RTMClient({
     port: 13315,
     autoReconnect: false,
     connectionTimeout: 10 * 1000,
-    pid: 1000012,
-    secretKey: 'bbeb2fc2-b2d5-4855-925d-e554e1195ce6'
+    pid: 1000014,
+    secretKey: 'd8c94627-db2e-4206-bd4f-967b5b4e94dc'
 });
 
 let filePath = path.resolve(__dirname, '../key/test-secp256k1-compressed-public.key');
@@ -65,7 +65,7 @@ client.on('connect', function(data){
     let lng = 69394.4850;
 
     let file_path = path.resolve(__dirname, '../key/test-secp256k1-public.pem');
-    
+
     t(function(name, cb){
 		console.log('---------------begin!-----------------')
     });

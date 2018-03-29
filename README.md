@@ -73,12 +73,14 @@ yarn test
 * `event`:
     * `connect`: 连接成功 
         * `data.processor`: **(RTMProcessor)** 监听PushService的句柄
-        * `data.services`: **(object)** 支持的PushService定义
+        * `data.services`: **(object)** 支持的PushService定义, 请参考 `RTMConfig.SERVER_PUSH` 成员
     * `error`: 发生异常
         * `err`: **(object)**
     * `close`: 连接关闭
 
-#### PushService ####
+#### PushService #### 
+请参考 `RTMConfig.SERVER_PUSH` 成员
+
 * `ping`: RTMGate主动ping
     * `data`: **(object)**
 
@@ -123,7 +125,7 @@ yarn test
     * `data.from`: **(Int64BE)** 发送者 id
     * `data.to`: **(Int64BE)** 接收者 id
     * `data.mtype`: **(number)** 消息类型
-    * `data.ftype`: **(number)** 文件类型, 请参考 RTMConfig.FILE_TYPE成员
+    * `data.ftype`: **(number)** 文件类型, 请参考 `RTMConfig.FILE_TYPE` 成员
     * `data.mid`: **(Int64BE)** 消息 id, 当前链接会话内唯一
     * `data.msg`: **(string)** 文件获取地址(url)
     * `data.attrs`: **(string)** 发送时附加的自定义内容
@@ -133,7 +135,7 @@ yarn test
     * `data.from`: **(Int64BE)** 发送者 id
     * `data.tos`: **(array[Int64BE])** 多个接收者 id
     * `data.mtype`: **(number)** 消息类型
-    * `data.ftype`: **(number)** 文件类型, 请参考 RTMConfig.FILE_TYPE成员
+    * `data.ftype`: **(number)** 文件类型, 请参考 `RTMConfig.FILE_TYPE` 成员
     * `data.mid`: **(Int64BE)** 消息 id, 当前链接会话内唯一
     * `data.msg`: **(string)** 消息内容
     * `data.attrs`: **(string)** 发送时附加的自定义内容
@@ -143,7 +145,7 @@ yarn test
     * `data.from`: **(Int64BE)** 发送者 id
     * `data.gid`: **(Int64BE)** Group id
     * `data.mtype`: **(number)** 消息类型
-    * `data.ftype`: **(number)** 文件类型, 请参考 RTMConfig.FILE_TYPE成员
+    * `data.ftype`: **(number)** 文件类型, 请参考 `RTMConfig.FILE_TYPE` 成员
     * `data.mid`: **(Int64BE)** 消息 id, 当前链接会话内唯一
     * `data.msg`: **(string)** 文件获取地址(url)
     * `data.attrs`: **(string)** 发送时附加的自定义内容
@@ -153,14 +155,14 @@ yarn test
     * `data.from`: **(Int64BE)** 发送者 id
     * `data.rid`: **(Int64BE)** Room id
     * `data.mtype`: **(number)** 消息类型
-    * `data.ftype`: **(number)** 文件类型, 请参考 RTMConfig.FILE_TYPE成员
+    * `data.ftype`: **(number)** 文件类型, 请参考 `RTMConfig.FILE_TYPE` 成员
     * `data.mid`: **(Int64BE)** 消息 id, 当前链接会话内唯一
     * `data.msg`: **(string)** 文件获取地址(url)
     * `data.attrs`: **(string)** 发送时附加的自定义内容
 
 * `pushevent`: RTMGate主动推送事件 
     * `data.pid`: **(number)** 应用编号
-    * `data.event`: **(string)** 事件名称, 请参考 RTMConfig.SERVER_EVENT成员
+    * `data.event`: **(string)** 事件名称, 请参考 `RTMConfig.SERVER_EVENT` 成员
     * `data.uid`: **(Int64BE)** 触发者 id
     * `data.time`: **(number)** 触发时间(s)
     * `data.endpoint`: **(string)** 对应的RTMGate地址
@@ -465,7 +467,7 @@ yarn test
     * `gids`: **(Optional | array[Uint64BE])** 多个Group id
     * `rids`: **(Optional | array[Uint64BE])** 多个Room id
     * `p2p`: **(Optional | bool)** P2P消息
-    * `events`: **(Optional | array[string])** 多个事件名称, 请参考 RTMConfig.SERVER_EVENT成员
+    * `events`: **(Optional | array[string])** 多个事件名称, 请参考 `RTMConfig.SERVER_EVENT` 成员
     * `callback`: **(Optional | function)** 回调方法, `callback(err, data)`
         * `err`: **(object)** 
         * `data`: **(object)** 
@@ -475,7 +477,7 @@ yarn test
     * `gids`: **(Optional | array[Uint64BE])** 多个Group id
     * `rids`: **(Optional | array[Uint64BE])** 多个Room id
     * `p2p`: **(Optional | bool)** P2P消息
-    * `events`: **(Optional | array[string])** 多个事件名称, 请参考 RTMConfig.SERVER_EVENT成员
+    * `events`: **(Optional | array[string])** 多个事件名称, 请参考 `RTMConfig.SERVER_EVENT` 成员
     * `callback`: **(Optional | function)** 回调方法, `callback(err, data)`
         * `err`: **(object)** 
         * `data`: **(object)** 
@@ -486,7 +488,7 @@ yarn test
     * `gids`: **(Optional | array[Uint64BE])** 多个Group id
     * `rids`: **(Optional | array[Uint64BE])** 多个Room id
     * `p2p`: **(Optional | bool)** P2P消息, `true`: 监听, `false`: 取消
-    * `events`: **(Optional | array[string])** 多个事件名称, 请参考 RTMConfig.SERVER_EVENT成员
+    * `events`: **(Optional | array[string])** 多个事件名称, 请参考 `RTMConfig.SERVER_EVENT` 成员
     * `callback`: **(Optional | function)** 回调方法, `callback(err, data)`
         * `err`: **(object)** 
         * `data`: **(object)** 
