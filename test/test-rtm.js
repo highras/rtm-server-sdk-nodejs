@@ -69,6 +69,26 @@ client.on('connect', function(data){
     t(function(name, cb){
 		console.log('---------------begin!-----------------')
     });
+
+    t(function(name, cb){
+		client[name].call(client, true, undefined, undefined, undefined, undefined, cb);
+    }, 'setEventListener');
+
+    t(function(name, cb){
+		client[name].call(client, false, undefined, undefined, undefined, undefined, cb);
+    }, 'setEventListener');
+
+    t(function(name, cb){
+		client[name].call(client, undefined, [gid], [], false, [], cb);
+    }, 'setEventListener');
+
+    t(function(name, cb){
+		client[name].call(client, undefined, [rid], true, ['login', 'logout'], cb);
+    }, 'addEventListener');
+
+    t(function(name, cb){
+		client[name].call(client, undefined, undefined, undefined, ['login'], cb);
+    }, 'removeEventListener');
     
     t(function(name, cb){
 		client[name].call(client, from, to, 8, 'hello !', '', cb);

@@ -1369,6 +1369,145 @@ class RTMClient{
             });
         }, timeout);
     }
+
+    /**
+     * 
+     * @param {array<Int64BE>} gids 
+     * @param {array<Int64BE>} rids 
+     * @param {bool} p2p 
+     * @param {array<string>} events 
+     * @param {function} callback 
+     * @param {number} timeout 
+     * 
+     * @callback
+     * @param {object} err
+     * @param {object} data 
+     */
+    addEventListener(gids, rids, p2p, events, callback, timeout){
+        let salt = genSalt.call(this);
+
+        let payload = {
+            pid: this._pid,
+            sign: genSign.call(this, salt.toString()),
+            salt: salt
+        };
+
+        if (gids){
+            payload.gids = gids;
+        }
+
+        if (rids){
+            payload.rids = rids;
+        }
+
+        if (p2p){
+            payload.p2p = true;
+        }
+
+        if (events){
+            payload.events = events;
+        }
+
+        let options = {
+            flag: 1,
+            method: 'addlisten',
+            payload: msgpack.encode(payload, this._msgOptions)
+        };
+
+        sendQuest.call(this, this._client, options, callback, timeout);
+    }
+
+    /**
+     * 
+     * @param {array<Int64BE>} gids 
+     * @param {array<Int64BE>} rids 
+     * @param {bool} p2p 
+     * @param {array<string>} events 
+     * @param {function} callback 
+     * @param {number} timeout 
+     * 
+     * @callback
+     * @param {object} err
+     * @param {object} data 
+     */
+    removeEventListener(gids, rids, p2p, events, callback, timeout){
+        let salt = genSalt.call(this);
+
+        let payload = {
+            pid: this._pid,
+            sign: genSign.call(this, salt.toString()),
+            salt: salt
+        };
+
+        if (gids){
+            payload.gids = gids;
+        }
+
+        if (rids){
+            payload.rids = rids;
+        }
+
+        if (p2p){
+            payload.p2p = true;
+        }
+
+        if (events){
+            payload.events = events;
+        }
+
+        let options = {
+            flag: 1,
+            method: 'removelisten',
+            payload: msgpack.encode(payload, this._msgOptions)
+        };
+
+        sendQuest.call(this, this._client, options, callback, timeout);
+    }
+
+    /**
+     * 
+     * @param {bool} all 
+     * @param {array<Int64BE>} gids 
+     * @param {array<Int64BE>} rids 
+     * @param {bool} p2p 
+     * @param {array<string>} events 
+     * @param {function} callback 
+     * @param {number} timeout 
+     * 
+     * @callback
+     * @param {object} err
+     * @param {object} data 
+     */
+    setEventListener(all, gids, rids, p2p, events, callback, timeout){
+        let salt = genSalt.call(this);
+
+        let payload = {
+            pid: this._pid,
+            sign: genSign.call(this, salt.toString()),
+            salt: salt,
+            gids: gids,
+            rids: rids,
+            p2p: p2p,
+            events: events
+        };
+
+        if (all != undefined){
+            payload.all = all;
+
+            payload.gids = [];
+            payload.rids = [];
+            payload.p2p = false;
+            payload.events = [];
+        }
+
+        let options = {
+            flag: 1,
+            method: 'setlisten',
+            payload: msgpack.encode(payload, this._msgOptions)
+        };
+
+        sendQuest.call(this, this._client, options, callback, timeout);
+    }
 }
 
 function filetoken(from, to, callback, timeout){

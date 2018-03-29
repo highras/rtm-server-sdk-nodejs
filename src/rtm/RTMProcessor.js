@@ -38,7 +38,9 @@ class RTMProcessor{
 
     /**
      * 
+     * @param {number} data.pid
      * @param {Int64BE} data.from
+     * @param {Int64BE} data.to
      * @param {number} data.mtype
      * @param {number} data.ftype
      * @param {Int64BE} data.mid
@@ -48,6 +50,10 @@ class RTMProcessor{
     pushmsg(data){
         if (data.from){
             data.from = new Int64BE(data.from);
+        }
+
+        if (data.to){
+            data.to = new Int64BE(data.to);
         }
 
         if (data.mid){
@@ -68,6 +74,48 @@ class RTMProcessor{
 
     /**
      * 
+     * @param {number} data.pid
+     * @param {Int64BE} data.from
+     * @param {array<Int64BE>} data.tos
+     * @param {number} data.mtype
+     * @param {number} data.ftype
+     * @param {Int64BE} data.mid
+     * @param {string} data.msg
+     * @param {string} data.attrs
+     */
+    pushmsgs(data){
+        if (data.from){
+            data.from = new Int64BE(data.from);
+        }
+
+        if (data.tos){
+            let buids = [];
+            data.tos.forEach(function(item, index){
+                buids[index] = new Int64BE(item);
+            });
+
+            data.tos = buids;
+        }
+
+        if (data.mid){
+            data.mid = new Int64BE(data.mid);
+            if (!checkMid.call(this, data.mid)){
+                return;
+            }
+        }
+
+        if (data.ftype > 0){
+            this.emit(RTMConfig.SERVER_PUSH.recvFiles, data);
+            return;
+        }
+
+        delete data.ftype; 
+        this.emit(RTMConfig.SERVER_PUSH.recvMessages, data);
+    }
+
+    /**
+     * 
+     * @param {number} data.pid
      * @param {Int64BE} data.from
      * @param {Int64BE} data.gid
      * @param {number} data.mtype
@@ -88,7 +136,6 @@ class RTMProcessor{
             }
         }
 
-
         if (data.gid){
             data.gid = new Int64BE(data.gid);
         }
@@ -104,6 +151,7 @@ class RTMProcessor{
 
     /**
      * 
+     * @param {number} data.pid
      * @param {Int64BE} data.from
      * @param {Int64BE} data.rid
      * @param {number} data.mtype
@@ -139,10 +187,19 @@ class RTMProcessor{
 
     /**
      * 
-     * @param {object} data 
+     * @param {number} data.pid
+     * @param {string} data.event
+     * @param {Int64BE} data.uid
+     * @param {number} data.time
+     * @param {string} data.endpoint
+     * @param {string} data.data
      */
-    pushevents(data){
-        this.emit(RTMConfig.SERVER_PUSH.recvEvents, data);
+    pushevent(data){
+        if (data.uid){
+            data.uid = new Int64BE(data.uid);
+        }
+
+        this.emit(RTMConfig.SERVER_PUSH.recvEvent, data);
     }
 
     /**
@@ -150,7 +207,7 @@ class RTMProcessor{
      * @param {object} data 
      */
     ping(data){
-        this.emit(RTMConfig.SERVER_PUSH.ping, data);
+        this.emit(RTMConfig.SERVER_PUSH.recvPing, data);
     }
 }
 

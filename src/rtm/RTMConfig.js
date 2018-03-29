@@ -42,14 +42,21 @@ const ERROR_CODE = {
 
 const SERVER_PUSH = {
 	recvMessage: 'pushmsg',
+	recvMessages: 'pushmsgs',
 	recvGroupMessage: 'pushgroupmsg',
 	recvRoomMessage: 'pushroommsg',
 	recvFile: 'pushfile',
+	recvFiles: 'pushfiles',
 	recvGroupFile: 'pushgroupfile',
 	recvRoomFile: 'pushroomfile',
-	recvEvents: 'pushevents',
-	ping: 'ping'
+	recvEvent: 'pushevent',
+	recvPing: 'ping'
 };
+
+const SERVER_EVENT = {
+	login: 'login',
+	logout: 'logout'
+}
 
 class RTMConfig{
 	static get ERROR_CODE(){
@@ -66,6 +73,10 @@ class RTMConfig{
 
 	static get MID_TTL(){
 		return 5 * 1000;
+	}
+
+	static get SERVER_EVENT(){
+		return SERVER_EVENT;
 	}
 }
 
