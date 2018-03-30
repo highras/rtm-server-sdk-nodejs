@@ -463,32 +463,32 @@ yarn test
         * `data`: **(object)** 
     * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `5 * 1000`
 
-* `addEventListener(gids, rids, p2p, events, callback, timeout)`: 添加 `事件` / `消息` 监听
-    * `gids`: **(Optional | array[Uint64BE])** 多个Group id
-    * `rids`: **(Optional | array[Uint64BE])** 多个Room id
-    * `p2p`: **(Optional | bool)** P2P消息
-    * `events`: **(Optional | array[string])** 多个事件名称, 请参考 `RTMConfig.SERVER_EVENT` 成员
+* `addEventListener(opts, callback, timeout)`: 添加 `事件` / `消息` 监听
+    * `opts.gids`: **(Optional | array[Uint64BE])** 多个Group id
+    * `opts.rids`: **(Optional | array[Uint64BE])** 多个Room id
+    * `opts.p2p`: **(Optional | bool)** P2P消息
+    * `opts.events`: **(Optional | array[string])** 多个事件名称, 请参考 `RTMConfig.SERVER_EVENT` 成员
     * `callback`: **(Optional | function)** 回调方法, `callback(err, data)`
         * `err`: **(object)** 
         * `data`: **(object)** 
     * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `5 * 1000`
 
-* `removeEventListener(gids, rids, p2p, events, callback, timeout)`: 删除 `事件` / `消息` 监听
-    * `gids`: **(Optional | array[Uint64BE])** 多个Group id
-    * `rids`: **(Optional | array[Uint64BE])** 多个Room id
-    * `p2p`: **(Optional | bool)** P2P消息
-    * `events`: **(Optional | array[string])** 多个事件名称, 请参考 `RTMConfig.SERVER_EVENT` 成员
+* `removeEventListener(opts, callback, timeout)`: 删除 `事件` / `消息` 监听
+    * `opts.gids`: **(Optional | array[Uint64BE])** 多个Group id
+    * `opts.rids`: **(Optional | array[Uint64BE])** 多个Room id
+    * `opts.p2p`: **(Optional | bool)** P2P消息
+    * `opts.events`: **(Optional | array[string])** 多个事件名称, 请参考 `RTMConfig.SERVER_EVENT` 成员
     * `callback`: **(Optional | function)** 回调方法, `callback(err, data)`
         * `err`: **(object)** 
         * `data`: **(object)** 
     * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `5 * 1000`
 
-* `setEventListener(all, gids, rids, p2p, events, callback, timeout)`: 更新 `事件` / `消息` 监听
-    * `all`: **(Optional | bool)** `true`: 监听所有 `事件` / `消息`, `false`: 取消所有 `事件` / `消息` 监听, `undefined`: **参数(`gids` `rids` `p2p` `events`)生效且不可忽略, 非`undefined`可忽略其他参数**
-    * `gids`: **(Optional | array[Uint64BE])** 多个Group id
-    * `rids`: **(Optional | array[Uint64BE])** 多个Room id
-    * `p2p`: **(Optional | bool)** P2P消息, `true`: 监听, `false`: 取消
-    * `events`: **(Optional | array[string])** 多个事件名称, 请参考 `RTMConfig.SERVER_EVENT` 成员
+* `setEventListener(opts, callback, timeout)`: 更新 `事件` / `消息` 监听
+    * `opts`: **(Optional | [bool | object])** `true`: 监听所有 `事件` / `消息`, `false`: 取消所有 `事件` / `消息` 监听
+    * `opts.gids`: **(Optional | array[Uint64BE])** 多个Group id
+    * `opts.rids`: **(Optional | array[Uint64BE])** 多个Room id
+    * `opts.p2p`: **(Optional | bool)** P2P消息, `true`: 监听, `false`: 取消监听
+    * `opts.events`: **(Optional | array[string])** 多个事件名称, 请参考 `RTMConfig.SERVER_EVENT` 成员
     * `callback`: **(Optional | function)** 回调方法, `callback(err, data)`
         * `err`: **(object)** 
         * `data`: **(object)** 

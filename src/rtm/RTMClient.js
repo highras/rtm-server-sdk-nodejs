@@ -1372,10 +1372,10 @@ class RTMClient{
 
     /**
      * 
-     * @param {array<Int64BE>} gids 
-     * @param {array<Int64BE>} rids 
-     * @param {bool} p2p 
-     * @param {array<string>} events 
+     * @param {array<Int64BE>} opts.gids 
+     * @param {array<Int64BE>} opts.rids 
+     * @param {bool} opts.p2p 
+     * @param {array<string>} opts.events 
      * @param {function} callback 
      * @param {number} timeout 
      * 
@@ -1383,7 +1383,7 @@ class RTMClient{
      * @param {object} err
      * @param {object} data 
      */
-    addEventListener(gids, rids, p2p, events, callback, timeout){
+    addEventListener(opts, callback, timeout){
         let salt = genSalt.call(this);
 
         let payload = {
@@ -1392,20 +1392,20 @@ class RTMClient{
             salt: salt
         };
 
-        if (gids){
-            payload.gids = gids;
+        if (opts.gids){
+            payload.gids = opts.gids;
         }
 
-        if (rids){
-            payload.rids = rids;
+        if (opts.rids){
+            payload.rids = opts.rids;
         }
 
-        if (p2p){
+        if (opts.p2p){
             payload.p2p = true;
         }
 
-        if (events){
-            payload.events = events;
+        if (opts.events){
+            payload.events = opts.events;
         }
 
         let options = {
@@ -1419,10 +1419,10 @@ class RTMClient{
 
     /**
      * 
-     * @param {array<Int64BE>} gids 
-     * @param {array<Int64BE>} rids 
-     * @param {bool} p2p 
-     * @param {array<string>} events 
+     * @param {array<Int64BE>} opts.gids 
+     * @param {array<Int64BE>} opts.rids 
+     * @param {bool} opts.p2p 
+     * @param {array<string>} opts.events 
      * @param {function} callback 
      * @param {number} timeout 
      * 
@@ -1430,7 +1430,7 @@ class RTMClient{
      * @param {object} err
      * @param {object} data 
      */
-    removeEventListener(gids, rids, p2p, events, callback, timeout){
+    removeEventListener(opts, callback, timeout){
         let salt = genSalt.call(this);
 
         let payload = {
@@ -1439,20 +1439,20 @@ class RTMClient{
             salt: salt
         };
 
-        if (gids){
-            payload.gids = gids;
+        if (opts.gids){
+            payload.gids = opts.gids;
         }
 
-        if (rids){
-            payload.rids = rids;
+        if (opts.rids){
+            payload.rids = opts.rids;
         }
 
-        if (p2p){
+        if (opts.p2p){
             payload.p2p = true;
         }
 
-        if (events){
-            payload.events = events;
+        if (opts.events){
+            payload.events = opts.events;
         }
 
         let options = {
@@ -1466,11 +1466,11 @@ class RTMClient{
 
     /**
      * 
-     * @param {bool} all 
-     * @param {array<Int64BE>} gids 
-     * @param {array<Int64BE>} rids 
-     * @param {bool} p2p 
-     * @param {array<string>} events 
+     * @param {bool} opts 
+     * @param {array<Int64BE>} opts.gids 
+     * @param {array<Int64BE>} opts.rids 
+     * @param {bool} opts.p2p 
+     * @param {array<string>} opts.events 
      * @param {function} callback 
      * @param {number} timeout 
      * 
@@ -1478,27 +1478,23 @@ class RTMClient{
      * @param {object} err
      * @param {object} data 
      */
-    setEventListener(all, gids, rids, p2p, events, callback, timeout){
+    setEventListener(opts, callback, timeout){
         let salt = genSalt.call(this);
 
         let payload = {
             pid: this._pid,
             sign: genSign.call(this, salt.toString()),
-            salt: salt,
-            gids: gids,
-            rids: rids,
-            p2p: p2p,
-            events: events
+            salt: salt
         };
 
-        if (all !== undefined){
-            payload.all = all;
-
-            payload.gids = [];
-            payload.rids = [];
-            payload.p2p = false;
-            payload.events = [];
+        if (typeof(opts) == 'boolean'){
+            payload.all = opts;
         }
+
+        payload.gids = opts.gids || [];
+        payload.rids = opts.rids || [];
+        payload.p2p = opts.p2p || false;
+        payload.events = opts.events || [];
 
         let options = {
             flag: 1,
