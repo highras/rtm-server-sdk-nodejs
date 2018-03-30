@@ -1383,7 +1383,7 @@ class RTMClient{
      * @param {object} err
      * @param {object} data 
      */
-    addEventListener(opts, callback, timeout){
+    addEvtListener(opts, callback, timeout){
         let salt = genSalt.call(this);
 
         let payload = {
@@ -1430,7 +1430,7 @@ class RTMClient{
      * @param {object} err
      * @param {object} data 
      */
-    removeEventListener(opts, callback, timeout){
+    removeEvtListener(opts, callback, timeout){
         let salt = genSalt.call(this);
 
         let payload = {
@@ -1478,7 +1478,7 @@ class RTMClient{
      * @param {object} err
      * @param {object} data 
      */
-    setEventListener(opts, callback, timeout){
+    setEvtListener(opts, callback, timeout){
         let salt = genSalt.call(this);
 
         let payload = {

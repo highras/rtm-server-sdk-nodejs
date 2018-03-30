@@ -72,23 +72,23 @@ client.on('connect', function(data){
 
     t(function(name, cb){
 		client[name].call(client, true, cb);
-    }, 'setEventListener');
+    }, 'setEvtListener');
 
     t(function(name, cb){
 		client[name].call(client, false, cb);
-    }, 'setEventListener');
+    }, 'setEvtListener');
 
     t(function(name, cb){
 		client[name].call(client, { gids:[gid], rids:[], p2p:false, events:[] }, cb);
-    }, 'setEventListener');
+    }, 'setEvtListener');
 
     t(function(name, cb){
 		client[name].call(client, { rids:[rid], p2p:true, events:['login', 'logout'] }, cb);
-    }, 'addEventListener');
+    }, 'addEvtListener');
 
     t(function(name, cb){
 		client[name].call(client, { events:['login'] }, cb);
-    }, 'removeEventListener');
+    }, 'removeEvtListener');
     
     t(function(name, cb){
 		client[name].call(client, from, to, 8, 'hello !', '', cb);

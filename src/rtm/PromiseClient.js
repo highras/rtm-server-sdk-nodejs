@@ -517,6 +517,48 @@ class PromiseClient{
             }, timeout);
         });
     }
+
+    addEvtListener(opts, callback, timeout){
+        let self = this;
+        return new Promise(function(resolve, reject){
+            self._rtmClient.addEvtListener(opts, function(err, data){
+                if (data){
+                    resolve(data);
+                }
+                if (err){
+                    reject(err);
+                }
+            }, timeout);
+        });
+    }
+
+    removeEvtListener(opts, callback, timeout){
+        let self = this;
+        return new Promise(function(resolve, reject){
+            self._rtmClient.removeEvtListener(opts, function(err, data){
+                if (data){
+                    resolve(data);
+                }
+                if (err){
+                    reject(err);
+                }
+            }, timeout);
+        });
+    }
+
+    setEvtListener(opts, callback, timeout){
+        let self = this;
+        return new Promise(function(resolve, reject){
+            self._rtmClient.setEvtListener(opts, function(err, data){
+                if (data){
+                    resolve(data);
+                }
+                if (err){
+                    reject(err);
+                }
+            }, timeout);
+        });
+    }
 }
 
 module.exports = PromiseClient;

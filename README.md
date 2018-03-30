@@ -463,7 +463,7 @@ yarn test
         * `data`: **(object)** 
     * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `5 * 1000`
 
-* `addEventListener(opts, callback, timeout)`: 添加 `事件` / `消息` 监听
+* `addEvtListener(opts, callback, timeout)`: 添加 `事件` / `消息` 监听
     * `opts.gids`: **(Optional | array[Uint64BE])** 多个Group id
     * `opts.rids`: **(Optional | array[Uint64BE])** 多个Room id
     * `opts.p2p`: **(Optional | bool)** P2P消息
@@ -473,7 +473,7 @@ yarn test
         * `data`: **(object)** 
     * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `5 * 1000`
 
-* `removeEventListener(opts, callback, timeout)`: 删除 `事件` / `消息` 监听
+* `removeEvtListener(opts, callback, timeout)`: 删除 `事件` / `消息` 监听
     * `opts.gids`: **(Optional | array[Uint64BE])** 多个Group id
     * `opts.rids`: **(Optional | array[Uint64BE])** 多个Room id
     * `opts.p2p`: **(Optional | bool)** P2P消息
@@ -483,7 +483,7 @@ yarn test
         * `data`: **(object)** 
     * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `5 * 1000`
 
-* `setEventListener(opts, callback, timeout)`: 更新 `事件` / `消息` 监听
+* `setEvtListener(opts, callback, timeout)`: 更新 `事件` / `消息` 监听
     * `opts`: **(Optional | [bool | object])** `true`: 监听所有 `事件` / `消息`, `false`: 取消所有 `事件` / `消息` 监听
     * `opts.gids`: **(Optional | array[Uint64BE])** 多个Group id
     * `opts.rids`: **(Optional | array[Uint64BE])** 多个Room id
