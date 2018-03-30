@@ -16,11 +16,11 @@ class PromiseClient{
         return new Promise(function(resolve, reject){
             self._rtmClient.enableConnect();
 
-            self._rtmClient.on('connect', function(){
+            self._rtmClient.once('connect', function(){
                 resolve();
             });
 
-            self._rtmClient.on('error', function(err){
+            self._rtmClient.once('error', function(err){
                 reject(err); 
             });
         });
@@ -31,11 +31,11 @@ class PromiseClient{
         return new Promise(function(resolve, reject){
             self._rtmClient.enableEncryptorByData(peerPubData, options);
 
-            self._rtmClient.on('connect', function(){
+            self._rtmClient.once('connect', function(){
                 resolve();
             });
 
-            self._rtmClient.on('error', function(err){
+            self._rtmClient.once('error', function(err){
                 reject(err); 
             });
         });
@@ -46,11 +46,11 @@ class PromiseClient{
         return new Promise(function(resolve, reject){
             self._rtmClient.enableEncryptorByFile(peerPubPath, options);
 
-            self._rtmClient.on('connect', function(){
+            self._rtmClient.once('connect', function(){
                 resolve();
             });
 
-            self._rtmClient.on('error', function(err){
+            self._rtmClient.once('error', function(err){
                 reject(err); 
             });
         });
