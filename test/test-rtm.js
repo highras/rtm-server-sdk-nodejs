@@ -10,6 +10,39 @@ const PromiseClient = require('../src/rtm/PromiseClient');
 
 let self = this;
 
+let step = 2;
+let index = 0;
+
+let t = function(fn, name){
+    setTimeout(function(){
+        var cb = function(err, data){
+            if (err){
+                console.error('\n[ERR] ' + name + ':\n', err)
+            }
+            if (data){
+                console.log('\n[DATA] ' + name + ':\n', data);
+            }
+        };
+        fn(name, cb);
+    }, index * 1000 * step);
+
+    if (name){
+        index++;
+    }
+}
+
+let from = new Int64BE(0, 778898);
+let to = new Int64BE(0, 778899);
+let tos = [new Int64BE(0, 778899), new Int64BE(0, 778877)];
+let gid = new Int64BE(0, 999999);
+let rid = new Int64BE(0, 666666);
+let friends = [new Int64BE(0, 778899), new Int64BE(0, 778877)];
+let fuid = new Int64BE(0, 778877);
+let lat = 39239.1123;
+let lng = 69394.4850;
+
+let file_path = path.resolve(__dirname, '../key/test-secp256k1-public.pem');
+
 let client = new RTMClient({ 
     host: '35.167.185.139',
     port: 13315,
@@ -29,42 +62,22 @@ let options = {
 
 client.enableConnect();
 // client.enableEncryptorByFile(filePath, options);
+    
+//receive
+let pushName = client.rtmConfig.SERVER_PUSH.recvMessage;
+client.processor.on(pushName, function(data){
+    console.log('\n[PUSH] ' + pushName + ':\n', data);
+});
 
+pushName = client.rtmConfig.SERVER_PUSH.recvPing;
+client.processor.on(pushName, function(data){
+    console.log('\n[PUSH] ' + pushName + ':\n', data);
+});
+
+//send
 client.on('connect', function(data){
+    index = 0;
     console.log('connect!\n\n');
-
-    let step = 2;
-    let index = 0;
-
-    let t = function(fn, name){
-        setTimeout(function(){
-            var cb = function(err, data){
-                if (err){
-                    console.error('\n[ERR] ' + name + ':\n', err)
-                }
-                if (data){
-                    console.log('\n[DATA] ' + name + ':\n', data);
-                }
-            };
-            fn(name, cb);
-        }, index * 1000 * step);
-
-        if (name){
-            index++;
-        }
-    }
-
-    let from = new Int64BE(0, 778898);
-    let to = new Int64BE(0, 778899);
-    let tos = [new Int64BE(0, 778899), new Int64BE(0, 778877)];
-    let gid = new Int64BE(0, 999999);
-    let rid = new Int64BE(0, 666666);
-    let friends = [new Int64BE(0, 778899), new Int64BE(0, 778877)];
-    let fuid = new Int64BE(0, 778877);
-    let lat = 39239.1123;
-    let lng = 69394.4850;
-
-    let file_path = path.resolve(__dirname, '../key/test-secp256k1-public.pem');
 
     t(function(name, cb){
 		console.log('---------------begin!-----------------')
@@ -199,14 +212,6 @@ client.on('connect', function(data){
     }, 'isProjectBlack');
 
     t(function(name, cb){
-		client[name].call(client, from, 'test-user', cb);
-    }, 'setPushName');
-
-    t(function(name, cb){
-		client[name].call(client, from, cb);
-    }, 'getPushName');
-
-    t(function(name, cb){
 		client[name].call(client, from, lat, lng, cb);
     }, 'setGeo');
 
@@ -225,12 +230,6 @@ client.on('connect', function(data){
     t(function(name, cb){
 		console.log('---------------(' + index + ')end!-----------------');
     });
-    
-    //receive from server
-    let pushName = data.services.recvMessage;
-    data.processor.on(pushName, function(data){
-        console.log('\n[PUSH] ' + pushName + ':\n', data);
-    });
 });
 
 client.on('error', function(err){
@@ -238,5 +237,5 @@ client.on('error', function(err){
 });
 
 client.on('close', function(){
-    console.error('closed!');
+    console.log('closed!');
 });

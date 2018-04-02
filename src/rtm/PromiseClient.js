@@ -433,34 +433,6 @@ class PromiseClient{
             }, timeout);
         });
     }
-    
-    setPushName(uid, pushname, timeout){
-        let self = this;
-        return new Promise(function(resolve, reject){
-            self._rtmClient.setPushName(uid, pushname, function(err, data){
-                if (data){
-                    resolve(data);
-                }
-                if (err){
-                    reject(err);
-                }
-            }, timeout);
-        });
-    }
-    
-    getPushName(uid, timeout){
-        let self = this;
-        return new Promise(function(resolve, reject){
-            self._rtmClient.getPushName(uid, function(err, data){
-                if (data){
-                    resolve(data);
-                }
-                if (err){
-                    reject(err);
-                }
-            }, timeout);
-        });
-    }
 
     setGeo(uid, lat, lng, timeout){
         let self = this;

@@ -40,25 +40,30 @@ let client = new RTMClient(options);
 // 开启连接
 client.enableConnect();
 
+//push service
+let pushName = client.rtmConfig.SERVER_PUSH.recvMessage;
+client.processor.on(pushName, function(data){
+    console.log('\n[PUSH] ' + pushName + ':\n', data);
+});
+
 // 连接成功并发送消息
-client.on('connect', function(data){
+client.on('connect', function(){
     let from = new Uint64BE(0, 778898);
     let to = new Uint64BE(0, 778899);
 
     client.sendMessage(from, to, 8, 'hello !', '', function(err, data){
         console.log(data, err);
     });
-
-    //push service
-    let pushName = data.services.recvMessage;
-    data.processor.on(pushName, function(data){
-        console.log('\n[PUSH] ' + pushName + ':\n', data);
-    });
 });
 
 // 异常
 client.on('error', function(err){
     console.error(err);
+});
+
+// 关闭
+client.on('close', function(){
+    console.log('closed!');
 });
 
 ```
@@ -72,10 +77,10 @@ yarn test
 #### Events ####
 * `event`:
     * `connect`: 连接成功 
-        * `data.processor`: **(RTMProcessor)** 监听PushService的句柄
-        * `data.services`: **(object)** 支持的PushService定义, 请参考 `RTMConfig.SERVER_PUSH` 成员
+
     * `error`: 发生异常
         * `err`: **(object)**
+
     * `close`: 连接关闭
 
 #### PushService #### 
@@ -177,6 +182,10 @@ yarn test
     * `options.autoReconnect`: **(Optional | bool)** 是否自动重连, 默认: `false`
     * `options.connectionTimeout`: **(Optional | number)** 超时时间(ms), 默认: `30 * 1000`
 
+* `processor`: **(RTMProcessor)** 监听PushService的句柄
+
+* `rtmConfig`: **(object)** 请参考 `RTMConfig` 成员
+
 * `enableConnect()`: 开启连接(非加密模式) 
 
 * `enableEncryptorByData(peerPubData, options)`: 开启加密连接
@@ -200,7 +209,7 @@ yarn test
     * `callback`: **(Optional | function)** 回调方法, `callback(err, data)`
         * `err`: **(object)** 
         * `data`: **(object)** 
-    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `5 * 1000`
+    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
 
 * `sendMessages(from, tos, mtype, msg, attrs, callback, timeout)`: 发送多人消息
     * `from`: **(Required | Uint64BE)** 发送方 id
@@ -211,7 +220,7 @@ yarn test
     * `callback`: **(Optional | function)** 回调方法, `callback(err, data)`
         * `err`: **(object)** 
         * `data`: **(object)** 
-    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `5 * 1000`
+    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
 
 * `sendGroupMessage(from, gid, mtype, msg, attrs, callback, timeout)`: 发送group消息
     * `from`: **(Required | Uint64BE)** 发送方 id
@@ -222,7 +231,7 @@ yarn test
     * `callback`: **(Optional | function)** 回调方法, `callback(err, data)`
         * `err`: **(object)** 
         * `data`: **(object)** 
-    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `5 * 1000`
+    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
 
 * `sendRoomMessage(from, rid, mtype, msg, attrs, callback, timeout)`: 发送room消息
     * `from`: **(Required | Uint64BE)** 发送方 id
@@ -233,7 +242,7 @@ yarn test
     * `callback`: **(Optional | function)** 回调方法, `callback(err, data)`
         * `err`: **(object)** 
         * `data`: **(object)** 
-    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `5 * 1000`
+    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
 
 * `broadcastMessage(from, mtype, msg, attrs, callback, timeout)`: 广播消息(andmin id)
     * `from`: **(Required | Uint64BE)** admin id
@@ -243,7 +252,7 @@ yarn test
     * `callback`: **(Optional | function)** 回调方法, `callback(err, data)`
         * `err`: **(object)** 
         * `data`: **(object)** 
-    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `5 * 1000`
+    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
 
 * `addFriends(uid, friends, callback, timeout)`: 添加好友
     * `uid`: **(Required | Uint64BE)** 用户 id
@@ -251,7 +260,7 @@ yarn test
     * `callback`: **(Optional | function)** 回调方法, `callback(err, data)`
         * `err`: **(object)** 
         * `data`: **(object)** 
-    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `5 * 1000`
+    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
 
 * `deleteFriends(uid, friends, callback, timeout)`: 删除好友
     * `uid`: **(Required | Uint64BE)** 用户 id
@@ -259,14 +268,14 @@ yarn test
     * `callback`: **(Optional | function)** 回调方法, `callback(err, data)`
         * `err`: **(object)** 
         * `data`: **(object)** 
-    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `5 * 1000`
+    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
 
 * `getFriends(uid, callback, timeout)`: 获取好友
     * `uid`: **(Required | Uint64BE)** 用户 id
     * `callback`: **(Optional | function)** 回调方法, `callback(err, data)`
         * `err`: **(object)** 
         * `data`: **(array[Uint64BE])** 
-    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `5 * 1000`
+    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
 
 * `isFriend(uid, fuid, callback, timeout)`: 是否好友
     * `uid`: **(Required | Uint64BE)** 用户 id
@@ -274,7 +283,7 @@ yarn test
     * `callback`: **(Optional | function)** 回调方法, `callback(err, data)`
         * `err`: **(object)** 
         * `data`: **(bool)** 
-    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `5 * 1000`
+    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
 
 * `isFriends(uid, fuids, callback, timeout)`: 是否好友
     * `uid`: **(Required | Uint64BE)** 用户 id
@@ -282,7 +291,7 @@ yarn test
     * `callback`: **(Optional | function)** 回调方法, `callback(err, data)`
         * `err`: **(object)** 
         * `data`: **(array[Uint64BE])** 
-    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `5 * 1000`
+    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
 
 * `addGroupMembers(gid, uids, callback, timeout)`: 添加group成员
     * `gid`: **(Required | Uint64BE)** group id
@@ -290,7 +299,7 @@ yarn test
     * `callback`: **(Optional | function)** 回调方法, `callback(err, data)`
         * `err`: **(object)** 
         * `data`: **(object)** 
-    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `5 * 1000`
+    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
 
 * `deleteGroupMembers(gid, uids, callback, timeout)`:  删除group成员
     * `gid`: **(Required | Uint64BE)** group id
@@ -298,21 +307,21 @@ yarn test
     * `callback`: **(Optional | function)** 回调方法, `callback(err, data)`
         * `err`: **(object)** 
         * `data`: **(object)** 
-    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `5 * 1000`
+    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
 
 * `deleteGroup(gid, callback, timeout)`: 删除group
     * `gid`: **(Required | Uint64BE)** group id
     * `callback`: **(Optional | function)** 回调方法, `callback(err, data)`
         * `err`: **(object)** 
         * `data`: **(object)** 
-    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `5 * 1000`
+    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
 
 * `getGroupMembers(gid, callback, timeout)`: 获取group成员
     * `gid`: **(Required | Uint64BE)** group id
     * `callback`: **(Optional | function)** 回调方法, `callback(err, data)`
         * `err`: **(object)** 
         * `data`: **(array[Uint64BE])** 
-    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `5 * 1000`
+    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
 
 * `isGroupMember(gid, uid, callback, timeout)`: 是否group成员
     * `gid`: **(Required | Uint64BE)** group id
@@ -320,28 +329,28 @@ yarn test
     * `callback`: **(Optional | function)** 回调方法, `callback(err, data)`
         * `err`: **(object)** 
         * `data`: **(bool)** 
-    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `5 * 1000`
+    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
 
 * `getUserGroups(uid, callback, timeout)`: 获取用户的group
     * `uid`: **(Required | Uint64BE)** 用户 id
     * `callback`: **(Optional | function)** 回调方法, `callback(err, data)`
         * `err`: **(object)** 
         * `data`: **(bool)** 
-    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `5 * 1000`
+    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
 
 * `getToken(uid, callback, timeout)`: 获取token
     * `uid`: **(Required | Uint64BE)** 用户 id
     * `callback`: **(Optional | function)** 回调方法, `callback(err, data)`
         * `err`: **(object)** 
         * `data`: **(string)** 
-    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `5 * 1000`
+    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
 
 * `getOnlineUsers(uids, callback, timeout)`: 获取在线用户
     * `uids`: **(Required | array[Uint64BE])** 多个用户 id
     * `callback`: **(Optional | function)** 回调方法, `callback(err, data)`
         * `err`: **(object)** 
         * `data`: **(array[Uint64BE])** 
-    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `5 * 1000`
+    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
 
 * `addGroupBan(gid, uid, btime, callback, timeout)`: 阻止用户消息(group)
     * `gid`: **(Required | Uint64BE)** group id
@@ -350,7 +359,7 @@ yarn test
     * `callback`: **(Optional | function)** 回调方法, `callback(err, data)`
         * `err`: **(object)** 
         * `data`: **(object)** 
-    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `5 * 1000`
+    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
 
 * `removeGroupBan(gid, uid, callback, timeout)`: 取消阻止(group)
     * `gid`: **(Required | Uint64BE)** group id
@@ -358,7 +367,7 @@ yarn test
     * `callback`: **(Optional | function)** 回调方法, `callback(err, data)`
         * `err`: **(object)** 
         * `data`: **(object)** 
-    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `5 * 1000`
+    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
 
 * `addRoomBan(rid, uid, btime, callback, timeout)`: 阻止用户消息(room)
     * `rid`: **(Required | Uint64BE)** room id
@@ -367,7 +376,7 @@ yarn test
     * `callback`: **(Optional | function)** 回调方法, `callback(err, data)`
         * `err`: **(object)** 
         * `data`: **(object)** 
-    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `5 * 1000`
+    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
 
 * `removeRoomBan(rid, uid, callback, timeout)`: 取消阻止(room)
     * `rid`: **(Required | Uint64BE)** room id
@@ -375,7 +384,7 @@ yarn test
     * `callback`: **(Optional | function)** 回调方法, `callback(err, data)`
         * `err`: **(object)** 
         * `data`: **(object)** 
-    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `5 * 1000`
+    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
 
 * `addProjectBlack(uid, btime, callback, timeout)`: 阻止用户消息(project)
     * `uid`: **(Required | Uint64BE)** 用户 id
@@ -383,14 +392,14 @@ yarn test
     * `callback`: **(Optional | function)** 回调方法, `callback(err, data)`
         * `err`: **(object)** 
         * `data`: **(object)** 
-    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `5 * 1000`
+    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
 
 * `removeProjectBlack(uid, callback, timeout)`: 取消阻止(project)
     * `uid`: **(Required | Uint64BE)** 用户 id
     * `callback`: **(Optional | function)** 回调方法, `callback(err, data)`
         * `err`: **(object)** 
         * `data`: **(object)** 
-    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `5 * 1000`
+    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
 
 * `isBanOfGroup(gid, uid, callback, timeout)`: 检查阻止(group)
     * `gid`: **(Required | Uint64BE)** group id
@@ -398,7 +407,7 @@ yarn test
     * `callback`: **(Optional | function)** 回调方法, `callback(err, data)`
         * `err`: **(object)** 
         * `data`: **(bool)** 
-    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `5 * 1000`
+    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
 
 * `isBanOfRoom(rid, uid, callback, timeout)`: 检查阻止(room)
     * `rid`: **(Required | Uint64BE)** room id
@@ -406,29 +415,14 @@ yarn test
     * `callback`: **(Optional | function)** 回调方法, `callback(err, data)`
         * `err`: **(object)** 
         * `data`: **(bool)** 
-    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `5 * 1000`
+    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
 
 * `isProjectBlack(uid, callback, timeout)`: 检查阻止(project)
     * `uid`: **(Required | Uint64BE)** 用户 id
     * `callback`: **(Optional | function)** 回调方法, `callback(err, data)`
         * `err`: **(object)** 
         * `data`: **(bool)** 
-    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `5 * 1000`
-
-* `setPushName(uid, pushname, callback, timeout)`: 设置名字
-    * `uid`: **(Required | Uint64BE)** 用户 id
-    * `pushname`: **(Required | string)** 名字
-    * `callback`: **(Optional | function)** 回调方法, `callback(err, data)`
-        * `err`: **(object)** 
-        * `data`: **(object)** 
-    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `5 * 1000`
-
-* `getPushName(uid, callback, timeout)`: 获取名字
-    * `uid`: **(Required | Uint64BE)** 用户 id
-    * `callback`: **(Optional | function)** 回调方法, `callback(err, data)`
-        * `err`: **(object)** 
-        * `data`: **(string)** 
-    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `5 * 1000`
+    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
 
 * `setGeo(uid, lat, lng, callback, timeout)`: 设置位置
     * `uid`: **(Required | Uint64BE)** 用户 id
@@ -437,21 +431,21 @@ yarn test
     * `callback`: **(Optional | function)** 回调方法, `callback(err, data)`
         * `err`: **(object)** 
         * `data`: **(object)** 
-    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `5 * 1000`
+    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
 
 * `getGeo(uid, callback, timeout)`: 获取位置
     * `uid`: **(Required | Uint64BE)** 用户 id
     * `callback`: **(Optional | function)** 回调方法, `callback(err, data)`
         * `err`: **(object)** 
         * `data`: **(object[lat:number, lng:number])** 
-    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `5 * 1000`
+    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
 
 * `getGeos(uids, callback, timeout)`: 获取位置
     * `uids`: **(Required | array[Uint64BE])** 多个用户 id
     * `callback`: **(Optional | function)** 回调方法, `callback(err, data)`
         * `err`: **(object)** 
         * `data`: **(array[array[uid:Uint64BE,lat:number,lng:number])** 
-    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `5 * 1000`
+    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
 
 * `sendFile(from, to, mtype, filePath, callback, timeout)`: 发送文件
     * `from`: **(Required | Uint64BE)** 发送方 id
@@ -461,7 +455,7 @@ yarn test
     * `callback`: **(Optional | function)** 回调方法, `callback(err, data)`
         * `err`: **(object)** 
         * `data`: **(object)** 
-    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `5 * 1000`
+    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
 
 * `addEvtListener(opts, callback, timeout)`: 添加 `事件` / `消息` 监听
     * `opts.gids`: **(Optional | array[Uint64BE])** 多个Group id
@@ -471,7 +465,7 @@ yarn test
     * `callback`: **(Optional | function)** 回调方法, `callback(err, data)`
         * `err`: **(object)** 
         * `data`: **(object)** 
-    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `5 * 1000`
+    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
 
 * `removeEvtListener(opts, callback, timeout)`: 删除 `事件` / `消息` 监听
     * `opts.gids`: **(Optional | array[Uint64BE])** 多个Group id
@@ -481,7 +475,7 @@ yarn test
     * `callback`: **(Optional | function)** 回调方法, `callback(err, data)`
         * `err`: **(object)** 
         * `data`: **(object)** 
-    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `5 * 1000`
+    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
 
 * `setEvtListener(opts, callback, timeout)`: 更新 `事件` / `消息` 监听
     * `opts`: **(Optional | [bool | object])** `true`: 监听所有 `事件` / `消息`, `false`: 取消所有 `事件` / `消息` 监听
@@ -492,4 +486,4 @@ yarn test
     * `callback`: **(Optional | function)** 回调方法, `callback(err, data)`
         * `err`: **(object)** 
         * `data`: **(object)** 
-    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `5 * 1000`
+    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`

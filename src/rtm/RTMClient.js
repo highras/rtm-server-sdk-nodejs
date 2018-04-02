@@ -40,7 +40,7 @@ class RTMClient{
         let self = this;
         this._client.on('connect', function(){
             self._client.processor = self._processor;
-            self.emit('connect', { processor: self._processor, services: RTMConfig.SERVER_PUSH });
+            self.emit('connect');
         });
 
         this._client.on('error', function(err){
@@ -56,6 +56,14 @@ class RTMClient{
         };
 
         this._processor = new RTMProcessor(this._msgOptions);
+    }
+
+    get processor(){
+        return this._processor;
+    }
+
+    get rtmConfig(){
+        return RTMConfig;
     }
 
     enableConnect(){
@@ -1121,80 +1129,6 @@ class RTMClient{
             let ok = data['ok'];
             if (ok !== undefined){
                 callback(null, ok);
-                return;
-            }
-
-            callback(null, data);
-        }, timeout);
-    }
-
-    /**
-     * 
-     * @param {Int64BE} uid 
-     * @param {string} pushname 
-     * @param {function} callback 
-     * @param {number} timeout 
-     * 
-     * @callback
-     * @param {object} err
-     * @param {object} data 
-     */
-    setPushName(uid, pushname, callback, timeout){
-        let salt = genSalt.call(this);
-
-        let payload = {
-            pid: this._pid,
-            sign: genSign.call(this, salt.toString()),
-            salt: salt,
-            uid: uid,
-            pushname: pushname
-        };
-
-        let options = {
-            flag: 1,
-            method: 'setpushname',
-            payload: msgpack.encode(payload, this._msgOptions)
-        };
-
-        sendQuest.call(this, this._client, options, callback, timeout);
-    }
-
-    /**
-     * 
-     * @param {Int64BE} uid 
-     * @param {string} pushname 
-     * @param {function} callback 
-     * @param {number} timeout 
-     * 
-     * @callback
-     * @param {object} err
-     * @param {string} data 
-     */
-    getPushName(uid, callback, timeout){
-        let salt = genSalt.call(this);
-
-        let payload = {
-            pid: this._pid,
-            sign: genSign.call(this, salt.toString()),
-            salt: salt,
-            uid: uid
-        };
-
-        let options = {
-            flag: 1,
-            method: 'getpushname',
-            payload: msgpack.encode(payload, this._msgOptions)
-        };
-
-        sendQuest.call(this, this._client, options, function(err, data){
-            if (err){
-                callback(err, null);
-                return;
-            }
-
-            let pushname = data['pushname'];
-            if (pushname !== undefined){
-                callback(null, pushname);
                 return;
             }
 
