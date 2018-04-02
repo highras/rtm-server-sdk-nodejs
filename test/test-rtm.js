@@ -17,7 +17,7 @@ let t = function(fn, name){
     setTimeout(function(){
         var cb = function(err, data){
             if (err){
-                console.error('\n[ERR] ' + name + ':\n', err)
+                console.error('\n[ERR] ' + name + ':\n', err.message);
             }
             if (data){
                 console.log('\n[DATA] ' + name + ':\n', data);
@@ -233,7 +233,7 @@ client.on('connect', function(data){
 });
 
 client.on('error', function(err){
-    console.error(err);
+    console.error(err.message);
 });
 
 client.on('close', function(){

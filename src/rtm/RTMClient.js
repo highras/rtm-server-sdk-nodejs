@@ -121,7 +121,7 @@ class RTMClient{
      * @param {number} timeout 
      * 
      * @callback
-     * @param {object} err
+     * @param {Error} err
      * @param {object} data
      */
     sendMessage(from, to, mtype, msg, attrs, callback, timeout){
@@ -159,7 +159,7 @@ class RTMClient{
      * @param {number} timeout 
      * 
      * @callback
-     * @param {object} err
+     * @param {Error} err
      * @param {object} data
      */
     sendMessages(from, tos, mtype, msg, attrs, callback, timeout){
@@ -197,7 +197,7 @@ class RTMClient{
      * @param {number} timeout 
      * 
      * @callback
-     * @param {object} err
+     * @param {Error} err
      * @param {object} data
      */
     sendGroupMessage(from, gid, mtype, msg, attrs, callback, timeout){
@@ -235,7 +235,7 @@ class RTMClient{
      * @param {number} timeout 
      * 
      * @callback
-     * @param {object} err
+     * @param {Error} err
      * @param {object} data
      */
     sendRoomMessage(from, rid, mtype, msg, attrs, callback, timeout){
@@ -272,7 +272,7 @@ class RTMClient{
      * @param {number} timeout 
      * 
      * @callback
-     * @param {object} err
+     * @param {Error} err
      * @param {object} data
      */
     broadcastMessage(from, mtype, msg, attrs, callback, timeout){
@@ -306,7 +306,7 @@ class RTMClient{
      * @param {number} timeout 
      * 
      * @callback
-     * @param {object} err
+     * @param {Error} err
      * @param {object} data
      */
     addFriends(uid, friends, callback, timeout){
@@ -337,7 +337,7 @@ class RTMClient{
      * @param {number} timeout 
      * 
      * @callback
-     * @param {object} err
+     * @param {Error} err
      * @param {object} data
      */
     deleteFriends(uid, friends, callback, timeout){
@@ -367,7 +367,7 @@ class RTMClient{
      * @param {number} timeout 
      * 
      * @callback
-     * @param {object} err
+     * @param {Error} err
      * @param {array<Int64BE>} data
      */
     getFriends(uid, callback, timeout){
@@ -415,7 +415,7 @@ class RTMClient{
      * @param {number} timeout 
      * 
      * @callback
-     * @param {object} err
+     * @param {Error} err
      * @param {bool} data
      */
     isFriend(uid, fuid, callback, timeout){
@@ -459,7 +459,7 @@ class RTMClient{
      * @param {number} timeout 
      * 
      * @callback
-     * @param {object} err
+     * @param {Error} err
      * @param {array<Int64BE>} data
      */
     isFriends(uid, fuids, callback, timeout){
@@ -508,7 +508,7 @@ class RTMClient{
      * @param {number} timeout 
      * 
      * @callback
-     * @param {object} err
+     * @param {Error} err
      * @param {object} data
      */
     addGroupMembers(gid, uids, callback, timeout){
@@ -539,7 +539,7 @@ class RTMClient{
      * @param {number} timeout 
      * 
      * @callback
-     * @param {object} err
+     * @param {Error} err
      * @param {object} data
      */
     deleteGroupMembers(gid, uids, callback, timeout){
@@ -569,7 +569,7 @@ class RTMClient{
      * @param {number} timeout 
      * 
      * @callback
-     * @param {object} err
+     * @param {Error} err
      * @param {object} data
      */
     deleteGroup(gid, callback, timeout){
@@ -598,7 +598,7 @@ class RTMClient{
      * @param {number} timeout 
      * 
      * @callback
-     * @param {object} err
+     * @param {Error} err
      * @param {array<Int64BE>} data
      */
     getGroupMembers(gid, callback, timeout){
@@ -646,7 +646,7 @@ class RTMClient{
      * @param {number} timeout 
      * 
      * @callback
-     * @param {object} err
+     * @param {Error} err
      * @param {bool} data
      */
     isGroupMember(gid, uid, callback, timeout){
@@ -689,7 +689,7 @@ class RTMClient{
      * @param {number} timeout 
      * 
      * @callback
-     * @param {object} err
+     * @param {Error} err
      * @param {array<Int64BE>} data
      */
     getUserGroups(uid, callback, timeout){
@@ -736,7 +736,7 @@ class RTMClient{
      * @param {number} timeout 
      * 
      * @callback
-     * @param {object} err
+     * @param {Error} err
      * @param {string} token 
      */
     getToken(uid, callback, timeout){
@@ -778,7 +778,7 @@ class RTMClient{
      * @param {number} timeout 
      * 
      * @callback
-     * @param {object} err
+     * @param {Error} err
      * @param {array<Int64BE>} uids 
      */
     getOnlineUsers(uids, callback, timeout){
@@ -827,7 +827,7 @@ class RTMClient{
      * @param {number} timeout 
      * 
      * @callback
-     * @param {object} err
+     * @param {Error} err
      * @param {object} data
      */
     addGroupBan(gid, uid, btime, callback, timeout){
@@ -859,7 +859,7 @@ class RTMClient{
      * @param {number} timeout 
      * 
      * @callback
-     * @param {object} err
+     * @param {Error} err
      * @param {object} data
      */
     removeGroupBan(gid, uid, callback, timeout){
@@ -891,7 +891,7 @@ class RTMClient{
      * @param {number} timeout 
      * 
      * @callback
-     * @param {object} err
+     * @param {Error} err
      * @param {object} data
      */
     addRoomBan(rid, uid, btime, callback, timeout){
@@ -923,7 +923,7 @@ class RTMClient{
      * @param {number} timeout 
      * 
      * @callback
-     * @param {object} err
+     * @param {Error} err
      * @param {object} data
      */
     removeRoomBan(rid, uid, callback, timeout){
@@ -954,7 +954,7 @@ class RTMClient{
      * @param {number} timeout 
      * 
      * @callback
-     * @param {object} err
+     * @param {Error} err
      * @param {object} data
      */
     addProjectBlack(uid, btime, callback, timeout){
@@ -984,7 +984,7 @@ class RTMClient{
      * @param {number} timeout 
      * 
      * @callback
-     * @param {object} err
+     * @param {Error} err
      * @param {object} data
      */
     removeProjectBlack(uid, callback, timeout){
@@ -1014,7 +1014,7 @@ class RTMClient{
      * @param {number} timeout 
      * 
      * @callback
-     * @param {object} err
+     * @param {Error} err
      * @param {bool} data
      */
     isBanOfGroup(gid, uid, callback, timeout){
@@ -1058,7 +1058,7 @@ class RTMClient{
      * @param {number} timeout 
      * 
      * @callback
-     * @param {object} err
+     * @param {Error} err
      * @param {bool} data
      */
     isBanOfRoom(rid, uid, callback, timeout){
@@ -1101,7 +1101,7 @@ class RTMClient{
      * @param {number} timeout 
      * 
      * @callback
-     * @param {object} err
+     * @param {Error} err
      * @param {bool} data 
      */
     isProjectBlack(uid, callback, timeout){
@@ -1145,7 +1145,7 @@ class RTMClient{
      * @param {number} timeout 
      * 
      * @callback
-     * @param {object} err
+     * @param {Error} err
      * @param {object} data 
      */
     setGeo(uid, lat, lng, callback, timeout){
@@ -1176,7 +1176,7 @@ class RTMClient{
      * @param {number} timeout 
      * 
      * @callback
-     * @param {object} err
+     * @param {Error} err
      * @param {object<lat:number, lng:number>} data 
      */
     getGeo(uid, callback, timeout){
@@ -1205,7 +1205,7 @@ class RTMClient{
      * @param {number} timeout 
      * 
      * @callback
-     * @param {object} err
+     * @param {Error} err
      * @param {array<array<uid:Int64BE,lat:number,lng:number>>} data 
      */
     getGeos(uids, callback, timeout){
@@ -1255,7 +1255,7 @@ class RTMClient{
      * @param {number} timeout 
      * 
      * @callback
-     * @param {object} err
+     * @param {Error} err
      * @param {object} data 
      */
     sendFile(from, to, mtype, filePath, callback, timeout){
@@ -1304,7 +1304,7 @@ class RTMClient{
                     sendfile.call(self, client, options, callback, timeout);
                 });
                 client.on('error', function(err){
-                    self.emit('error', { src: 'file client', err: err });
+                    self.emit('error', new Error('file client: ' + err.message));
                 });
             });
         }, timeout);
@@ -1320,7 +1320,7 @@ class RTMClient{
      * @param {number} timeout 
      * 
      * @callback
-     * @param {object} err
+     * @param {Error} err
      * @param {object} data 
      */
     addEvtListener(opts, callback, timeout){
@@ -1367,7 +1367,7 @@ class RTMClient{
      * @param {number} timeout 
      * 
      * @callback
-     * @param {object} err
+     * @param {Error} err
      * @param {object} data 
      */
     removeEvtListener(opts, callback, timeout){
@@ -1415,7 +1415,7 @@ class RTMClient{
      * @param {number} timeout 
      * 
      * @callback
-     * @param {object} err
+     * @param {Error} err
      * @param {object} data 
      */
     setEvtListener(opts, callback, timeout){
@@ -1512,10 +1512,19 @@ function md5(data){
 }
 
 function isException(data){
-    if (data === undefined){
-        return false;
+    if (!data){
+        return null;
     }
-    return data.hasOwnProperty('code') && data.hasOwnProperty('ex');
+
+    if (data instanceof Error){
+        return data;
+    }
+
+    if (data.hasOwnProperty('code') && data.hasOwnProperty('ex')){
+        return new Error('code: ' + data.code + ', ex: ' + data.ex);
+    }
+
+    return null;
 }
 
 function sendQuest(client, options, callback, timeout){
@@ -1525,14 +1534,23 @@ function sendQuest(client, options, callback, timeout){
             return;
         }
 
+        let err = null;
+
         if (data.payload){
             let payload = msgpack.decode(data.payload, self._msgOptions);
-            if (isException.call(self, payload)){
-                callback(payload, null);
+            err = isException.call(self, payload);
+            if (err){
+                callback(err, null);
                 return;
             }
 
             callback(null, payload);
+            return;
+        }
+
+        err = isException.call(self, data);
+        if (err){
+            callback(data, null);
             return;
         }
 
