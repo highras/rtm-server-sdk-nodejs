@@ -13,7 +13,7 @@ let self = this;
 let client = new RTMClient({ 
     host: '35.167.185.139',
     port: 13315,
-    autoReconnect: false,
+    autoReconnect: true,
     connectionTimeout: 10 * 1000,
     pid: 1000014,
     secretKey: 'd8c94627-db2e-4206-bd4f-967b5b4e94dc'

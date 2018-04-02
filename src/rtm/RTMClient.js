@@ -1335,6 +1335,12 @@ class RTMClient{
 
             let token = data["token"];
             let endpoint = data["endpoint"];
+
+            if (!token || !endpoint){
+                self.emit('error', data);
+                return;
+            }
+
             let ipport = endpoint.split(':');
 
             fs.readFile(filePath, function(err, data){
