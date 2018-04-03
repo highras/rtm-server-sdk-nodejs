@@ -6,7 +6,6 @@ const msgpack = require("msgpack-lite");
 const Int64BE = require("int64-buffer").Int64BE;
 
 const RTMClient = require('../src/rtm/RTMClient');
-const PromiseClient = require('../src/rtm/PromiseClient');
 
 let self = this;
 
@@ -40,6 +39,7 @@ let friends = [new Int64BE(0, 778899), new Int64BE(0, 778877)];
 let fuid = new Int64BE(0, 778877);
 let lat = 39239.1123;
 let lng = 69394.4850;
+let timeout = 10 * 1000;
 
 let file_path = path.resolve(__dirname, '../key/test-secp256k1-public.pem');
 
@@ -84,148 +84,156 @@ client.on('connect', function(data){
     });
 
     t(function(name, cb){
-		client[name].call(client, true, cb);
+		client[name].call(client, true, timeout, cb);
     }, 'setEvtListener');
 
     t(function(name, cb){
-		client[name].call(client, false, cb);
+		client[name].call(client, false, timeout, cb);
     }, 'setEvtListener');
 
     t(function(name, cb){
-		client[name].call(client, { gids:[gid], rids:[], p2p:false, events:[] }, cb);
+		client[name].call(client, { gids:[gid], rids:[], p2p:false, events:[] }, timeout, cb);
     }, 'setEvtListener');
 
     t(function(name, cb){
-		client[name].call(client, { rids:[rid], p2p:true, events:['login', 'logout'] }, cb);
+		client[name].call(client, { rids:[rid], p2p:true, events:['login', 'logout'] }, timeout, cb);
     }, 'addEvtListener');
 
     t(function(name, cb){
-		client[name].call(client, { events:['login'] }, cb);
+		client[name].call(client, { events:['login'] }, timeout, cb);
     }, 'removeEvtListener');
     
     t(function(name, cb){
-		client[name].call(client, from, to, 8, 'hello !', '', cb);
+		client[name].call(client, from, to, 8, 'hello !', '', timeout, cb);
     }, 'sendMessage');
 
     t(function(name, cb){
-		client[name].call(client, from, tos, 8, 'hello !', '', cb);
+		client[name].call(client, from, tos, 8, 'hello !', '', timeout, cb);
     }, 'sendMessages');
 
     t(function(name, cb){
-		client[name].call(client, from, gid, 8, 'hello !', '', cb);
+		client[name].call(client, from, gid, 8, 'hello !', '', timeout, cb);
     }, 'sendGroupMessage');
 
     t(function(name, cb){
-		client[name].call(client, from, rid, 8, 'hello !', '', cb);
+		client[name].call(client, from, rid, 8, 'hello !', '', timeout, cb);
     }, 'sendRoomMessage');
     
     t(function(name, cb){
-		client[name].call(client, from, 8, 'hello !', '', cb);
+		client[name].call(client, from, 8, 'hello !', '', timeout, cb);
     }, 'broadcastMessage');
 
     t(function(name, cb){
-		client[name].call(client, from, friends, cb);
+		client[name].call(client, from, friends, timeout, cb);
     }, 'addFriends');
 
     t(function(name, cb){
-		client[name].call(client, from, [new Int64BE(0, 778899)], cb);
+		client[name].call(client, from, [new Int64BE(0, 778899)], timeout, cb);
     }, 'deleteFriends');
 
     t(function(name, cb){
-		client[name].call(client, from, cb);
+		client[name].call(client, from, timeout, cb);
     }, 'getFriends');
 
     t(function(name, cb){
-		client[name].call(client, from, fuid, cb);
+		client[name].call(client, from, fuid, timeout, cb);
     }, 'isFriend');
 
     t(function(name, cb){
-		client[name].call(client, from, friends, cb);
+		client[name].call(client, from, friends, timeout, cb);
     }, 'isFriends');
 
     t(function(name, cb){
-		client[name].call(client, gid, [from, to], cb);
+		client[name].call(client, gid, [from, to], timeout, cb);
     }, 'addGroupMembers');
 
     t(function(name, cb){
-		client[name].call(client, gid, [to], cb);
+		client[name].call(client, gid, [to], timeout, cb);
     }, 'deleteGroupMembers');
 
     t(function(name, cb){
-		client[name].call(client, gid, cb);
+		client[name].call(client, gid, timeout, cb);
     }, 'getGroupMembers');
 
     t(function(name, cb){
-		client[name].call(client, gid, from, cb);
+		client[name].call(client, gid, from, timeout, cb);
     }, 'isGroupMember');
 
     t(function(name, cb){
-		client[name].call(client, from, cb);
+		client[name].call(client, from, timeout, cb);
     }, 'getUserGroups');
 
     t(function(name, cb){
-		client[name].call(client, gid, cb);
+		client[name].call(client, gid, timeout, cb);
     }, 'deleteGroup');
 
     t(function(name, cb){
-		client[name].call(client, from, cb);
+		client[name].call(client, from, timeout, cb);
     }, 'getToken');
 
     t(function(name, cb){
-		client[name].call(client, tos, cb);
+		client[name].call(client, tos, timeout, cb);
     }, 'getOnlineUsers');
 
     t(function(name, cb){
-		client[name].call(client, gid, to, 1, cb);
+		client[name].call(client, gid, to, 1, timeout, cb);
     }, 'addGroupBan');
 
     t(function(name, cb){
-		client[name].call(client, gid, to, cb);
+		client[name].call(client, gid, to, timeout, cb);
     }, 'removeGroupBan');
 
     t(function(name, cb){
-		client[name].call(client, rid, to, 1, cb);
+		client[name].call(client, rid, to, 1, timeout, cb);
     }, 'addRoomBan');
 
     t(function(name, cb){
-		client[name].call(client, rid, to, cb);
+		client[name].call(client, rid, to, timeout, cb);
     }, 'removeRoomBan');
 
     t(function(name, cb){
-		client[name].call(client, from, 1, cb);
+		client[name].call(client, from, 1, timeout, cb);
     }, 'addProjectBlack');
 
     t(function(name, cb){
-		client[name].call(client, from, cb);
+		client[name].call(client, from, timeout, cb);
     }, 'removeProjectBlack');
 
     t(function(name, cb){
-		client[name].call(client, gid, from, cb);
+		client[name].call(client, gid, from, timeout, cb);
     }, 'isBanOfGroup');
 
     t(function(name, cb){
-		client[name].call(client, rid, from, cb);
+		client[name].call(client, rid, from, timeout, cb);
     }, 'isBanOfRoom');
 
     t(function(name, cb){
-		client[name].call(client, from, cb);
+		client[name].call(client, from, timeout, cb);
     }, 'isProjectBlack');
 
     t(function(name, cb){
-		client[name].call(client, from, lat, lng, cb);
+		client[name].call(client, from, lat, lng, timeout, cb);
     }, 'setGeo');
 
     t(function(name, cb){
-		client[name].call(client, from, cb);
+		client[name].call(client, from, timeout, cb);
     }, 'getGeo');
 
     t(function(name, cb){
-		client[name].call(client, [from, to], cb);
+		client[name].call(client, [from, to], timeout, cb);
     }, 'getGeos');
 
     t(function(name, cb){
-		client[name].call(client, from, to, 8, file_path, cb);
+		client[name].call(client, from, to, 8, file_path, timeout, cb);
     }, 'sendFile');
+
+    t(function(name, cb){
+		client[name].call(client, from, 'app-info', 'device-token', timeout, cb);
+    }, 'addDevice');
+
+    t(function(name, cb){
+		client[name].call(client, from, 'device-token', timeout, cb);
+    }, 'removeDevice');
 
     t(function(name, cb){
 		console.log('---------------(' + index + ')end!-----------------');
@@ -233,7 +241,7 @@ client.on('connect', function(data){
 });
 
 client.on('error', function(err){
-    console.error(err.message);
+    console.error(err);
 });
 
 client.on('close', function(){

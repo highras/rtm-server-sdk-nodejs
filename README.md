@@ -51,7 +51,7 @@ client.on('connect', function(){
     let from = new Uint64BE(0, 778898);
     let to = new Uint64BE(0, 778899);
 
-    client.sendMessage(from, to, 8, 'hello !', '', function(err, data){
+    client.sendMessage(from, to, 8, 'hello !', '', 10 * 1000, function(err, data){
         console.log(data, err);
     });
 });
@@ -200,290 +200,307 @@ yarn test
     * `options.strength`: **(Optional | number)** 加密长度, 默认: `128` 
     * `options.streamMode`: **(Optional | bool)** 加密模式, 默认: `package`
 
-* `sendMessage(from, to, mtype, msg, attrs, callback, timeout)`: 发送消息
+* `sendMessage(from, to, mtype, msg, attrs, timeout, callback)`: 发送消息
     * `from`: **(Required | Uint64BE)** 发送方 id
     * `to`: **(Required | Uint64BE)** 接收方uid
     * `mtype`: **(Required | number)** 消息类型
     * `msg`: **(Required | string)** 消息内容
     * `attrs`: **(Required | string)** 消息附加信息, 没有可传`''`
+    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
     * `callback`: **(Optional | function)** 回调方法, `callback(err, data)`
         * `err`: **(Error)** 
         * `data`: **(object)** 
-    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
 
-* `sendMessages(from, tos, mtype, msg, attrs, callback, timeout)`: 发送多人消息
+* `sendMessages(from, tos, mtype, msg, attrs, timeout, callback)`: 发送多人消息
     * `from`: **(Required | Uint64BE)** 发送方 id
     * `tos`: **(Required | array[Uint64BE])** 接收方uids
     * `mtype`: **(Required | number)** 消息类型
     * `msg`: **(Required | string)** 消息内容
     * `attrs`: **(Required | string)** 消息附加信息, 没有可传`''`
+    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
     * `callback`: **(Optional | function)** 回调方法, `callback(err, data)`
         * `err`: **(Error)** 
         * `data`: **(object)** 
-    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
 
-* `sendGroupMessage(from, gid, mtype, msg, attrs, callback, timeout)`: 发送group消息
+* `sendGroupMessage(from, gid, mtype, msg, attrs, timeout, callback)`: 发送group消息
     * `from`: **(Required | Uint64BE)** 发送方 id
     * `gid`: **(Required | Uint64BE)** group id
     * `mtype`: **(Required | number)** 消息类型
     * `msg`: **(Required | string)** 消息内容
     * `attrs`: **(Required | string)** 消息附加信息, 可传`''`
+    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
     * `callback`: **(Optional | function)** 回调方法, `callback(err, data)`
         * `err`: **(Error)** 
         * `data`: **(object)** 
-    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
 
-* `sendRoomMessage(from, rid, mtype, msg, attrs, callback, timeout)`: 发送room消息
+* `sendRoomMessage(from, rid, mtype, msg, attrs, timeout, callback)`: 发送room消息
     * `from`: **(Required | Uint64BE)** 发送方 id
     * `rid`: **(Required | Uint64BE)** room id
     * `mtype`: **(Required | number)** 消息类型
     * `msg`: **(Required | string)** 消息内容
     * `attrs`: **(Required | string)** 消息附加信息, 可传`''`
+    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
     * `callback`: **(Optional | function)** 回调方法, `callback(err, data)`
         * `err`: **(Error)** 
         * `data`: **(object)** 
-    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
 
-* `broadcastMessage(from, mtype, msg, attrs, callback, timeout)`: 广播消息(andmin id)
+* `broadcastMessage(from, mtype, msg, attrs, timeout, callback)`: 广播消息(andmin id)
     * `from`: **(Required | Uint64BE)** admin id
     * `mtype`: **(Required | number)** 消息类型
     * `msg`: **(Required | string)** 消息内容
     * `attrs`: **(Required | string)** 消息附加信息, 可传`''`
+    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
     * `callback`: **(Optional | function)** 回调方法, `callback(err, data)`
         * `err`: **(Error)** 
         * `data`: **(object)** 
-    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
 
-* `addFriends(uid, friends, callback, timeout)`: 添加好友
+* `addFriends(uid, friends, timeout, callback)`: 添加好友
     * `uid`: **(Required | Uint64BE)** 用户 id
     * `friends`: **(Required | array[Uint64BE])** 多个好友 id
+    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
     * `callback`: **(Optional | function)** 回调方法, `callback(err, data)`
         * `err`: **(Error)** 
         * `data`: **(object)** 
-    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
 
-* `deleteFriends(uid, friends, callback, timeout)`: 删除好友
+* `deleteFriends(uid, friends, timeout, callback)`: 删除好友
     * `uid`: **(Required | Uint64BE)** 用户 id
     * `friends`: **(Required | array[Uint64BE])** 多个好友 id
+    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
     * `callback`: **(Optional | function)** 回调方法, `callback(err, data)`
         * `err`: **(Error)** 
         * `data`: **(object)** 
-    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
 
-* `getFriends(uid, callback, timeout)`: 获取好友
+* `getFriends(uid, timeout, callback)`: 获取好友
     * `uid`: **(Required | Uint64BE)** 用户 id
+    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
     * `callback`: **(Optional | function)** 回调方法, `callback(err, data)`
         * `err`: **(Error)** 
         * `data`: **(array[Uint64BE])** 
-    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
 
-* `isFriend(uid, fuid, callback, timeout)`: 是否好友
+* `isFriend(uid, fuid, timeout, callback)`: 是否好友
     * `uid`: **(Required | Uint64BE)** 用户 id
     * `fuid`: **(Required | Uint64BE)** 好友 id
+    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
     * `callback`: **(Optional | function)** 回调方法, `callback(err, data)`
         * `err`: **(Error)** 
         * `data`: **(bool)** 
-    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
 
-* `isFriends(uid, fuids, callback, timeout)`: 是否好友
+* `isFriends(uid, fuids, timeout, callback)`: 是否好友
     * `uid`: **(Required | Uint64BE)** 用户 id
     * `fuids`: **(Required | array[Uint64BE])** 多个好友 id
+    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
     * `callback`: **(Optional | function)** 回调方法, `callback(err, data)`
         * `err`: **(Error)** 
         * `data`: **(array[Uint64BE])** 
-    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
 
-* `addGroupMembers(gid, uids, callback, timeout)`: 添加group成员
+* `addGroupMembers(gid, uids, timeout, callback)`: 添加group成员
     * `gid`: **(Required | Uint64BE)** group id
     * `uids`: **(Required | array[Uint64BE])** 多个用户 id
+    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
     * `callback`: **(Optional | function)** 回调方法, `callback(err, data)`
         * `err`: **(Error)** 
         * `data`: **(object)** 
-    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
 
-* `deleteGroupMembers(gid, uids, callback, timeout)`:  删除group成员
+* `deleteGroupMembers(gid, uids, timeout, callback)`:  删除group成员
     * `gid`: **(Required | Uint64BE)** group id
     * `uids`: **(Required | array[Uint64BE])** 多个用户 id
+    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
     * `callback`: **(Optional | function)** 回调方法, `callback(err, data)`
         * `err`: **(Error)** 
         * `data`: **(object)** 
-    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
 
-* `deleteGroup(gid, callback, timeout)`: 删除group
+* `deleteGroup(gid, timeout, callback)`: 删除group
     * `gid`: **(Required | Uint64BE)** group id
+    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
     * `callback`: **(Optional | function)** 回调方法, `callback(err, data)`
         * `err`: **(Error)** 
         * `data`: **(object)** 
-    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
 
-* `getGroupMembers(gid, callback, timeout)`: 获取group成员
+* `getGroupMembers(gid, timeout, callback)`: 获取group成员
     * `gid`: **(Required | Uint64BE)** group id
+    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
     * `callback`: **(Optional | function)** 回调方法, `callback(err, data)`
         * `err`: **(Error)** 
         * `data`: **(array[Uint64BE])** 
-    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
 
-* `isGroupMember(gid, uid, callback, timeout)`: 是否group成员
+* `isGroupMember(gid, uid, timeout, callback)`: 是否group成员
     * `gid`: **(Required | Uint64BE)** group id
     * `uid`: **(Required | Uint64BE)** 用户 id
+    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
     * `callback`: **(Optional | function)** 回调方法, `callback(err, data)`
         * `err`: **(Error)** 
         * `data`: **(bool)** 
-    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
 
-* `getUserGroups(uid, callback, timeout)`: 获取用户的group
+* `getUserGroups(uid, timeout, callback)`: 获取用户的group
     * `uid`: **(Required | Uint64BE)** 用户 id
+    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
     * `callback`: **(Optional | function)** 回调方法, `callback(err, data)`
         * `err`: **(Error)** 
         * `data`: **(bool)** 
-    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
 
-* `getToken(uid, callback, timeout)`: 获取token
+* `getToken(uid, timeout, callback)`: 获取token
     * `uid`: **(Required | Uint64BE)** 用户 id
+    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
     * `callback`: **(Optional | function)** 回调方法, `callback(err, data)`
         * `err`: **(Error)** 
         * `data`: **(string)** 
-    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
 
-* `getOnlineUsers(uids, callback, timeout)`: 获取在线用户
+* `getOnlineUsers(uids, timeout, callback)`: 获取在线用户
     * `uids`: **(Required | array[Uint64BE])** 多个用户 id
+    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
     * `callback`: **(Optional | function)** 回调方法, `callback(err, data)`
         * `err`: **(Error)** 
         * `data`: **(array[Uint64BE])** 
-    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
 
-* `addGroupBan(gid, uid, btime, callback, timeout)`: 阻止用户消息(group)
+* `addGroupBan(gid, uid, btime, timeout, callback)`: 阻止用户消息(group)
     * `gid`: **(Required | Uint64BE)** group id
     * `uid`: **(Required | Uint64BE)** 用户 id
     * `btime`: **(Required | number)** 阻止时间(s)
+    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
     * `callback`: **(Optional | function)** 回调方法, `callback(err, data)`
         * `err`: **(Error)** 
         * `data`: **(object)** 
-    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
 
-* `removeGroupBan(gid, uid, callback, timeout)`: 取消阻止(group)
+* `removeGroupBan(gid, uid, timeout, callback)`: 取消阻止(group)
     * `gid`: **(Required | Uint64BE)** group id
     * `uid`: **(Required | Uint64BE)** 用户 id
+    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
     * `callback`: **(Optional | function)** 回调方法, `callback(err, data)`
         * `err`: **(Error)** 
         * `data`: **(object)** 
-    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
 
-* `addRoomBan(rid, uid, btime, callback, timeout)`: 阻止用户消息(room)
+* `addRoomBan(rid, uid, btime, timeout, callback)`: 阻止用户消息(room)
     * `rid`: **(Required | Uint64BE)** room id
     * `uid`: **(Required | Uint64BE)** 用户 id
     * `btime`: **(Required | number)** 阻止时间(s)
+    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
     * `callback`: **(Optional | function)** 回调方法, `callback(err, data)`
         * `err`: **(Error)** 
         * `data`: **(object)** 
-    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
 
-* `removeRoomBan(rid, uid, callback, timeout)`: 取消阻止(room)
+* `removeRoomBan(rid, uid, timeout, callback)`: 取消阻止(room)
     * `rid`: **(Required | Uint64BE)** room id
     * `uid`: **(Required | Uint64BE)** 用户 id
+    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
     * `callback`: **(Optional | function)** 回调方法, `callback(err, data)`
         * `err`: **(Error)** 
         * `data`: **(object)** 
-    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
 
-* `addProjectBlack(uid, btime, callback, timeout)`: 阻止用户消息(project)
+* `addProjectBlack(uid, btime, timeout, callback)`: 阻止用户消息(project)
     * `uid`: **(Required | Uint64BE)** 用户 id
     * `btime`: **(Required | number)** 阻止时间(s)
+    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
     * `callback`: **(Optional | function)** 回调方法, `callback(err, data)`
         * `err`: **(Error)** 
         * `data`: **(object)** 
-    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
 
-* `removeProjectBlack(uid, callback, timeout)`: 取消阻止(project)
+* `removeProjectBlack(uid, timeout, callback)`: 取消阻止(project)
     * `uid`: **(Required | Uint64BE)** 用户 id
+    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
     * `callback`: **(Optional | function)** 回调方法, `callback(err, data)`
         * `err`: **(Error)** 
         * `data`: **(object)** 
-    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
 
-* `isBanOfGroup(gid, uid, callback, timeout)`: 检查阻止(group)
+* `isBanOfGroup(gid, uid, timeout, callback)`: 检查阻止(group)
     * `gid`: **(Required | Uint64BE)** group id
     * `uid`: **(Required | Uint64BE)** 用户 id
+    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
     * `callback`: **(Optional | function)** 回调方法, `callback(err, data)`
         * `err`: **(Error)** 
         * `data`: **(bool)** 
-    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
 
-* `isBanOfRoom(rid, uid, callback, timeout)`: 检查阻止(room)
+* `isBanOfRoom(rid, uid, timeout, callback)`: 检查阻止(room)
     * `rid`: **(Required | Uint64BE)** room id
     * `uid`: **(Required | Uint64BE)** 用户 id
+    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
     * `callback`: **(Optional | function)** 回调方法, `callback(err, data)`
         * `err`: **(Error)** 
         * `data`: **(bool)** 
-    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
 
-* `isProjectBlack(uid, callback, timeout)`: 检查阻止(project)
+* `isProjectBlack(uid, timeout, callback)`: 检查阻止(project)
     * `uid`: **(Required | Uint64BE)** 用户 id
+    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
     * `callback`: **(Optional | function)** 回调方法, `callback(err, data)`
         * `err`: **(Error)** 
         * `data`: **(bool)** 
-    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
 
-* `setGeo(uid, lat, lng, callback, timeout)`: 设置位置
+* `setGeo(uid, lat, lng, timeout, callback)`: 设置位置
     * `uid`: **(Required | Uint64BE)** 用户 id
     * `lat`: **(Required | number)** 纬度
     * `lng`: **(Required | number)** 经度
+    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
     * `callback`: **(Optional | function)** 回调方法, `callback(err, data)`
         * `err`: **(Error)** 
         * `data`: **(object)** 
-    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
 
-* `getGeo(uid, callback, timeout)`: 获取位置
+* `getGeo(uid, timeout, callback)`: 获取位置
     * `uid`: **(Required | Uint64BE)** 用户 id
+    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
     * `callback`: **(Optional | function)** 回调方法, `callback(err, data)`
         * `err`: **(Error)** 
         * `data`: **(object[lat:number, lng:number])** 
-    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
 
-* `getGeos(uids, callback, timeout)`: 获取位置
+* `getGeos(uids, timeout, callback)`: 获取位置
     * `uids`: **(Required | array[Uint64BE])** 多个用户 id
+    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
     * `callback`: **(Optional | function)** 回调方法, `callback(err, data)`
         * `err`: **(Error)** 
         * `data`: **(array[array[uid:Uint64BE,lat:number,lng:number])** 
-    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
 
-* `sendFile(from, to, mtype, filePath, callback, timeout)`: 发送文件
+* `sendFile(from, to, mtype, filePath, timeout, callback)`: 发送文件
     * `from`: **(Required | Uint64BE)** 发送方 id
     * `to`: **(Required | Uint64BE)** 接收方uid
     * `mtype`: **(Required | number)** 消息类型
     * `filePath`: **(Required | string)** 文件路径 
+    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
     * `callback`: **(Optional | function)** 回调方法, `callback(err, data)`
         * `err`: **(Error)** 
         * `data`: **(object)** 
-    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
 
-* `addEvtListener(opts, callback, timeout)`: 添加 `事件` / `消息` 监听
+* `addEvtListener(opts, timeout, callback)`: 添加 `事件` / `消息` 监听
     * `opts.gids`: **(Optional | array[Uint64BE])** 多个Group id
     * `opts.rids`: **(Optional | array[Uint64BE])** 多个Room id
     * `opts.p2p`: **(Optional | bool)** P2P消息
     * `opts.events`: **(Optional | array[string])** 多个事件名称, 请参考 `RTMConfig.SERVER_EVENT` 成员
+    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
     * `callback`: **(Optional | function)** 回调方法, `callback(err, data)`
         * `err`: **(Error)** 
         * `data`: **(object)** 
-    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
 
-* `removeEvtListener(opts, callback, timeout)`: 删除 `事件` / `消息` 监听
+* `removeEvtListener(opts, timeout, callback)`: 删除 `事件` / `消息` 监听
     * `opts.gids`: **(Optional | array[Uint64BE])** 多个Group id
     * `opts.rids`: **(Optional | array[Uint64BE])** 多个Room id
     * `opts.p2p`: **(Optional | bool)** P2P消息
     * `opts.events`: **(Optional | array[string])** 多个事件名称, 请参考 `RTMConfig.SERVER_EVENT` 成员
+    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
     * `callback`: **(Optional | function)** 回调方法, `callback(err, data)`
         * `err`: **(Error)** 
         * `data`: **(object)** 
-    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
 
-* `setEvtListener(opts, callback, timeout)`: 更新 `事件` / `消息` 监听
+* `setEvtListener(opts, timeout, callback)`: 更新 `事件` / `消息` 监听
     * `opts`: **(Optional | [bool | object])** `true`: 监听所有 `事件` / `消息`, `false`: 取消所有 `事件` / `消息` 监听
     * `opts.gids`: **(Optional | array[Uint64BE])** 多个Group id
     * `opts.rids`: **(Optional | array[Uint64BE])** 多个Room id
     * `opts.p2p`: **(Optional | bool)** P2P消息, `true`: 监听, `false`: 取消监听
     * `opts.events`: **(Optional | array[string])** 多个事件名称, 请参考 `RTMConfig.SERVER_EVENT` 成员
+    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
     * `callback`: **(Optional | function)** 回调方法, `callback(err, data)`
         * `err`: **(Error)** 
         * `data`: **(object)** 
+
+* `addDevice(uid, apptype, devicetoken, timeout, callback)`: 添加设备, 应用信息
+    * `uid`: **(Required | Uint64BE])** 用户 id
+    * `apptype`: **(Required | string)** 应用信息
+    * `devicetoken`: **(Required | string)** 设备 token
     * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
+    * `callback`: **(Optional | function)** 回调方法, `callback(err, data)`
+        * `err`: **(Error)** 
+        * `data`: **(object)** 
+        
+* `removeDevice(uid, devicetoken, timeout, callback)`: 删除设备, 应用信息
+    * `uid`: **(Required | Uint64BE])** 用户 id
+    * `devicetoken`: **(Required | string)** 设备 token
+    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
+    * `callback`: **(Optional | function)** 回调方法, `callback(err, data)`
+        * `err`: **(Error)** 
+        * `data`: **(object)** 

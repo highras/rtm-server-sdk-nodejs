@@ -117,14 +117,14 @@ class RTMClient{
      * @param {number} mtype 
      * @param {string} msg 
      * @param {string} attrs 
-     * @param {function} callback 
      * @param {number} timeout 
+     * @param {function} callback 
      * 
      * @callback
      * @param {Error} err
      * @param {object} data
      */
-    sendMessage(from, to, mtype, msg, attrs, callback, timeout){
+    sendMessage(from, to, mtype, msg, attrs, timeout, callback){
         let salt = genSalt.call(this);
 
         let payload = {
@@ -155,14 +155,14 @@ class RTMClient{
      * @param {number} mtype 
      * @param {string} msg 
      * @param {string} attrs 
-     * @param {function} callback 
      * @param {number} timeout 
+     * @param {function} callback 
      * 
      * @callback
      * @param {Error} err
      * @param {object} data
      */
-    sendMessages(from, tos, mtype, msg, attrs, callback, timeout){
+    sendMessages(from, tos, mtype, msg, attrs, timeout, callback){
         let salt = genSalt.call(this);
 
         let payload = {
@@ -193,14 +193,14 @@ class RTMClient{
      * @param {number} mtype 
      * @param {string} msg 
      * @param {string} attrs 
-     * @param {function} callback 
      * @param {number} timeout 
+     * @param {function} callback 
      * 
      * @callback
      * @param {Error} err
      * @param {object} data
      */
-    sendGroupMessage(from, gid, mtype, msg, attrs, callback, timeout){
+    sendGroupMessage(from, gid, mtype, msg, attrs, timeout, callback){
         let salt = genSalt.call(this);
 
         let payload = {
@@ -231,14 +231,14 @@ class RTMClient{
      * @param {number} mtype 
      * @param {string} msg 
      * @param {string} attrs 
-     * @param {function} callback 
      * @param {number} timeout 
+     * @param {function} callback 
      * 
      * @callback
      * @param {Error} err
      * @param {object} data
      */
-    sendRoomMessage(from, rid, mtype, msg, attrs, callback, timeout){
+    sendRoomMessage(from, rid, mtype, msg, attrs, timeout, callback){
         let salt = genSalt.call(this);
 
         let payload = {
@@ -268,14 +268,14 @@ class RTMClient{
      * @param {number} mtype 
      * @param {string} msg 
      * @param {string} attrs 
-     * @param {function} callback 
      * @param {number} timeout 
+     * @param {function} callback 
      * 
      * @callback
      * @param {Error} err
      * @param {object} data
      */
-    broadcastMessage(from, mtype, msg, attrs, callback, timeout){
+    broadcastMessage(from, mtype, msg, attrs, timeout, callback){
         let salt = genSalt.call(this);
 
         let payload = {
@@ -302,14 +302,14 @@ class RTMClient{
      * 
      * @param {Int64BE} uid 
      * @param {array<Int64BE>} friends 
-     * @param {function} callback 
      * @param {number} timeout 
+     * @param {function} callback 
      * 
      * @callback
      * @param {Error} err
      * @param {object} data
      */
-    addFriends(uid, friends, callback, timeout){
+    addFriends(uid, friends, timeout, callback){
         let salt = genSalt.call(this);
 
         let payload = {
@@ -333,14 +333,14 @@ class RTMClient{
      * 
      * @param {Int64BE} uid 
      * @param {array<Int64BE>} friends 
-     * @param {function} callback 
      * @param {number} timeout 
+     * @param {function} callback 
      * 
      * @callback
      * @param {Error} err
      * @param {object} data
      */
-    deleteFriends(uid, friends, callback, timeout){
+    deleteFriends(uid, friends, timeout, callback){
         let salt = genSalt.call(this);
 
         let payload = {
@@ -363,14 +363,14 @@ class RTMClient{
     /**
      * 
      * @param {Int64BE} uid 
-     * @param {function} callback 
      * @param {number} timeout 
+     * @param {function} callback 
      * 
      * @callback
      * @param {Error} err
      * @param {array<Int64BE>} data
      */
-    getFriends(uid, callback, timeout){
+    getFriends(uid, timeout, callback){
         let salt = genSalt.call(this);
 
         let payload = {
@@ -411,14 +411,14 @@ class RTMClient{
      * 
      * @param {Int64BE} uid 
      * @param {Int64BE} fuid 
-     * @param {function} callback 
      * @param {number} timeout 
+     * @param {function} callback 
      * 
      * @callback
      * @param {Error} err
      * @param {bool} data
      */
-    isFriend(uid, fuid, callback, timeout){
+    isFriend(uid, fuid, timeout, callback){
         let salt = genSalt.call(this);
 
         let payload = {
@@ -462,7 +462,7 @@ class RTMClient{
      * @param {Error} err
      * @param {array<Int64BE>} data
      */
-    isFriends(uid, fuids, callback, timeout){
+    isFriends(uid, fuids, timeout, callback){
         let salt = genSalt.call(this);
 
         let payload = {
@@ -504,14 +504,14 @@ class RTMClient{
      * 
      * @param {Int64BE} gid 
      * @param {array<Int64BE>} uids 
-     * @param {function} callback 
      * @param {number} timeout 
+     * @param {function} callback 
      * 
      * @callback
      * @param {Error} err
      * @param {object} data
      */
-    addGroupMembers(gid, uids, callback, timeout){
+    addGroupMembers(gid, uids, timeout, callback){
         let salt = genSalt.call(this);
 
         let payload = {
@@ -535,14 +535,14 @@ class RTMClient{
      * 
      * @param {Int64BE} gid 
      * @param {array<Int64BE>} uids 
-     * @param {function} callback 
      * @param {number} timeout 
+     * @param {function} callback 
      * 
      * @callback
      * @param {Error} err
      * @param {object} data
      */
-    deleteGroupMembers(gid, uids, callback, timeout){
+    deleteGroupMembers(gid, uids, timeout, callback){
         let salt = genSalt.call(this);
 
         let payload = {
@@ -565,14 +565,14 @@ class RTMClient{
     /**
      * 
      * @param {Int64BE} gid 
-     * @param {function} callback 
      * @param {number} timeout 
+     * @param {function} callback 
      * 
      * @callback
      * @param {Error} err
      * @param {object} data
      */
-    deleteGroup(gid, callback, timeout){
+    deleteGroup(gid, timeout, callback){
         let salt = genSalt.call(this);
 
         let payload = {
@@ -594,14 +594,14 @@ class RTMClient{
     /**
      * 
      * @param {Int64BE} gid 
-     * @param {function} callback 
      * @param {number} timeout 
+     * @param {function} callback 
      * 
      * @callback
      * @param {Error} err
      * @param {array<Int64BE>} data
      */
-    getGroupMembers(gid, callback, timeout){
+    getGroupMembers(gid, timeout, callback){
         let salt = genSalt.call(this);
 
         let payload = {
@@ -642,14 +642,14 @@ class RTMClient{
      * 
      * @param {Int64BE} gid 
      * @param {Int64BE} uid 
-     * @param {function} callback 
      * @param {number} timeout 
+     * @param {function} callback 
      * 
      * @callback
      * @param {Error} err
      * @param {bool} data
      */
-    isGroupMember(gid, uid, callback, timeout){
+    isGroupMember(gid, uid, timeout, callback){
         let salt = genSalt.call(this);
 
         let payload = {
@@ -685,14 +685,14 @@ class RTMClient{
     /**
      * 
      * @param {Int64BE} uid 
-     * @param {function} callback 
      * @param {number} timeout 
+     * @param {function} callback 
      * 
      * @callback
      * @param {Error} err
      * @param {array<Int64BE>} data
      */
-    getUserGroups(uid, callback, timeout){
+    getUserGroups(uid, timeout, callback){
         let salt = genSalt.call(this);
 
         let payload = {
@@ -732,14 +732,14 @@ class RTMClient{
     /**
      * 
      * @param {Int64BE} uid 
-     * @param {function} callback 
      * @param {number} timeout 
+     * @param {function} callback 
      * 
      * @callback
      * @param {Error} err
      * @param {string} token 
      */
-    getToken(uid, callback, timeout){
+    getToken(uid, timeout, callback){
         let salt = genSalt.call(this);
 
         let payload = {
@@ -774,14 +774,14 @@ class RTMClient{
     /**
      * 
      * @param {array<Int64BE>} uids 
-     * @param {function} callback 
      * @param {number} timeout 
+     * @param {function} callback 
      * 
      * @callback
      * @param {Error} err
      * @param {array<Int64BE>} uids 
      */
-    getOnlineUsers(uids, callback, timeout){
+    getOnlineUsers(uids, timeout, callback){
         let salt = genSalt.call(this);
 
         let payload = {
@@ -823,14 +823,14 @@ class RTMClient{
      * @param {Int64BE} gid 
      * @param {Int64BE} uid 
      * @param {number} btime 
-     * @param {function} callback 
      * @param {number} timeout 
+     * @param {function} callback 
      * 
      * @callback
      * @param {Error} err
      * @param {object} data
      */
-    addGroupBan(gid, uid, btime, callback, timeout){
+    addGroupBan(gid, uid, btime, timeout, callback){
         let salt = genSalt.call(this);
 
         let payload = {
@@ -855,14 +855,14 @@ class RTMClient{
      * 
      * @param {Int64BE} gid 
      * @param {Int64BE} uid 
-     * @param {function} callback 
      * @param {number} timeout 
+     * @param {function} callback 
      * 
      * @callback
      * @param {Error} err
      * @param {object} data
      */
-    removeGroupBan(gid, uid, callback, timeout){
+    removeGroupBan(gid, uid, timeout, callback){
         let salt = genSalt.call(this);
 
         let payload = {
@@ -887,14 +887,14 @@ class RTMClient{
      * @param {Int64BE} rid 
      * @param {Int64BE} uid 
      * @param {number} btime 
-     * @param {function} callback 
      * @param {number} timeout 
+     * @param {function} callback 
      * 
      * @callback
      * @param {Error} err
      * @param {object} data
      */
-    addRoomBan(rid, uid, btime, callback, timeout){
+    addRoomBan(rid, uid, btime, timeout, callback){
         let salt = genSalt.call(this);
 
         let payload = {
@@ -919,14 +919,14 @@ class RTMClient{
      * 
      * @param {Int64BE} rid 
      * @param {Int64BE} uid 
-     * @param {function} callback 
      * @param {number} timeout 
+     * @param {function} callback 
      * 
      * @callback
      * @param {Error} err
      * @param {object} data
      */
-    removeRoomBan(rid, uid, callback, timeout){
+    removeRoomBan(rid, uid, timeout, callback){
         let salt = genSalt.call(this);
 
         let payload = {
@@ -950,14 +950,14 @@ class RTMClient{
      * 
      * @param {Int64BE} uid 
      * @param {number} btime 
-     * @param {function} callback 
      * @param {number} timeout 
+     * @param {function} callback 
      * 
      * @callback
      * @param {Error} err
      * @param {object} data
      */
-    addProjectBlack(uid, btime, callback, timeout){
+    addProjectBlack(uid, btime, timeout, callback){
         let salt = genSalt.call(this);
 
         let payload = {
@@ -980,14 +980,14 @@ class RTMClient{
     /**
      * 
      * @param {Int64BE} uid 
-     * @param {function} callback 
      * @param {number} timeout 
+     * @param {function} callback 
      * 
      * @callback
      * @param {Error} err
      * @param {object} data
      */
-    removeProjectBlack(uid, callback, timeout){
+    removeProjectBlack(uid, timeout, callback){
         let salt = genSalt.call(this);
 
         let payload = {
@@ -1010,14 +1010,14 @@ class RTMClient{
      * 
      * @param {Int64BE} gid 
      * @param {Int64BE} uid 
-     * @param {function} callback 
      * @param {number} timeout 
+     * @param {function} callback 
      * 
      * @callback
      * @param {Error} err
      * @param {bool} data
      */
-    isBanOfGroup(gid, uid, callback, timeout){
+    isBanOfGroup(gid, uid, timeout, callback){
         let salt = genSalt.call(this);
 
         let payload = {
@@ -1054,14 +1054,14 @@ class RTMClient{
      * 
      * @param {Int64BE} rid 
      * @param {Int64BE} uid 
-     * @param {function} callback 
      * @param {number} timeout 
+     * @param {function} callback 
      * 
      * @callback
      * @param {Error} err
      * @param {bool} data
      */
-    isBanOfRoom(rid, uid, callback, timeout){
+    isBanOfRoom(rid, uid, timeout, callback){
         let salt = genSalt.call(this);
 
         let payload = {
@@ -1097,14 +1097,14 @@ class RTMClient{
     /**
      * 
      * @param {Int64BE} uid 
-     * @param {function} callback 
      * @param {number} timeout 
+     * @param {function} callback 
      * 
      * @callback
      * @param {Error} err
      * @param {bool} data 
      */
-    isProjectBlack(uid, callback, timeout){
+    isProjectBlack(uid, timeout, callback){
         let salt = genSalt.call(this);
 
         let payload = {
@@ -1141,14 +1141,14 @@ class RTMClient{
      * @param {Int64BE} uid 
      * @param {number} lat 
      * @param {number} lng 
-     * @param {function} callback 
      * @param {number} timeout 
+     * @param {function} callback 
      * 
      * @callback
      * @param {Error} err
      * @param {object} data 
      */
-    setGeo(uid, lat, lng, callback, timeout){
+    setGeo(uid, lat, lng, timeout, callback){
         let salt = genSalt.call(this);
 
         let payload = {
@@ -1172,14 +1172,14 @@ class RTMClient{
     /**
      * 
      * @param {Int64BE} uid 
-     * @param {function} callback 
      * @param {number} timeout 
+     * @param {function} callback 
      * 
      * @callback
      * @param {Error} err
      * @param {object<lat:number, lng:number>} data 
      */
-    getGeo(uid, callback, timeout){
+    getGeo(uid, timeout, callback){
         let salt = genSalt.call(this);
 
         let payload = {
@@ -1201,14 +1201,14 @@ class RTMClient{
     /**
      * 
      * @param {array<Int64BE>} uids
-     * @param {function} callback 
      * @param {number} timeout 
+     * @param {function} callback 
      * 
      * @callback
      * @param {Error} err
      * @param {array<array<uid:Int64BE,lat:number,lng:number>>} data 
      */
-    getGeos(uids, callback, timeout){
+    getGeos(uids, timeout, callback){
         let salt = genSalt.call(this);
 
         let payload = {
@@ -1251,14 +1251,14 @@ class RTMClient{
      * @param {Int64BE} to 
      * @param {number} mtype 
      * @param {string} filePath 
-     * @param {function} callback 
      * @param {number} timeout 
+     * @param {function} callback 
      * 
      * @callback
      * @param {Error} err
      * @param {object} data 
      */
-    sendFile(from, to, mtype, filePath, callback, timeout){
+    sendFile(from, to, mtype, filePath, timeout, callback){
         let self = this;
 
         filetoken.call(this, from, to, function(err, data){
@@ -1316,14 +1316,14 @@ class RTMClient{
      * @param {array<Int64BE>} opts.rids 
      * @param {bool} opts.p2p 
      * @param {array<string>} opts.events 
-     * @param {function} callback 
      * @param {number} timeout 
+     * @param {function} callback 
      * 
      * @callback
      * @param {Error} err
      * @param {object} data 
      */
-    addEvtListener(opts, callback, timeout){
+    addEvtListener(opts, timeout, callback){
         let salt = genSalt.call(this);
 
         let payload = {
@@ -1363,14 +1363,14 @@ class RTMClient{
      * @param {array<Int64BE>} opts.rids 
      * @param {bool} opts.p2p 
      * @param {array<string>} opts.events 
-     * @param {function} callback 
      * @param {number} timeout 
+     * @param {function} callback 
      * 
      * @callback
      * @param {Error} err
      * @param {object} data 
      */
-    removeEvtListener(opts, callback, timeout){
+    removeEvtListener(opts, timeout, callback){
         let salt = genSalt.call(this);
 
         let payload = {
@@ -1411,14 +1411,14 @@ class RTMClient{
      * @param {array<Int64BE>} opts.rids 
      * @param {bool} opts.p2p 
      * @param {array<string>} opts.events 
-     * @param {function} callback 
      * @param {number} timeout 
+     * @param {function} callback 
      * 
      * @callback
      * @param {Error} err
      * @param {object} data 
      */
-    setEvtListener(opts, callback, timeout){
+    setEvtListener(opts, timeout, callback){
         let salt = genSalt.call(this);
 
         let payload = {
@@ -1439,6 +1439,70 @@ class RTMClient{
         let options = {
             flag: 1,
             method: 'setlisten',
+            payload: msgpack.encode(payload, this._msgOptions)
+        };
+
+        sendQuest.call(this, this._client, options, callback, timeout);
+    }
+
+    /**
+     * 
+     * @param {Int64BE} uid
+     * @param {string} apptype
+     * @param {string} devicetoken
+     * @param {number} timeout
+     * @param {function} callback
+     * 
+     * @callback
+     * @param {Error} err
+     * @param {object} data 
+     */
+    addDevice(uid, apptype, devicetoken, timeout, callback){
+        let salt = genSalt.call(this);
+
+        let payload = {
+            pid: this._pid,
+            sign: genSign.call(this, salt.toString()),
+            salt: salt,
+            uid: uid,
+            apptype: apptype,
+            devicetoken: devicetoken 
+        };
+
+        let options = {
+            flag: 1,
+            method: 'adddevice',
+            payload: msgpack.encode(payload, this._msgOptions)
+        };
+
+        sendQuest.call(this, this._client, options, callback, timeout);
+    }
+
+    /**
+     * 
+     * @param {Int64BE} uid 
+     * @param {string} devicetoken 
+     * @param {number} timeout 
+     * @param {function} callback 
+     * 
+     * @callback
+     * @param {Error} err
+     * @param {object} data 
+     */
+    removeDevice(uid, devicetoken, timeout, callback){
+        let salt = genSalt.call(this);
+
+        let payload = {
+            pid: this._pid,
+            sign: genSign.call(this, salt.toString()),
+            salt: salt,
+            uid: uid,
+            devicetoken: devicetoken 
+        };
+
+        let options = {
+            flag: 1,
+            method: 'removedevice',
             payload: msgpack.encode(payload, this._msgOptions)
         };
 
