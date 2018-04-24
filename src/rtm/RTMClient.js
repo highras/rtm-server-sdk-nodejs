@@ -85,7 +85,14 @@ class RTMClient{
             options = {};
         } 
 
-        this._client.connectCryptor(peerPubData, options.curveName, options.strength, options.streamMode);
+        this._client.encryptor(options.curveName, peerPubData, options.streamMode, options.strength);
+        this._client.connect(function(fpEncryptor){
+            return msgpack.encode({ 
+                publicKey:fpEncryptor.pubKey, 
+                streamMode:fpEncryptor.streamMode, 
+                bits:fpEncryptor.strength 
+            })
+        });
     }
 
     /**
@@ -106,7 +113,7 @@ class RTMClient{
                 self.emit('error', err);
                 return;
             }
-            self.enableEncryptorByData(data);
+            self.enableEncryptorByData(data, options);
         });
     }
 

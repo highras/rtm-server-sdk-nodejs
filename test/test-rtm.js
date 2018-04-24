@@ -41,28 +41,27 @@ let lat = 39239.1123;
 let lng = 69394.4850;
 let timeout = 10 * 1000;
 
-let file_path = path.resolve(__dirname, '../key/test-secp256k1-public.pem');
-
 let client = new RTMClient({ 
+    // host: 'highras-rtm-svrgated.ifunplus.cn',
     host: '35.167.185.139',
     port: 13315,
     autoReconnect: true,
-    connectionTimeout: 10 * 1000,
-    pid: 1000014,
-    secretKey: 'd8c94627-db2e-4206-bd4f-967b5b4e94dc'
+    connectionTimeout: 5 * 1000,
+    pid: 1017,
+    secretKey: '10d09e42-05d3-4d3c-b97a-50c8f27aa6c7'
 });
 
 let filePath = path.resolve(__dirname, '../key/test-secp256k1-compressed-public.key');
 
 let options = {
-    curveName: null,
+    curveName: 'secp256k1',
     strength: 128,
     streamMode: false
 }
 
 client.enableConnect();
 // client.enableEncryptorByFile(filePath, options);
-    
+
 //receive
 let pushName = client.rtmConfig.SERVER_PUSH.recvMessage;
 client.processor.on(pushName, function(data){
@@ -224,7 +223,7 @@ client.on('connect', function(data){
     }, 'getGeos');
 
     t(function(name, cb){
-		client[name].call(client, from, to, 8, file_path, timeout, cb);
+		client[name].call(client, from, to, 8, filePath, timeout, cb);
     }, 'sendFile');
 
     t(function(name, cb){
