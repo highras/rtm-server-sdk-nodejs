@@ -42,27 +42,32 @@ client.enableConnect();
 
 //push service
 let pushName = client.rtmConfig.SERVER_PUSH.recvMessage;
-client.processor.on(pushName, function(data){
+client.processor.on(pushName, function(data) {
+
     console.log('\n[PUSH] ' + pushName + ':\n', data);
 });
 
 // 连接成功并发送消息
-client.on('connect', function(){
+client.on('connect', function() {
+    
     let from = new Uint64BE(0, 778898);
     let to = new Uint64BE(0, 778899);
 
-    client.sendMessage(from, to, 8, 'hello !', '', 10 * 1000, function(err, data){
+    client.sendMessage(from, to, 8, 'hello !', '', 10 * 1000, function(err, data) {
+        
         console.log(data, err);
     });
 });
 
 // 异常
-client.on('error', function(err){
+client.on('error', function(err) {
+
     console.error(err);
 });
 
 // 关闭
-client.on('close', function(){
+client.on('close', function() {
+
     console.log('closed!');
 });
 

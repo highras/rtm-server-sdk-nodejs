@@ -10,7 +10,8 @@ const FPClient = require('../fpnn/FPClient');
 const RTMConfig = require('./RTMConfig');
 const RTMProcessor = require('./RTMProcessor');
 
-class RTMClient{
+class RTMClient {
+
     /**
      * 
      * @param {object} options 
@@ -23,7 +24,8 @@ class RTMClient{
      * {bool} options.autoReconnect 
      * {number} options.connectionTimeout 
      */
-    constructor(options){
+    constructor(options) {
+
         this._pid = options.pid;
         this._secretKey = options.secretKey;
 
@@ -38,16 +40,20 @@ class RTMClient{
         });
 
         let self = this;
-        this._client.on('connect', function(){
+
+        this._client.on('connect', function() {
+
             self._client.processor = self._processor;
             self.emit('connect');
         });
 
-        this._client.on('error', function(err){
+        this._client.on('error', function(err) {
+
             self.emit('error', err);
         });
 
-        this._client.on('close', function(){
+        this._client.on('close', function() {
+
             self.emit('close');
         });
 
@@ -58,15 +64,18 @@ class RTMClient{
         this._processor = new RTMProcessor(this._msgOptions);
     }
 
-    get processor(){
+    get processor() {
+
         return this._processor;
     }
 
-    get rtmConfig(){
+    get rtmConfig() {
+
         return RTMConfig;
     }
 
-    enableConnect(){
+    enableConnect() {
+
         this._client.connect();
     }
 
@@ -80,13 +89,16 @@ class RTMClient{
      * {number} options.strength 
      * {bool} options.streamMode 
      */
-    enableEncryptorByData(peerPubData, options){
-        if (!options){
+    enableEncryptorByData(peerPubData, options) {
+
+        if (!options) {
+
             options = {};
         } 
 
         this._client.encryptor(options.curveName, peerPubData, options.streamMode, options.strength);
-        this._client.connect(function(fpEncryptor){
+        this._client.connect(function(fpEncryptor) {
+            
             return msgpack.encode({ 
                 publicKey:fpEncryptor.pubKey, 
                 streamMode:fpEncryptor.streamMode, 
@@ -105,16 +117,25 @@ class RTMClient{
      * {number} options.strength 
      * {bool} options.streamMode 
      */
-    enableEncryptorByFile(peerPubPath, options){
+    enableEncryptorByFile(peerPubPath, options) {
+        
         let self = this;
 
-        fs.readFile(peerPubPath, function(err, data){
-            if (err){
+        fs.readFile(peerPubPath, function(err, data) {
+
+            if (err) {
+
                 self.emit('error', err);
                 return;
             }
+
             self.enableEncryptorByData(data, options);
         });
+    }
+
+    sendQuest(options, callback, timeout) {
+
+        sendQuest.call(this, this._client, options, callback, timeout);
     }
 
     /**
@@ -131,7 +152,8 @@ class RTMClient{
      * @param {Error} err
      * @param {object} data
      */
-    sendMessage(from, to, mtype, msg, attrs, timeout, callback){
+    sendMessage(from, to, mtype, msg, attrs, timeout, callback) {
+        
         let salt = genSalt.call(this);
 
         let payload = {
@@ -169,7 +191,8 @@ class RTMClient{
      * @param {Error} err
      * @param {object} data
      */
-    sendMessages(from, tos, mtype, msg, attrs, timeout, callback){
+    sendMessages(from, tos, mtype, msg, attrs, timeout, callback) {
+
         let salt = genSalt.call(this);
 
         let payload = {
@@ -207,7 +230,8 @@ class RTMClient{
      * @param {Error} err
      * @param {object} data
      */
-    sendGroupMessage(from, gid, mtype, msg, attrs, timeout, callback){
+    sendGroupMessage(from, gid, mtype, msg, attrs, timeout, callback) {
+
         let salt = genSalt.call(this);
 
         let payload = {
@@ -245,7 +269,8 @@ class RTMClient{
      * @param {Error} err
      * @param {object} data
      */
-    sendRoomMessage(from, rid, mtype, msg, attrs, timeout, callback){
+    sendRoomMessage(from, rid, mtype, msg, attrs, timeout, callback) {
+
         let salt = genSalt.call(this);
 
         let payload = {
@@ -282,7 +307,8 @@ class RTMClient{
      * @param {Error} err
      * @param {object} data
      */
-    broadcastMessage(from, mtype, msg, attrs, timeout, callback){
+    broadcastMessage(from, mtype, msg, attrs, timeout, callback) {
+
         let salt = genSalt.call(this);
 
         let payload = {
@@ -316,7 +342,8 @@ class RTMClient{
      * @param {Error} err
      * @param {object} data
      */
-    addFriends(uid, friends, timeout, callback){
+    addFriends(uid, friends, timeout, callback) {
+
         let salt = genSalt.call(this);
 
         let payload = {
@@ -347,7 +374,8 @@ class RTMClient{
      * @param {Error} err
      * @param {object} data
      */
-    deleteFriends(uid, friends, timeout, callback){
+    deleteFriends(uid, friends, timeout, callback) {
+
         let salt = genSalt.call(this);
 
         let payload = {
@@ -377,7 +405,8 @@ class RTMClient{
      * @param {Error} err
      * @param {array<Int64BE>} data
      */
-    getFriends(uid, timeout, callback){
+    getFriends(uid, timeout, callback) {
+
         let salt = genSalt.call(this);
 
         let payload = {
@@ -393,16 +422,20 @@ class RTMClient{
             payload: msgpack.encode(payload, this._msgOptions)
         };
 
-        sendQuest.call(this, this._client, options, function(err, data){
-            if (err){
+        sendQuest.call(this, this._client, options, function(err, data) {
+
+            if (err) {
+
                 callback(err, null);
                 return;
             }
 
             let uids = data['uids'];
-            if (uids){
+            if (uids) {
+
                 let buids = [];
-                uids.forEach(function(item, index){
+                uids.forEach(function(item, index) {
+
                     buids[index] = new Int64BE(item);
                 });
 
@@ -425,7 +458,8 @@ class RTMClient{
      * @param {Error} err
      * @param {bool} data
      */
-    isFriend(uid, fuid, timeout, callback){
+    isFriend(uid, fuid, timeout, callback) {
+
         let salt = genSalt.call(this);
 
         let payload = {
@@ -442,14 +476,17 @@ class RTMClient{
             payload: msgpack.encode(payload, this._msgOptions)
         };
 
-        sendQuest.call(this, this._client, options, function(err, data){
-            if (err){
+        sendQuest.call(this, this._client, options, function(err, data) {
+
+            if (err) {
+
                 callback(err, null);
                 return;
             }
 
             let ok = data['ok'];
-            if (ok !== undefined){
+            if (ok !== undefined) {
+
                 callback(null, ok);
                 return;
             }
@@ -469,7 +506,8 @@ class RTMClient{
      * @param {Error} err
      * @param {array<Int64BE>} data
      */
-    isFriends(uid, fuids, timeout, callback){
+    isFriends(uid, fuids, timeout, callback) {
+
         let salt = genSalt.call(this);
 
         let payload = {
@@ -486,16 +524,20 @@ class RTMClient{
             payload: msgpack.encode(payload, this._msgOptions)
         };
 
-        sendQuest.call(this, this._client, options, function(err, data){
-            if (err){
+        sendQuest.call(this, this._client, options, function(err, data) {
+
+            if (err) {
+
                 callback(err, null);
                 return;
             }
 
             let fuids = data['fuids'];
-            if (fuids){
+            if (fuids) {
+
                 let bfuids = [];
-                fuids.forEach(function(item, index){
+                fuids.forEach(function(item, index) {
+
                     bfuids[index] = new Int64BE(item);
                 });
 
@@ -518,7 +560,8 @@ class RTMClient{
      * @param {Error} err
      * @param {object} data
      */
-    addGroupMembers(gid, uids, timeout, callback){
+    addGroupMembers(gid, uids, timeout, callback) {
+
         let salt = genSalt.call(this);
 
         let payload = {
@@ -549,7 +592,8 @@ class RTMClient{
      * @param {Error} err
      * @param {object} data
      */
-    deleteGroupMembers(gid, uids, timeout, callback){
+    deleteGroupMembers(gid, uids, timeout, callback) {
+
         let salt = genSalt.call(this);
 
         let payload = {
@@ -579,7 +623,8 @@ class RTMClient{
      * @param {Error} err
      * @param {object} data
      */
-    deleteGroup(gid, timeout, callback){
+    deleteGroup(gid, timeout, callback) {
+
         let salt = genSalt.call(this);
 
         let payload = {
@@ -608,7 +653,8 @@ class RTMClient{
      * @param {Error} err
      * @param {array<Int64BE>} data
      */
-    getGroupMembers(gid, timeout, callback){
+    getGroupMembers(gid, timeout, callback) {
+        
         let salt = genSalt.call(this);
 
         let payload = {
@@ -624,16 +670,20 @@ class RTMClient{
             payload: msgpack.encode(payload, this._msgOptions)
         };
 
-        sendQuest.call(this, this._client, options, function(err, data){
-            if (err){
+        sendQuest.call(this, this._client, options, function(err, data) {
+
+            if (err) {
+
                 callback(err, null);
                 return;
             }
 
             let uids = data['uids'];
-            if (uids){
+            if (uids) {
+
                 let buids = [];
-                uids.forEach(function(item, index){
+                uids.forEach(function(item, index) {
+
                     buids[index] = new Int64BE(item);
                 });
 
@@ -656,7 +706,8 @@ class RTMClient{
      * @param {Error} err
      * @param {bool} data
      */
-    isGroupMember(gid, uid, timeout, callback){
+    isGroupMember(gid, uid, timeout, callback) {
+
         let salt = genSalt.call(this);
 
         let payload = {
@@ -673,14 +724,17 @@ class RTMClient{
             payload: msgpack.encode(payload, this._msgOptions)
         };
 
-        sendQuest.call(this, this._client, options, function(err, data){
-            if (err){
+        sendQuest.call(this, this._client, options, function(err, data) {
+
+            if (err) {
+
                 callback(err, null);
                 return;
             }
 
             let ok = data['ok'];
-            if (ok !== undefined){
+            if (ok !== undefined) {
+
                 callback(null, ok);
                 return;
             }
@@ -699,7 +753,8 @@ class RTMClient{
      * @param {Error} err
      * @param {array<Int64BE>} data
      */
-    getUserGroups(uid, timeout, callback){
+    getUserGroups(uid, timeout, callback) {
+
         let salt = genSalt.call(this);
 
         let payload = {
@@ -715,16 +770,20 @@ class RTMClient{
             payload: msgpack.encode(payload, this._msgOptions)
         };
 
-        sendQuest.call(this, this._client, options, function(err, data){
-            if (err){
+        sendQuest.call(this, this._client, options, function(err, data) {
+
+            if (err) {
+
                 callback(err, null);
                 return;
             }
 
             let gids = data['gids'];
-            if (gids){
+            if (gids) {
+
                 let bgids = [];
-                gids.forEach(function(item, index){
+                gids.forEach(function(item, index) {
+
                     bgids[index] = new Int64BE(item);
                 });
 
@@ -746,7 +805,8 @@ class RTMClient{
      * @param {Error} err
      * @param {string} token 
      */
-    getToken(uid, timeout, callback){
+    getToken(uid, timeout, callback) {
+
         let salt = genSalt.call(this);
 
         let payload = {
@@ -762,14 +822,17 @@ class RTMClient{
             payload: msgpack.encode(payload, this._msgOptions)
         };
 
-        sendQuest.call(this, this._client, options, function(err, data){
-            if (err){
+        sendQuest.call(this, this._client, options, function(err, data) {
+
+            if (err) {
+
                 callback(err, null);
                 return;
             }
 
             let token = data['token'];
-            if (token !== undefined){
+            if (token !== undefined) {
+
                 callback(null, token);
                 return;
             }
@@ -788,7 +851,8 @@ class RTMClient{
      * @param {Error} err
      * @param {array<Int64BE>} uids 
      */
-    getOnlineUsers(uids, timeout, callback){
+    getOnlineUsers(uids, timeout, callback) {
+
         let salt = genSalt.call(this);
 
         let payload = {
@@ -804,16 +868,20 @@ class RTMClient{
             payload: msgpack.encode(payload, this._msgOptions)
         };
 
-        sendQuest.call(this, this._client, options, function(err, data){
-            if (err){
+        sendQuest.call(this, this._client, options, function(err, data) {
+
+            if (err) {
+
                 callback(err, null);
                 return;
             }
 
             let uids = data['uids'];
-            if (uids){
+            if (uids) {
+
                 let buids = [];
-                uids.forEach(function(item, index){
+                uids.forEach(function(item, index) {
+
                     buids[index] = new Int64BE(item);
                 });
 
@@ -837,7 +905,8 @@ class RTMClient{
      * @param {Error} err
      * @param {object} data
      */
-    addGroupBan(gid, uid, btime, timeout, callback){
+    addGroupBan(gid, uid, btime, timeout, callback) {
+
         let salt = genSalt.call(this);
 
         let payload = {
@@ -869,7 +938,8 @@ class RTMClient{
      * @param {Error} err
      * @param {object} data
      */
-    removeGroupBan(gid, uid, timeout, callback){
+    removeGroupBan(gid, uid, timeout, callback) {
+
         let salt = genSalt.call(this);
 
         let payload = {
@@ -901,7 +971,8 @@ class RTMClient{
      * @param {Error} err
      * @param {object} data
      */
-    addRoomBan(rid, uid, btime, timeout, callback){
+    addRoomBan(rid, uid, btime, timeout, callback) {
+
         let salt = genSalt.call(this);
 
         let payload = {
@@ -933,7 +1004,8 @@ class RTMClient{
      * @param {Error} err
      * @param {object} data
      */
-    removeRoomBan(rid, uid, timeout, callback){
+    removeRoomBan(rid, uid, timeout, callback) {
+
         let salt = genSalt.call(this);
 
         let payload = {
@@ -964,7 +1036,8 @@ class RTMClient{
      * @param {Error} err
      * @param {object} data
      */
-    addProjectBlack(uid, btime, timeout, callback){
+    addProjectBlack(uid, btime, timeout, callback) {
+
         let salt = genSalt.call(this);
 
         let payload = {
@@ -994,7 +1067,8 @@ class RTMClient{
      * @param {Error} err
      * @param {object} data
      */
-    removeProjectBlack(uid, timeout, callback){
+    removeProjectBlack(uid, timeout, callback) {
+
         let salt = genSalt.call(this);
 
         let payload = {
@@ -1024,7 +1098,8 @@ class RTMClient{
      * @param {Error} err
      * @param {bool} data
      */
-    isBanOfGroup(gid, uid, timeout, callback){
+    isBanOfGroup(gid, uid, timeout, callback) {
+
         let salt = genSalt.call(this);
 
         let payload = {
@@ -1041,14 +1116,17 @@ class RTMClient{
             payload: msgpack.encode(payload, this._msgOptions)
         };
 
-        sendQuest.call(this, this._client, options, function(err, data){
-            if (err){
+        sendQuest.call(this, this._client, options, function(err, data) {
+            
+            if (err) {
+
                 callback(err, null);
                 return;
             }
 
             let ok = data['ok'];
-            if (ok !== undefined){
+            if (ok !== undefined) {
+                
                 callback(null, ok);
                 return;
             }
@@ -1068,7 +1146,8 @@ class RTMClient{
      * @param {Error} err
      * @param {bool} data
      */
-    isBanOfRoom(rid, uid, timeout, callback){
+    isBanOfRoom(rid, uid, timeout, callback) {
+
         let salt = genSalt.call(this);
 
         let payload = {
@@ -1085,14 +1164,17 @@ class RTMClient{
             payload: msgpack.encode(payload, this._msgOptions)
         };
 
-        sendQuest.call(this, this._client, options, function(err, data){
-            if (err){
+        sendQuest.call(this, this._client, options, function(err, data) {
+
+            if (err) {
+
                 callback(err, null);
                 return;
             }
 
             let ok = data['ok'];
-            if (ok !== undefined){
+            if (ok !== undefined) {
+
                 callback(null, ok);
                 return;
             }
@@ -1111,7 +1193,8 @@ class RTMClient{
      * @param {Error} err
      * @param {bool} data 
      */
-    isProjectBlack(uid, timeout, callback){
+    isProjectBlack(uid, timeout, callback) {
+
         let salt = genSalt.call(this);
 
         let payload = {
@@ -1127,14 +1210,17 @@ class RTMClient{
             payload: msgpack.encode(payload, this._msgOptions)
         };
 
-        sendQuest.call(this, this._client, options, function(err, data){
-            if (err){
+        sendQuest.call(this, this._client, options, function(err, data) {
+
+            if (err) {
+
                 callback(err, null);
                 return;
             }
 
             let ok = data['ok'];
-            if (ok !== undefined){
+            if (ok !== undefined) {
+
                 callback(null, ok);
                 return;
             }
@@ -1155,7 +1241,8 @@ class RTMClient{
      * @param {Error} err
      * @param {object} data 
      */
-    setGeo(uid, lat, lng, timeout, callback){
+    setGeo(uid, lat, lng, timeout, callback) {
+
         let salt = genSalt.call(this);
 
         let payload = {
@@ -1186,7 +1273,8 @@ class RTMClient{
      * @param {Error} err
      * @param {object<lat:number, lng:number>} data 
      */
-    getGeo(uid, timeout, callback){
+    getGeo(uid, timeout, callback) {
+
         let salt = genSalt.call(this);
 
         let payload = {
@@ -1215,7 +1303,8 @@ class RTMClient{
      * @param {Error} err
      * @param {array<array<uid:Int64BE,lat:number,lng:number>>} data 
      */
-    getGeos(uids, timeout, callback){
+    getGeos(uids, timeout, callback) {
+
         let salt = genSalt.call(this);
 
         let payload = {
@@ -1231,19 +1320,24 @@ class RTMClient{
             payload: msgpack.encode(payload, this._msgOptions)
         };
 
-        sendQuest.call(this, this._client, options, function(err, data){
-            if (err){
+        sendQuest.call(this, this._client, options, function(err, data) {
+
+            if (err) {
+
                 callback(err, null);
                 return;
             }
 
             let geos = data['geos'];
-            if (geos){
+            if (geos) {
+
                 let bgeos = [];
-                geos.forEach(function(item, index){
+                geos.forEach(function(item, index) {
+
                     item[0] = new Int64BE(item[0]);
                     bgeos[index] = item;
                 });
+
                 callback(null, bgeos);
                 return;
             }
@@ -1265,11 +1359,14 @@ class RTMClient{
      * @param {Error} err
      * @param {object} data 
      */
-    sendFile(from, to, mtype, filePath, timeout, callback){
+    sendFile(from, to, mtype, filePath, timeout, callback) {
+
         let self = this;
 
-        filetoken.call(this, from, to, function(err, data){
-            if (err){
+        filetoken.call(this, from, to, function(err, data) {
+            
+            if (err) {
+
                 self.emit('error', err);
                 return;
             }
@@ -1277,15 +1374,18 @@ class RTMClient{
             let token = data["token"];
             let endpoint = data["endpoint"];
 
-            if (!token || !endpoint){
+            if (!token || !endpoint) {
+
                 self.emit('error', data);
                 return;
             }
 
             let ipport = endpoint.split(':');
 
-            fs.readFile(filePath, function(err, data){
-                if (err){
+            fs.readFile(filePath, function(err, data) {
+
+                if (err) {
+
                     self.emit('error', err);
                     return;
                 }
@@ -1299,7 +1399,8 @@ class RTMClient{
                 });
 
                 client.connect();
-                client.on('connect', function(){
+                client.on('connect', function() {
+
                     let options = {
                         token: token,
                         from: from,
@@ -1308,9 +1409,12 @@ class RTMClient{
                         sign: sign,
                         data: data
                     };
+
                     sendfile.call(self, client, options, callback, timeout);
                 });
-                client.on('error', function(err){
+
+                client.on('error', function(err) {
+
                     self.emit('error', new Error('file client: ' + err.message));
                 });
             });
@@ -1330,7 +1434,8 @@ class RTMClient{
      * @param {Error} err
      * @param {object} data 
      */
-    addEvtListener(opts, timeout, callback){
+    addEvtListener(opts, timeout, callback) {
+
         let salt = genSalt.call(this);
 
         let payload = {
@@ -1339,19 +1444,23 @@ class RTMClient{
             salt: salt
         };
 
-        if (opts.gids){
+        if (opts.gids) {
+
             payload.gids = opts.gids;
         }
 
-        if (opts.rids){
+        if (opts.rids) {
+            
             payload.rids = opts.rids;
         }
 
-        if (opts.p2p){
+        if (opts.p2p) {
+
             payload.p2p = true;
         }
 
-        if (opts.events){
+        if (opts.events) {
+
             payload.events = opts.events;
         }
 
@@ -1377,7 +1486,8 @@ class RTMClient{
      * @param {Error} err
      * @param {object} data 
      */
-    removeEvtListener(opts, timeout, callback){
+    removeEvtListener(opts, timeout, callback) {
+        
         let salt = genSalt.call(this);
 
         let payload = {
@@ -1386,19 +1496,23 @@ class RTMClient{
             salt: salt
         };
 
-        if (opts.gids){
+        if (opts.gids) {
+            
             payload.gids = opts.gids;
         }
 
-        if (opts.rids){
+        if (opts.rids) {
+
             payload.rids = opts.rids;
         }
 
-        if (opts.p2p){
+        if (opts.p2p) {
+
             payload.p2p = true;
         }
 
-        if (opts.events){
+        if (opts.events) {
+
             payload.events = opts.events;
         }
 
@@ -1425,7 +1539,8 @@ class RTMClient{
      * @param {Error} err
      * @param {object} data 
      */
-    setEvtListener(opts, timeout, callback){
+    setEvtListener(opts, timeout, callback) {
+
         let salt = genSalt.call(this);
 
         let payload = {
@@ -1434,7 +1549,8 @@ class RTMClient{
             salt: salt
         };
 
-        if (typeof(opts) == 'boolean'){
+        if (typeof(opts) == 'boolean') {
+
             payload.all = opts;
         }
 
@@ -1464,7 +1580,8 @@ class RTMClient{
      * @param {Error} err
      * @param {object} data 
      */
-    addDevice(uid, apptype, devicetoken, timeout, callback){
+    addDevice(uid, apptype, devicetoken, timeout, callback) {
+
         let salt = genSalt.call(this);
 
         let payload = {
@@ -1496,7 +1613,8 @@ class RTMClient{
      * @param {Error} err
      * @param {object} data 
      */
-    removeDevice(uid, devicetoken, timeout, callback){
+    removeDevice(uid, devicetoken, timeout, callback) {
+
         let salt = genSalt.call(this);
 
         let payload = {
@@ -1517,7 +1635,8 @@ class RTMClient{
     }
 }
 
-function filetoken(from, to, callback, timeout){
+function filetoken(from, to, callback, timeout) {
+
     let salt = genSalt.call(this);
 
     let payload = {
@@ -1538,7 +1657,8 @@ function filetoken(from, to, callback, timeout){
     sendQuest.call(this, this._client, options, callback, timeout);
 }
 
-function sendfile(client, ops, callback, timeout){
+function sendfile(client, ops, callback, timeout) {
+
     let payload = {
         pid: this._pid,
         token: ops.token,
@@ -1556,61 +1676,78 @@ function sendfile(client, ops, callback, timeout){
         payload: msgpack.encode(payload, this._msgOptions)
     };
 
-    sendQuest.call(this, client, options, function(err, data){
+    sendQuest.call(this, client, options, function(err, data) {
+
         callback && callback(err, data);
         client.close(); 
     }, timeout);
 }
 
-function genMid(){
+function genMid() {
+
     let timestamp = Math.floor(Date.now() / 1000);
     return new Int64BE(timestamp, this._midSeq++);
 }
 
-function genSalt(){
+function genSalt() {
+
     let timestamp = Math.floor(Date.now() / 1000);
     return new Int64BE(timestamp, this._saltSeq++);
 }
 
-function genSign(salt){
+function genSign(salt) {
+
     return md5.call(this, this._pid + ':' + this._secretKey + ':' + salt).toUpperCase();
 }
 
-function md5(data){
+function md5(data) {
+
     let hash = crypto.createHash('md5');
     hash.update(data);
+
     return hash.digest('hex');
 }
 
-function isException(data){
-    if (!data){
+function isException(data) {
+
+    if (!data) {
+
         return null;
     }
 
-    if (data instanceof Error){
+    if (data instanceof Error) {
+
         return data;
     }
 
-    if (data.hasOwnProperty('code') && data.hasOwnProperty('ex')){
+    if (data.hasOwnProperty('code') && data.hasOwnProperty('ex')) {
+
         return new Error('code: ' + data.code + ', ex: ' + data.ex);
     }
 
     return null;
 }
 
-function sendQuest(client, options, callback, timeout){
+function sendQuest(client, options, callback, timeout) {
+
     let self = this;
-    client.sendQuest(options, function(data){
-        if (!callback){
+
+    client.sendQuest(options, function(data) {
+
+        if (!callback) {
+
             return;
         }
 
         let err = null;
 
-        if (data.payload){
+        if (data.payload) {
+
             let payload = msgpack.decode(data.payload, self._msgOptions);
             err = isException.call(self, payload);
-            if (err){
+
+            if (err) {
+
                 callback(err, null);
                 return;
             }
@@ -1620,7 +1757,8 @@ function sendQuest(client, options, callback, timeout){
         }
 
         err = isException.call(self, data);
-        if (err){
+        if (err) {
+
             callback(data, null);
             return;
         }

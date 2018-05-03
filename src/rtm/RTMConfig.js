@@ -58,24 +58,25 @@ const SERVER_EVENT = {
 	logout: 'logout'
 }
 
-class RTMConfig{
-	static get ERROR_CODE(){
+class RTMConfig {
+
+	static get ERROR_CODE() {
+
 		return ERROR_CODE;
 	}
 
-	static get PING_INTERVAL(){
-		return 10 * 1000;
-	}
+	static get SERVER_PUSH() {
 
-	static get SERVER_PUSH(){
 		return SERVER_PUSH;
 	}
 
-	static get MID_TTL(){
+	static get MID_TTL() {
+
 		return 5 * 1000;
 	}
 
-	static get SERVER_EVENT(){
+	static get SERVER_EVENT() {
+
 		return SERVER_EVENT;
 	}
 }
