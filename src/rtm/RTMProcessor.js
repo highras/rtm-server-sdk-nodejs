@@ -72,7 +72,7 @@ class RTMProcessor {
 
             data.mid = new Int64BE(data.mid);
 
-            if (!checkMid.call(this, data.mid)) {
+            if (!checkMid.call(this, 1, data.mid, data.from)) {
 
                 return;
             }
@@ -121,7 +121,7 @@ class RTMProcessor {
             
             data.mid = new Int64BE(data.mid);
 
-            if (!checkMid.call(this, data.mid)) {
+            if (!checkMid.call(this, 1, data.mid, data.from)) {
 
                 return;
             }
@@ -159,7 +159,7 @@ class RTMProcessor {
 
             data.mid = new Int64BE(data.mid);
 
-            if (!checkMid.call(this, data.mid)) {
+            if (!checkMid.call(this, 2, data.mid, data.from, data.gid)) {
 
                 return;
             }
@@ -202,7 +202,7 @@ class RTMProcessor {
 
             data.mid = new Int64BE(data.mid);
 
-            if (!checkMid.call(this, data.mid)) {
+            if (!checkMid.call(this, 3, data.mid, data.from, data.rid)) {
 
                 return;
             }
@@ -252,9 +252,20 @@ class RTMProcessor {
     }
 }
 
-function checkMid(mid) {
+function checkMid(type, mid, uid, rgid) {
 
-    let key = mid.toString();
+    let arr = [];
+    
+    arr.push(type);
+    arr.push(mid);
+    arr.push(uid);
+    
+    if (rgid != undefined) {
+    
+        arr.push(rgid);
+    }
+    
+    let key = arr.join('_');
 
     if (this._map.hasOwnProperty(key)) {
 
@@ -284,7 +295,7 @@ function checkExpire() {
 
             delayRemove.call(self, key);
         }
-    }, RTMConfig.MID_TTL);
+    }, RTMConfig.MID_TTL + 1000);
 }
 
 function delayRemove(key) {

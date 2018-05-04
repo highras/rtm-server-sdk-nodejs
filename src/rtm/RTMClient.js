@@ -1685,14 +1685,22 @@ function sendfile(client, ops, callback, timeout) {
 
 function genMid() {
 
-    let timestamp = Math.floor(Date.now() / 1000);
-    return new Int64BE(timestamp, this._midSeq++);
+    if (++this._midSeq >= 999) {
+
+        this._midSeq = 0;
+    }
+
+    return new Int64BE(Date.now().toString() + this._midSeq);
 }
 
 function genSalt() {
 
-    let timestamp = Math.floor(Date.now() / 1000);
-    return new Int64BE(timestamp, this._saltSeq++);
+    if (++this._saltSeq >= 999) {
+
+        this._saltSeq = 0;
+    }
+
+    return new Int64BE(Date.now().toString() + this._saltSeq);
 }
 
 function genSign(salt) {
