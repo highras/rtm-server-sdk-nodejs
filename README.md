@@ -20,6 +20,10 @@ yarn add msgpack-lite
 * 需要支持部分ES6特性，如遇问题请参考:http://node.green/
 * 参考es-checker / babel-cli / babel-preset-es2015
 
+#### Promise支持 ####
+* 支持动态转Promise接口
+* 参考:[Promise.promisifyAll](http://bluebirdjs.com/docs/api/promise.promisifyall.html)
+
 #### 一个例子 ####
 ```javascript
 
