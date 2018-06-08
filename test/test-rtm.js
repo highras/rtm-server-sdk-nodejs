@@ -4,10 +4,10 @@ const TestCase = require('./TestCase');
 const AsyncStressTester = require('./AsyncStressTester');
 
 // case 1
-baseTest.call(this);
+// baseTest.call(this);
 
 // case 2
-// asyncStressTest.call(this);
+asyncStressTest.call(this);
 
 
 
@@ -34,7 +34,7 @@ function asyncStressTest() {
         secretKey: ''
     });
 
-    tester.buildTesters(100, 5000);
+    tester.buildTesters(1, 150);
 
     tester.launch();
     tester.showStatistics();

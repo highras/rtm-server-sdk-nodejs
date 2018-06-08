@@ -41,16 +41,6 @@ let options = {
 
 let client = new RTMClient(options);
 
-// 开启连接
-client.enableConnect();
-
-//push service
-let pushName = client.rtmConfig.SERVER_PUSH.recvMessage;
-client.processor.on(pushName, function(data) {
-
-    console.log('\n[PUSH] ' + pushName + ':\n', data);
-});
-
 // 连接成功并发送消息
 client.on('connect', function() {
     
@@ -75,6 +65,15 @@ client.on('close', function() {
     console.log('closed!');
 });
 
+//push service
+let pushName = client.rtmConfig.SERVER_PUSH.recvMessage;
+client.processor.on(pushName, function(data) {
+
+    console.log('\n[PUSH] ' + pushName + ':\n', data);
+});
+
+// 开启连接
+client.enableConnect();
 ```
 
 #### 测试 ####
