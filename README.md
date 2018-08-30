@@ -31,12 +31,12 @@ const Uint64BE = require("int64-buffer").Uint64BE;
 
 // 创建Client
 let options = {
-    host: '10.0.0.1',
-    port: 11100,
+    host: 'rtm-nx-front.ifunplus.cn',
+    port: 13315,
     autoReconnect: true,
     connectionTimeout: 10 * 1000,
-    pid: 1000001,
-    secretKey: '3a0023b6-bc80-488d-b312-c4a139b5ab1a'
+    pid: 11000001,
+    secretKey: 'ef3617e5-e886-4a4e-9eef-7263c0320628'
 }
 
 let client = new RTMClient(options);

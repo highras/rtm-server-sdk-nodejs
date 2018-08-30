@@ -14,12 +14,12 @@ asyncStressTest.call(this);
 function baseTest() {
 
     let tester = new TestCase({
-        host: 'highras-rtm-svrgated.ifunplus.cn',
+        host: '35.167.185.139',
         port: 13315,
         autoReconnect: true,
         connectionTimeout: 5 * 1000,
-        pid: 1017,
-        secretKey: '10d09e42-05d3-4d3c-b97a-50c8f27aa6c7'
+        pid: 11000001,
+        secretKey: 'ef3617e5-e886-4a4e-9eef-7263c0320628'
     });
 }
 
