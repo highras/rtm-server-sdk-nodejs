@@ -45,6 +45,12 @@ class RTMProcessor {
         }
     }
 
+    destroy() {
+
+        this._map = {};
+        this.removeAllListeners();
+    }
+
     /**
      * 
      * @param {number} data.pid

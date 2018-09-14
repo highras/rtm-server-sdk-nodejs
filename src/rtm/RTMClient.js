@@ -7,7 +7,6 @@ const msgpack = require("msgpack-lite");
 const Int64BE = require("int64-buffer").Int64BE;
 
 const FPClient = require('../fpnn/FPClient');
-const RTMConfig = require('./RTMConfig');
 const RTMProcessor = require('./RTMProcessor');
 
 class RTMClient {
@@ -58,9 +57,11 @@ class RTMClient {
         });
 
         this._msgOptions = {
+
             codec: msgpack.createCodec({ int64: true })
         };
 
+        this._fileClient = null;
         this._processor = new RTMProcessor(this._msgOptions);
     }
 
@@ -69,9 +70,30 @@ class RTMClient {
         return this._processor;
     }
 
-    get rtmConfig() {
+    destroy() {
 
-        return RTMConfig;
+        this._midSeq = 0;
+        this._saltSeq = 0;
+
+        if (this._processor) {
+
+            this._processor.destroy();
+            this._processor = null;
+        }
+
+        if (this._client) {
+
+            this._client.destroy();
+            this._client = null;
+        }
+
+        if (this._fileClient) {
+
+            this._fileClient.destroy();
+            this._fileClient = null;
+        }
+
+        this.removeAllListeners();
     }
 
     enableConnect() {
@@ -1391,32 +1413,41 @@ class RTMClient {
                 }
 
                 let sign = md5.call(self, md5.call(self, data) + ':' + token);
-                let client = new FPClient({ 
-                    host: ipport[0], 
-                    port: +ipport[1], 
-                    autoReconnect: false,
-                    connectionTimeout: timeout
-                });
 
-                client.connect();
-                client.on('connect', function() {
+                if (!self._fileClient) {
 
-                    let options = {
-                        token: token,
-                        from: from,
-                        to: to,
-                        mtype: mtype,
-                        sign: sign,
-                        data: data
-                    };
+                    self._fileClient = new FPClient({ 
 
-                    sendfile.call(self, client, options, callback, timeout);
-                });
+                        host: ipport[0],
+                        port: +ipport[1],
+                        autoReconnect: false,
+                        connectionTimeout: timeout
+                    });
 
-                client.on('error', function(err) {
+                    // self._fileClient.on('connect', function() {});
+                    // self._fileClient.on('close', function() {});
+                    self._fileClient.on('error', function(err) {
 
-                    self.emit('error', new Error('file client: ' + err.message));
-                });
+                        self.emit('error', new Error('file client: ' + err.message));
+                    });
+                }
+
+                if (!self._fileClient.hasConnect) {
+
+                    self._fileClient.connect();
+                }
+
+                let options = {
+
+                    token: token,
+                    from: from,
+                    to: to,
+                    mtype: mtype,
+                    sign: sign,
+                    data: data
+                };
+
+                sendfile.call(self, self._fileClient, options, callback, timeout);
             });
         }, timeout);
     }
@@ -1676,11 +1707,7 @@ function sendfile(client, ops, callback, timeout) {
         payload: msgpack.encode(payload, this._msgOptions)
     };
 
-    sendQuest.call(this, client, options, function(err, data) {
-
-        callback && callback(err, data);
-        client.close(); 
-    }, timeout);
+    sendQuest.call(this, client, options, callback, timeout);
 }
 
 function genMid() {
@@ -1739,6 +1766,12 @@ function isException(data) {
 function sendQuest(client, options, callback, timeout) {
 
     let self = this;
+
+    if (!client) {
+
+        callback && callback(new Error('client has been destroyed!'), null);
+        return;
+    }
 
     client.sendQuest(options, function(data) {
 

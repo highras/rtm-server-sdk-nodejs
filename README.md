@@ -66,7 +66,7 @@ client.on('close', function() {
 });
 
 //push service
-let pushName = client.rtmConfig.SERVER_PUSH.recvMessage;
+let pushName = RTMConfig.SERVER_PUSH.recvMessage;
 client.processor.on(pushName, function(data) {
 
     console.log('\n[PUSH] ' + pushName + ':\n', data);
@@ -74,6 +74,9 @@ client.processor.on(pushName, function(data) {
 
 // 开启连接
 client.enableConnect();
+
+//destroy
+//client.destroy();
 ```
 
 #### 测试 ####
@@ -192,7 +195,7 @@ yarn test
 
 * `processor`: **(RTMProcessor)** 监听PushService的句柄
 
-* `rtmConfig`: **(object)** 请参考 `RTMConfig` 成员
+* `destroy()`: 断开链接并销毁
 
 * `enableConnect()`: 开启连接(非加密模式) 
 

@@ -6,6 +6,7 @@ const msgpack = require("msgpack-lite");
 const Int64BE = require("int64-buffer").Int64BE;
 
 const RTMClient = require('../src/rtm/RTMClient');
+const RTMConfig = require('../src/rtm/RTMConfig');
 
 let step = 2;
 let index = 0;
@@ -39,13 +40,13 @@ class TestCase {
         // this._client.enableEncryptorByFile(this._filePath, this._options);
 
         //receive
-        let pushName = this._client.rtmConfig.SERVER_PUSH.recvMessage;
+        let pushName = RTMConfig.SERVER_PUSH.recvMessage;
         this._client.processor.on(pushName, function(data) {
 
             console.log('\n[PUSH] ' + pushName + ':\n', data);
         });
 
-        pushName = this._client.rtmConfig.SERVER_PUSH.recvPing;
+        pushName = RTMConfig.SERVER_PUSH.recvPing;
         this._client.processor.on(pushName, function(data) {
 
             console.log('\n[PUSH] ' + pushName + ':\n', data);
