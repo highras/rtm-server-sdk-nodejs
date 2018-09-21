@@ -196,7 +196,18 @@ class RTMClient {
             payload: msgpack.encode(payload, this._msgOptions)
         };
 
-        sendQuest.call(this, this._client, options, callback, timeout);
+        sendQuest.call(this, this._client, options, function(err, data) {
+
+            if (err) {
+
+                err.rtm_mid = payload.mid;
+                callback && callback(err, null);
+                return;
+            }
+
+            data.rtm_mid = payload.mid;
+            callback && callback(null, data);
+        }, timeout);
     }
 
     /**
@@ -235,7 +246,18 @@ class RTMClient {
             payload: msgpack.encode(payload, this._msgOptions)
         };
 
-        sendQuest.call(this, this._client, options, callback, timeout);
+        sendQuest.call(this, this._client, options, function(err, data) {
+
+            if (err) {
+
+                err.rtm_mid = payload.mid;
+                callback && callback(err, null);
+                return;
+            }
+
+            data.rtm_mid = payload.mid;
+            callback && callback(null, data);
+        }, timeout);
     }
 
     /**
@@ -274,7 +296,18 @@ class RTMClient {
             payload: msgpack.encode(payload, this._msgOptions)
         };
 
-        sendQuest.call(this, this._client, options, callback, timeout);
+        sendQuest.call(this, this._client, options, function(err, data) {
+
+            if (err) {
+
+                err.rtm_mid = payload.mid;
+                callback && callback(err, null);
+                return;
+            }
+
+            data.rtm_mid = payload.mid;
+            callback && callback(null, data);
+        }, timeout);
     }
 
     /**
@@ -313,7 +346,18 @@ class RTMClient {
             payload: msgpack.encode(payload, this._msgOptions)
         };
 
-        sendQuest.call(this, this._client, options, callback, timeout);
+        sendQuest.call(this, this._client, options, function(err, data) {
+
+            if (err) {
+
+                err.rtm_mid = payload.mid;
+                callback && callback(err, null);
+                return;
+            }
+
+            data.rtm_mid = payload.mid;
+            callback && callback(null, data);
+        }, timeout);
     }
 
     /**
@@ -350,7 +394,18 @@ class RTMClient {
             payload: msgpack.encode(payload, this._msgOptions)
         };
 
-        sendQuest.call(this, this._client, options, callback, timeout);
+        sendQuest.call(this, this._client, options, function(err, data) {
+
+            if (err) {
+
+                err.rtm_mid = payload.mid;
+                callback && callback(err, null);
+                return;
+            }
+
+            data.rtm_mid = payload.mid;
+            callback && callback(null, data);
+        }, timeout);
     }
 
     /**
@@ -448,7 +503,7 @@ class RTMClient {
 
             if (err) {
 
-                callback(err, null);
+                callback && callback(err, null);
                 return;
             }
 
@@ -461,11 +516,11 @@ class RTMClient {
                     buids[index] = new Int64BE(item);
                 });
 
-                callback(null, buids);
+                callback && callback(null, buids);
                 return;
             }
 
-            callback(null, data);
+            callback && callback(null, data);
         }, timeout);
     }
 
@@ -502,18 +557,18 @@ class RTMClient {
 
             if (err) {
 
-                callback(err, null);
+                callback && callback(err, null);
                 return;
             }
 
             let ok = data['ok'];
             if (ok !== undefined) {
 
-                callback(null, ok);
+                callback && callback(null, ok);
                 return;
             }
 
-            callback(null, data);
+            callback && callback(null, data);
         }, timeout);
     }
 
@@ -550,7 +605,7 @@ class RTMClient {
 
             if (err) {
 
-                callback(err, null);
+                callback && callback(err, null);
                 return;
             }
 
@@ -563,11 +618,11 @@ class RTMClient {
                     bfuids[index] = new Int64BE(item);
                 });
 
-                callback(null, bfuids);
+                callback && callback(null, bfuids);
                 return;
             }
 
-            callback(null, data);
+            callback && callback(null, data);
         }, timeout);
     }
 
@@ -696,7 +751,7 @@ class RTMClient {
 
             if (err) {
 
-                callback(err, null);
+                callback && callback(err, null);
                 return;
             }
 
@@ -709,11 +764,11 @@ class RTMClient {
                     buids[index] = new Int64BE(item);
                 });
 
-                callback(null, buids);
+                callback && callback(null, buids);
                 return;
             }
 
-            callback(null, data);
+            callback && callback(null, data);
         }, timeout);
     }
 
@@ -750,18 +805,18 @@ class RTMClient {
 
             if (err) {
 
-                callback(err, null);
+                callback && callback(err, null);
                 return;
             }
 
             let ok = data['ok'];
             if (ok !== undefined) {
 
-                callback(null, ok);
+                callback && callback(null, ok);
                 return;
             }
 
-            callback(null, data);
+            callback && callback(null, data);
         }, timeout);
     }
 
@@ -796,7 +851,7 @@ class RTMClient {
 
             if (err) {
 
-                callback(err, null);
+                callback && callback(err, null);
                 return;
             }
 
@@ -809,11 +864,11 @@ class RTMClient {
                     bgids[index] = new Int64BE(item);
                 });
 
-                callback(null, bgids);
+                callback && callback(null, bgids);
                 return;
             }
 
-            callback(null, data);
+            callback && callback(null, data);
         }, timeout);
     }
 
@@ -848,18 +903,18 @@ class RTMClient {
 
             if (err) {
 
-                callback(err, null);
+                callback && callback(err, null);
                 return;
             }
 
             let token = data['token'];
             if (token !== undefined) {
 
-                callback(null, token);
+                callback && callback(null, token);
                 return;
             }
 
-            callback(null, data);
+            callback && callback(null, data);
         }, timeout);
     }
 
@@ -894,7 +949,7 @@ class RTMClient {
 
             if (err) {
 
-                callback(err, null);
+                callback && callback(err, null);
                 return;
             }
 
@@ -907,11 +962,11 @@ class RTMClient {
                     buids[index] = new Int64BE(item);
                 });
 
-                callback(null, buids);
+                callback && callback(null, buids);
                 return;
             }
 
-            callback(null, data);
+            callback && callback(null, data);
         }, timeout);
     }
 
@@ -1142,18 +1197,18 @@ class RTMClient {
             
             if (err) {
 
-                callback(err, null);
+                callback && callback(err, null);
                 return;
             }
 
             let ok = data['ok'];
             if (ok !== undefined) {
                 
-                callback(null, ok);
+                callback && callback(null, ok);
                 return;
             }
 
-            callback(null, data);
+            callback && callback(null, data);
         }, timeout);
     }
 
@@ -1190,18 +1245,18 @@ class RTMClient {
 
             if (err) {
 
-                callback(err, null);
+                callback && callback(err, null);
                 return;
             }
 
             let ok = data['ok'];
             if (ok !== undefined) {
 
-                callback(null, ok);
+                callback && callback(null, ok);
                 return;
             }
 
-            callback(null, data);
+            callback && callback(null, data);
         }, timeout);
     }
 
@@ -1236,18 +1291,18 @@ class RTMClient {
 
             if (err) {
 
-                callback(err, null);
+                callback && callback(err, null);
                 return;
             }
 
             let ok = data['ok'];
             if (ok !== undefined) {
 
-                callback(null, ok);
+                callback && callback(null, ok);
                 return;
             }
 
-            callback(null, data);
+            callback && callback(null, data);
         }, timeout);
     }
 
@@ -1346,7 +1401,7 @@ class RTMClient {
 
             if (err) {
 
-                callback(err, null);
+                callback && callback(err, null);
                 return;
             }
 
@@ -1360,11 +1415,11 @@ class RTMClient {
                     bgeos[index] = item;
                 });
 
-                callback(null, bgeos);
+                callback && callback(null, bgeos);
                 return;
             }
 
-            callback(null, data);
+            callback && callback(null, data);
         }, timeout);
     }
 
@@ -1789,22 +1844,22 @@ function sendQuest(client, options, callback, timeout) {
 
             if (err) {
 
-                callback(err, null);
+                callback && callback(err, null);
                 return;
             }
 
-            callback(null, payload);
+            callback && callback(null, payload);
             return;
         }
 
         err = isException.call(self, data);
         if (err) {
 
-            callback(data, null);
+            callback && callback(data, null);
             return;
         }
 
-        callback(null, data);
+        callback && callback(null, data);
     }, timeout);
 }
 
