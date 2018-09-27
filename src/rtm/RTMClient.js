@@ -200,13 +200,11 @@ class RTMClient {
 
             if (err) {
 
-                err.rtm_mid = payload.mid;
-                callback && callback(err, null);
+                callback && callback({ mid: payload.mid, error: err }, null);
                 return;
             }
 
-            data.rtm_mid = payload.mid;
-            callback && callback(null, data);
+            callback && callback(null, { mid: payload.mid, payload: data });
         }, timeout);
     }
 
@@ -250,13 +248,11 @@ class RTMClient {
 
             if (err) {
 
-                err.rtm_mid = payload.mid;
-                callback && callback(err, null);
+                callback && callback({ mid: payload.mid, error: err }, null);
                 return;
             }
 
-            data.rtm_mid = payload.mid;
-            callback && callback(null, data);
+            callback && callback(null, { mid: payload.mid, payload: data });
         }, timeout);
     }
 
@@ -300,13 +296,11 @@ class RTMClient {
 
             if (err) {
 
-                err.rtm_mid = payload.mid;
-                callback && callback(err, null);
+                callback && callback({ mid: payload.mid, error: err }, null);
                 return;
             }
 
-            data.rtm_mid = payload.mid;
-            callback && callback(null, data);
+            callback && callback(null, { mid: payload.mid, payload: data });
         }, timeout);
     }
 
@@ -350,13 +344,11 @@ class RTMClient {
 
             if (err) {
 
-                err.rtm_mid = payload.mid;
-                callback && callback(err, null);
+                callback && callback({ mid: payload.mid, error: err }, null);
                 return;
             }
 
-            data.rtm_mid = payload.mid;
-            callback && callback(null, data);
+            callback && callback(null, { mid: payload.mid, payload: data });
         }, timeout);
     }
 
@@ -398,13 +390,11 @@ class RTMClient {
 
             if (err) {
 
-                err.rtm_mid = payload.mid;
-                callback && callback(err, null);
+                callback && callback({ mid: payload.mid, error: err }, null);
                 return;
             }
 
-            data.rtm_mid = payload.mid;
-            callback && callback(null, data);
+            callback && callback(null, { mid: payload.mid, payload: data });
         }, timeout);
     }
 
