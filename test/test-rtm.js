@@ -14,7 +14,7 @@ baseTest.call(this);
 function baseTest() {
 
     let tester = new TestCase({
-        host: '35.167.185.139',
+        host: '52.83.245.22',
         port: 13315,
         autoReconnect: true,
         connectionTimeout: 5 * 1000,
@@ -26,7 +26,7 @@ function baseTest() {
 function asyncStressTest() {
 
     let tester = new AsyncStressTester({
-        host: '35.167.185.139',
+        host: '52.83.245.22',
         port: 13013,
         autoReconnect: true,
         connectionTimeout: 20 * 1000,

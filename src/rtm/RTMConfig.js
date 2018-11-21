@@ -40,13 +40,18 @@ const ERROR_CODE = {
 	RTM_EC_UNKNOWN_ERROR: 200999
 };
 
+const FILE_TYPE = {
+	image: 40, 			//图片
+	audio: 41,  		//语音
+	video: 42, 			//视频
+	file: 50 			//泛指文件，服务器会修改此值（如果服务器可以判断出具体类型的话，仅在mtype=50的情况下）
+};
+
 const SERVER_PUSH = {
 	recvMessage: 'pushmsg',
-	recvMessages: 'pushmsgs',
 	recvGroupMessage: 'pushgroupmsg',
 	recvRoomMessage: 'pushroommsg',
 	recvFile: 'pushfile',
-	recvFiles: 'pushfiles',
 	recvGroupFile: 'pushgroupfile',
 	recvRoomFile: 'pushroomfile',
 	recvEvent: 'pushevent',

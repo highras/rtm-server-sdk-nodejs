@@ -26,6 +26,8 @@ class TestCase {
         this._lng = 69394.4850;
         this._timeout = 10 * 1000;
 
+        this._mid = new Int64BE(0);
+
         this._filePath = path.resolve(__dirname, '../key/test-secp256k1-compressed-public.key');
 
         this._options = {
@@ -83,195 +85,297 @@ function onConnect() {
         console.log('---------------begin!-----------------')
     });
 
+    //ServerGate (1)
     t.call(self, function(name, cb) {
 
-        self._client[name].call(self._client, true, self._timeout, cb);
-    }, 'setEvtListener');
+        self._client[name].call(self._client, self._from, self._to, 8, 'hello !', '', new Int64BE(0), self._timeout, function(err, data){
 
-    t.call(self, function(name, cb) {
-
-        self._client[name].call(self._client, false, self._timeout, cb);
-    }, 'setEvtListener');
-
-    t.call(self, function(name, cb) {
-
-        self._client[name].call(self._client, { gids:[self._gid], rids:[], p2p:false, events:[] }, self._timeout, cb);
-    }, 'setEvtListener');
-
-    t.call(self, function(name, cb) {
-
-        self._client[name].call(self._client, { rids:[self._rid], p2p:true, events:['login', 'logout'] }, self._timeout, cb);
-    }, 'addEvtListener');
-
-    t.call(self, function(name, cb) {
-
-        self._client[name].call(self._client, { events:['login'] }, self._timeout, cb);
-    }, 'removeEvtListener');
-    
-    t.call(self, function(name, cb) {
-
-        self._client[name].call(self._client, self._from, self._to, 8, 'hello !', '', self._timeout, cb);
+            self._mid = err ? err.mid : data.mid;
+            cb && cb(err, data);
+        });
     }, 'sendMessage');
 
+    //ServerGate (2)
     t.call(self, function(name, cb) {
 
-        self._client[name].call(self._client, self._from, self._tos, 8, 'hello !', '', self._timeout, cb);
+        self._client[name].call(self._client, self._from, self._tos, 8, 'hello !', '', new Int64BE(0), self._timeout, cb);
     }, 'sendMessages');
 
+    //ServerGate (3)
     t.call(self, function(name, cb) {
 
-        self._client[name].call(self._client, self._from, self._gid, 8, 'hello !', '', self._timeout, cb);
+        self._client[name].call(self._client, self._from, self._gid, 8, 'hello !', '', new Int64BE(0), self._timeout, cb);
     }, 'sendGroupMessage');
 
+    //ServerGate (4)
     t.call(self, function(name, cb) {
 
-        self._client[name].call(self._client, self._from, self._rid, 8, 'hello !', '', self._timeout, cb);
+        self._client[name].call(self._client, self._from, self._rid, 8, 'hello !', '', new Int64BE(0), self._timeout, cb);
     }, 'sendRoomMessage');
     
+    //ServerGate (5)
     t.call(self, function(name, cb) {
 
-        self._client[name].call(self._client, self._from, 8, 'hello !', '', self._timeout, cb);
+        self._client[name].call(self._client, self._from, 8, 'hello !', '', new Int64BE(0), self._timeout, cb);
     }, 'broadcastMessage');
 
+    //ServerGate (6)
     t.call(self, function(name, cb) {
 
         self._client[name].call(self._client, self._from, self._friends, self._timeout, cb);
     }, 'addFriends');
 
+    //ServerGate (7)
     t.call(self, function(name, cb) {
 
         self._client[name].call(self._client, self._from, [new Int64BE(0, 778899)], self._timeout, cb);
     }, 'deleteFriends');
 
+    //ServerGate (8)
     t.call(self, function(name, cb) {
 
         self._client[name].call(self._client, self._from, self._timeout, cb);
     }, 'getFriends');
 
+    //ServerGate (9)
     t.call(self, function(name, cb) {
 
         self._client[name].call(self._client, self._from, self._fuid, self._timeout, cb);
     }, 'isFriend');
 
+    //ServerGate (10)
     t.call(self, function(name, cb) {
 
         self._client[name].call(self._client, self._from, self._friends, self._timeout, cb);
     }, 'isFriends');
 
+    //ServerGate (11)
     t.call(self, function(name, cb) {
 
         self._client[name].call(self._client, self._gid, [self._from, self._to], self._timeout, cb);
     }, 'addGroupMembers');
 
+    //ServerGate (12)
     t.call(self, function(name, cb) {
 
         self._client[name].call(self._client, self._gid, [self._to], self._timeout, cb);
     }, 'deleteGroupMembers');
 
-    t.call(self, function(name, cb) {
-
-        self._client[name].call(self._client, self._gid, self._timeout, cb);
-    }, 'getGroupMembers');
-
-    t.call(self, function(name, cb) {
-
-        self._client[name].call(self._client, self._gid, self._from, self._timeout, cb);
-    }, 'isGroupMember');
-
-    t.call(self, function(name, cb) {
-
-        self._client[name].call(self._client, self._from, self._timeout, cb);
-    }, 'getUserGroups');
-
+    //ServerGate (13)
     t.call(self, function(name, cb) {
 
         self._client[name].call(self._client, self._gid, self._timeout, cb);
     }, 'deleteGroup');
 
+    //ServerGate (14)
+    t.call(self, function(name, cb) {
+
+        self._client[name].call(self._client, self._gid, self._timeout, cb);
+    }, 'getGroupMembers');
+
+    //ServerGate (15)
+    t.call(self, function(name, cb) {
+
+        self._client[name].call(self._client, self._gid, self._from, self._timeout, cb);
+    }, 'isGroupMember');
+
+    //ServerGate (16)
+    t.call(self, function(name, cb) {
+
+        self._client[name].call(self._client, self._from, self._timeout, cb);
+    }, 'getUserGroups');
+
+    //ServerGate (17)
     t.call(self, function(name, cb) {
 
         self._client[name].call(self._client, self._from, self._timeout, cb);
     }, 'getToken');
 
+    //ServerGate (18)
     t.call(self, function(name, cb) {
 
         self._client[name].call(self._client, self._tos, self._timeout, cb);
     }, 'getOnlineUsers');
 
+    //ServerGate (19)
     t.call(self, function(name, cb) {
 
         self._client[name].call(self._client, self._gid, self._to, 1, self._timeout, cb);
     }, 'addGroupBan');
 
+    //ServerGate (20)
     t.call(self, function(name, cb) {
 
         self._client[name].call(self._client, self._gid, self._to, self._timeout, cb);
     }, 'removeGroupBan');
 
+    //ServerGate (21)
     t.call(self, function(name, cb) {
 
         self._client[name].call(self._client, self._rid, self._to, 1, self._timeout, cb);
     }, 'addRoomBan');
 
+    //ServerGate (22)
     t.call(self, function(name, cb) {
 
         self._client[name].call(self._client, self._rid, self._to, self._timeout, cb);
     }, 'removeRoomBan');
 
+    //ServerGate (23)
     t.call(self, function(name, cb) {
 
         self._client[name].call(self._client, self._from, 1, self._timeout, cb);
     }, 'addProjectBlack');
 
+    //ServerGate (24)
     t.call(self, function(name, cb) {
 
         self._client[name].call(self._client, self._from, self._timeout, cb);
     }, 'removeProjectBlack');
 
+    //ServerGate (25)
     t.call(self, function(name, cb) {
 
         self._client[name].call(self._client, self._gid, self._from, self._timeout, cb);
     }, 'isBanOfGroup');
 
+    //ServerGate (26)
     t.call(self, function(name, cb) {
 
         self._client[name].call(self._client, self._rid, self._from, self._timeout, cb);
     }, 'isBanOfRoom');
 
+    //ServerGate (27)
     t.call(self, function(name, cb) {
 
         self._client[name].call(self._client, self._from, self._timeout, cb);
     }, 'isProjectBlack');
 
+    //ServerGate (28)
     t.call(self, function(name, cb) {
 
-        self._client[name].call(self._client, self._from, self._lat, self._lng, self._timeout, cb);
-    }, 'setGeo');
+        self._client[name].call(self._client, self._from, 'sendfile', null, self._to, null, null, self._timeout, cb);
+    }, 'fileToken');
 
+    //ServerGate (29)
     t.call(self, function(name, cb) {
 
-        self._client[name].call(self._client, self._from, self._timeout, cb);
-    }, 'getGeo');
+        self._client[name].call(self._client, self._gid, false, 10, 0, 0, 0, self._timeout, cb);
+    }, 'getGroupMessage');
 
+    //ServerGate (30)
     t.call(self, function(name, cb) {
 
-        self._client[name].call(self._client, [self._from, self._to], self._timeout, cb);
-    }, 'getGeos');
+        self._client[name].call(self._client, self._rid, false, 10, 0, 0, 0, self._timeout, cb);
+    }, 'getRoomMessage');
 
+    //ServerGate (31)
     t.call(self, function(name, cb) {
 
-        self._client[name].call(self._client, self._from, self._to, 8, self._filePath, self._timeout, cb);
-    }, 'sendFile');
+        self._client[name].call(self._client, false, 10, 0, 0, 0, self._timeout, cb);
+    }, 'getBroadcastMessage');
 
+    //ServerGate (32)
+    t.call(self, function(name, cb) {
+
+        self._client[name].call(self._client, self._from, self._to, false, 10, 0, 0, 0, self._timeout, cb);
+    }, 'getP2PMessage');
+
+    //ServerGate (33)
+    t.call(self, function(name, cb) {
+
+        self._client[name].call(self._client, self._rid, self._from, self._timeout, cb);
+    }, 'addRoomMember');
+
+    //ServerGate (34)
+    t.call(self, function(name, cb) {
+
+        self._client[name].call(self._client, self._rid, self._from, self._timeout, cb);
+    }, 'deleteRoomMember');
+
+    //ServerGate (35)
+    t.call(self, function(name, cb) {
+
+        self._client[name].call(self._client, { rids:[self._rid], p2p:true, events:['login', 'logout'] }, self._timeout, cb);
+    }, 'addEvtListener');
+
+    //ServerGate (36)
+    t.call(self, function(name, cb) {
+
+        self._client[name].call(self._client, { events:['login'] }, self._timeout, cb);
+    }, 'removeEvtListener');
+
+    //ServerGate (37)
+    t.call(self, function(name, cb) {
+
+        self._client[name].call(self._client, true, self._timeout, cb);
+    }, 'setEvtListener');
+/*
+    //ServerGate (37)
+    t.call(self, function(name, cb) {
+
+        self._client[name].call(self._client, false, self._timeout, cb);
+    }, 'setEvtListener');
+
+    //ServerGate (37)
+    t.call(self, function(name, cb) {
+
+        self._client[name].call(self._client, { gids:[self._gid], rids:[], p2p:false, events:[] }, self._timeout, cb);
+    }, 'setEvtListener');
+*/
+    //ServerGate (38)
     t.call(self, function(name, cb) {
 
         self._client[name].call(self._client, self._from, 'app-info', 'device-token', self._timeout, cb);
     }, 'addDevice');
 
+    //ServerGate (39)
     t.call(self, function(name, cb) {
 
         self._client[name].call(self._client, self._from, 'device-token', self._timeout, cb);
     }, 'removeDevice');
+
+    //ServerGate (40)
+    t.call(self, function(name, cb) {
+
+        self._client[name].call(self._client, self._mid, self._from, self._to, 1, self._timeout, cb);
+    }, 'deleteMessage');
+
+    //ServerGate (41)
+    t.call(self, function(name, cb) {
+
+        self._client[name].call(self._client, self._to, null, self._timeout, cb);
+    }, 'kickout');
+
+    //fileGate (1)
+    t.call(self, function(name, cb) {
+
+        self._client[name].call(self._client, self._from, self._to, 50, self._filePath, new Int64BE(0), self._timeout, cb);
+    }, 'sendFile');
+
+    //filegate (2)
+    t.call(self, function(name, cb) {
+
+        self._client[name].call(self._client, self._from, self._tos, 50, self._filePath, new Int64BE(0), self._timeout, cb);
+    }, 'sendFiles');
+
+    //filegate (3)
+    t.call(self, function(name, cb) {
+
+        self._client[name].call(self._client, self._from, self._gid, 50, self._filePath, new Int64BE(0), self._timeout, cb);
+    }, 'sendGroupFile');
+
+    //filegate (4)
+    t.call(self, function(name, cb) {
+
+        self._client[name].call(self._client, self._from, self._rid, 50, self._filePath, new Int64BE(0), self._timeout, cb);
+    }, 'sendRoomFile');
+
+    //filegate (5)
+    t.call(self, function(name, cb) {
+
+        self._client[name].call(self._client, self._from, 50, self._filePath, new Int64BE(0), self._timeout, cb);
+    }, 'broadcastFile');
 
     t.call(self, function(name, cb) {
 
@@ -287,7 +391,7 @@ function t(fn, name) {
 
             if (err) {
 
-                if (err.mid) {
+                if (err.hasOwnProperty('mid')) {
 
                     console.error('\n[ERR] mid:' + err.mid.toString(), name + ':\n', err.error);
                     return;
@@ -298,7 +402,7 @@ function t(fn, name) {
 
             if (data) {
 
-                if (data.mid) {
+                if (data.hasOwnProperty('mid')) {
 
                     console.log('\n[DATA] mid:' + data.mid.toString(), name + ':\n', data.payload);
                     return;

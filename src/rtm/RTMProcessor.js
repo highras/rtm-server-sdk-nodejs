@@ -52,12 +52,12 @@ class RTMProcessor {
     }
 
     /**
+     *  
+     * ServerGate (1)
      * 
-     * @param {number} data.pid
      * @param {Int64BE} data.from
      * @param {Int64BE} data.to
      * @param {number} data.mtype
-     * @param {number} data.ftype
      * @param {Int64BE} data.mid
      * @param {string} data.msg
      * @param {string} data.attrs
@@ -84,72 +84,22 @@ class RTMProcessor {
             }
         }
 
-        if (data.ftype > 0) {
+        if (data.mtype >= 40 && data.mtype <= 50) {
 
             this.emit(RTMConfig.SERVER_PUSH.recvFile, data);
             return;
         }
 
-        delete data.ftype; 
         this.emit(RTMConfig.SERVER_PUSH.recvMessage, data);
     }
 
     /**
+     *  
+     * ServerGate (2)
      * 
-     * @param {number} data.pid
-     * @param {Int64BE} data.from
-     * @param {array<Int64BE>} data.tos
-     * @param {number} data.mtype
-     * @param {number} data.ftype
-     * @param {Int64BE} data.mid
-     * @param {string} data.msg
-     * @param {string} data.attrs
-     */
-    pushmsgs(data) {
-
-        if (data.from) {
-
-            data.from = new Int64BE(data.from);
-        }
-
-        if (data.tos) {
-
-            let buids = [];
-            data.tos.forEach(function(item, index) {
-
-                buids[index] = new Int64BE(item);
-            });
-
-            data.tos = buids;
-        }
-
-        if (data.mid) {
-            
-            data.mid = new Int64BE(data.mid);
-
-            if (!checkMid.call(this, 1, data.mid, data.from)) {
-
-                return;
-            }
-        }
-
-        if (data.ftype > 0) {
-
-            this.emit(RTMConfig.SERVER_PUSH.recvFiles, data);
-            return;
-        }
-
-        delete data.ftype; 
-        this.emit(RTMConfig.SERVER_PUSH.recvMessages, data);
-    }
-
-    /**
-     * 
-     * @param {number} data.pid
      * @param {Int64BE} data.from
      * @param {Int64BE} data.gid
      * @param {number} data.mtype
-     * @param {number} data.ftype
      * @param {Int64BE} data.mid
      * @param {string} data.msg
      * @param {string} data.attrs
@@ -176,23 +126,22 @@ class RTMProcessor {
             data.gid = new Int64BE(data.gid);
         }
 
-        if (data.ftype > 0) {
+        if (data.mtype >= 40 && data.mtype <= 50) {
 
             this.emit(RTMConfig.SERVER_PUSH.recvGroupFile, data);
             return;
         }
 
-        delete data.ftype; 
         this.emit(RTMConfig.SERVER_PUSH.recvGroupMessage, data);
     }
 
     /**
+     *  
+     * ServerGate (3)
      * 
-     * @param {number} data.pid
      * @param {Int64BE} data.from
      * @param {Int64BE} data.rid
      * @param {number} data.mtype
-     * @param {number} data.ftype
      * @param {Int64BE} data.mid
      * @param {string} data.msg
      * @param {string} data.attrs
@@ -219,17 +168,18 @@ class RTMProcessor {
             data.rid = new Int64BE(data.rid);
         }
 
-        if (data.ftype > 0) {
+        if (data.mtype >= 40 && data.mtype <= 50) {
 
             this.emit(RTMConfig.SERVER_PUSH.recvRoomFile, data);
             return;
         }
 
-        delete data.ftype; 
         this.emit(RTMConfig.SERVER_PUSH.recvRoomMessage, data);
     }
 
     /**
+     *  
+     * ServerGate (4)
      * 
      * @param {number} data.pid
      * @param {string} data.event
@@ -249,6 +199,8 @@ class RTMProcessor {
     }
 
     /**
+     *  
+     * ServerGate (5)
      * 
      * @param {object} data 
      */
