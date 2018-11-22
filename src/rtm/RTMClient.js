@@ -2339,6 +2339,14 @@ function fileSendProcess(ops, filePath, mid, callback, timeout) {
         let token = data["token"];
         let endpoint = data["endpoint"];
 
+        let ext = null;
+        let index = filePath.lastIndexOf('.');
+
+        if (index != -1) {
+
+            ext = filePath.slice(index + 1);
+        }
+
         if (!token || !endpoint) {
 
             callback && callback({ mid: mid, error: new Error(JSON.stringify(data)) }, null);
@@ -2380,6 +2388,7 @@ function fileSendProcess(ops, filePath, mid, callback, timeout) {
             let options = {
                 token: token,
                 sign: sign,
+                ext: ext,
                 file: content
             };
 
@@ -2426,14 +2435,19 @@ function sendfile(fileClient, ops, mid, callback, timeout) {
 
     let payload = {
         pid: this._pid,
-        mid: mid,
+        mid: mid
     };
 
     for (let key in ops) {
 
         if (key == 'sign') {
 
-            payload.attrs = JSON.stringify({ sign: ops[key] });
+            payload.attrs = JSON.stringify({ sign: ops.sign, ext: ops.ext });
+            continue;
+        }
+
+        if (key == 'ext') {
+
             continue;
         }
 

@@ -412,6 +412,18 @@ yarn test
         * `err`: **(Error)** 
         * `data`: **(bool)** 
 
+* `fileToken(from, cmd, tos, to, rid, gid, timeout, callback)`: 获取发送文件的token
+    * `from`: **(Required | Int64BE)** 发送方 id
+    * `cmd`: **(Required | string)** 文件发送方式`sendfile | sendfiles | sendroomfile | sendgroupfile | broadcastfile`
+    * `tos`: **(Optional | array[Int64BE])** 接收方 uids
+    * `to`: **(Optional | Int64BE)** 接收方 uid
+    * `rid`: **(Optional | Int64BE)** Room id
+    * `gid`: **(Optional | Int64BE)** Group id
+    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
+    * `callback`: **(Optional | function)** 回调方法, `callback(err, data)`
+        * `err`: **(Error)** 
+        * `data`: **(object[token:string, endpoint:string])** 
+
 * `getGroupMessage(gid, desc, num, begin, end, lastid, timeout, callback)`: 获取Group历史消息
     * `gid`: **(Required | Int64BE)** Group id
     * `desc`: **(Required | bool)** `true`: 则从`end`的时间戳开始倒序翻页, `false`: 则从`begin`的时间戳顺序翻页
@@ -557,7 +569,7 @@ yarn test
         * `data`: **(object)** 
 
 * `deleteMessage(mid, from, xid, type, timeout, callback)`: 删除消息
-    * `mid`: **(Required | Int64BE])** 消息 id
+    * `mid`: **(Required | Int64BE)** 消息 id
     * `from`: **(Required | Int64BE)** 发送方 id
     * `xid`: **(Required | Int64BE)** 接收放 id, `rid/gid/to`
     * `type`: **(Required | number)** 消息发送分类 `1:P2P, 2:Group, 3:Room, 4:Broadcast`
@@ -567,7 +579,7 @@ yarn test
         * `data`: **(object)** 
 
 * `kickout(uid, ce, timeout, callback)`: 踢掉一个用户或者一个链接
-    * `uid`: **(Required | Int64BE])** 用户 id
+    * `uid`: **(Required | Int64BE)** 用户 id
     * `ce`: **(Optional | string)** 踢掉`ce`对应链接, 多用户登录情况
     * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
     * `callback`: **(Optional | function)** 回调方法, `callback(err, data)`
@@ -577,7 +589,7 @@ yarn test
 * `sendFile(from, to, mtype, filePath, mid, timeout, callback)`: 发送文件
     * `from`: **(Required | Int64BE)** 发送方 id
     * `to`: **(Required | Int64BE)** 接收方 uid
-    * `mtype`: **(Required | number)** 消息类型
+    * `mtype`: **(Required | number)** 文件类型
     * `filePath`: **(Required | string)** 文件路径 
     * `mid`: **(Optional | Int64BE)** 消息 id, 用于过滤重复消息, 非重发时为`Int64BE(0)`
     * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
@@ -588,7 +600,7 @@ yarn test
 * `sendFiles(from, tos, mtype, filepath, mid, timeout, callback)`: 给多人发送文件
     * `from`: **(Required | Int64BE)** 发送方 id
     * `tos`: **(Required | array<Int64BE>)** 接收方 uids
-    * `mtype`: **(Required | number)** 消息类型
+    * `mtype`: **(Required | number)** 文件类型
     * `filePath`: **(Required | string)** 文件路径 
     * `mid`: **(Optional | Int64BE)** 消息 id, 用于过滤重复消息, 非重发时为`Int64BE(0)`
     * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
@@ -599,7 +611,7 @@ yarn test
 * `sendGroupFile(from, gid, mtype, filepath, mid, timeout, callback)`: 给Group发送文件
     * `from`: **(Required | Int64BE)** 发送方 id
     * `gid`: **(Required | Int64BE)** Group id 
-    * `mtype`: **(Required | number)** 消息类型
+    * `mtype`: **(Required | number)** 文件类型
     * `filePath`: **(Required | string)** 文件路径 
     * `mid`: **(Optional | Int64BE)** 消息 id, 用于过滤重复消息, 非重发时为`Int64BE(0)`
     * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
@@ -610,7 +622,7 @@ yarn test
 * `sendRoomFile(from, rid, mtype, filepath, mid, timeout, callback)`: 给Room发送文件
     * `from`: **(Required | Int64BE)** 发送方 id
     * `rid`: **(Required | Int64BE)** Room id 
-    * `mtype`: **(Required | number)** 消息类型
+    * `mtype`: **(Required | number)** 文件类型
     * `filePath`: **(Required | string)** 文件路径 
     * `mid`: **(Optional | Int64BE)** 消息 id, 用于过滤重复消息, 非重发时为`Int64BE(0)`
     * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
@@ -620,7 +632,7 @@ yarn test
 
 * `broadcastFile(from, mtype, filepath, mid, timeout, callback)`: 给整个Project发送文件
     * `from`: **(Required | Int64BE)** Admin id
-    * `mtype`: **(Required | number)** 消息类型
+    * `mtype`: **(Required | number)** 文件类型
     * `filePath`: **(Required | string)** 文件路径 
     * `mid`: **(Optional | Int64BE)** 消息 id, 用于过滤重复消息, 非重发时为`Int64BE(0)`
     * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`

@@ -387,28 +387,33 @@ function t(fn, name) {
 
     setTimeout(function() {
 
+        if (name) {
+
+            console.log('\n[TEST] ' + name + ':');
+        }
+
         var cb = function(err, data) {
 
             if (err) {
 
                 if (err.hasOwnProperty('mid')) {
 
-                    console.error('\n[ERR] mid:' + err.mid.toString(), name + ':\n', err.error);
+                    console.error('\n mid:' + err.mid.toString(), err.error);
                     return;
                 }
 
-                console.error('\n[ERR] ' + name + ':\n', err);
+                console.error('\n ', err);
             }
 
             if (data) {
 
                 if (data.hasOwnProperty('mid')) {
 
-                    console.log('\n[DATA] mid:' + data.mid.toString(), name + ':\n', data.payload);
+                    console.log('\n mid:' + data.mid.toString(), data.payload);
                     return;
                 }
 
-                console.log('\n[DATA] ' + name + ':\n', data);
+                console.log('\n ', data);
             }
         };
 
