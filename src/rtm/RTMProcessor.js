@@ -48,7 +48,6 @@ class RTMProcessor {
     destroy() {
 
         this._map = {};
-        this.removeAllListeners();
     }
 
     /**
@@ -61,6 +60,7 @@ class RTMProcessor {
      * @param {Int64BE} data.mid
      * @param {string} data.msg
      * @param {string} data.attrs
+     * @param {Int64BE} data.mtime
      */
     pushmsg(data) {
 
@@ -72,6 +72,11 @@ class RTMProcessor {
         if (data.to) {
 
             data.to = new Int64BE(data.to);
+        }
+
+        if (data.mtime) {
+
+            data.mtime = new Int64BE(data.mtime);
         }
 
         if (data.mid) {
@@ -103,12 +108,23 @@ class RTMProcessor {
      * @param {Int64BE} data.mid
      * @param {string} data.msg
      * @param {string} data.attrs
+     * @param {Int64BE} data.mtime
      */
     pushgroupmsg(data) {
 
         if (data.from) {
 
             data.from = new Int64BE(data.from);
+        }
+
+        if (data.gid) {
+
+            data.gid = new Int64BE(data.gid);
+        }
+
+        if (data.mtime) {
+
+            data.mtime = new Int64BE(data.mtime);
         }
 
         if (data.mid) {
@@ -119,11 +135,6 @@ class RTMProcessor {
 
                 return;
             }
-        }
-
-        if (data.gid) {
-
-            data.gid = new Int64BE(data.gid);
         }
 
         if (data.mtype >= 40 && data.mtype <= 50) {
@@ -145,12 +156,23 @@ class RTMProcessor {
      * @param {Int64BE} data.mid
      * @param {string} data.msg
      * @param {string} data.attrs
+     * @param {Int64BE} data.mtime
      */
     pushroommsg(data) {
 
         if (data.from) {
 
             data.from = new Int64BE(data.from);
+        }
+
+        if (data.rid) {
+
+            data.rid = new Int64BE(data.rid);
+        }
+
+        if (data.mtime) {
+
+            data.mtime = new Int64BE(data.mtime);
         }
 
         if (data.mid) {
@@ -161,11 +183,6 @@ class RTMProcessor {
 
                 return;
             }
-        }
-
-        if (data.rid) {
-
-            data.rid = new Int64BE(data.rid);
         }
 
         if (data.mtype >= 40 && data.mtype <= 50) {
@@ -214,13 +231,13 @@ function checkMid(type, mid, uid, rgid) {
 
     let arr = [];
     
-    arr.push(type);
-    arr.push(mid);
-    arr.push(uid);
+    arr.push(type.toString());
+    arr.push(mid.toString());
+    arr.push(uid.toString());
     
     if (rgid != undefined) {
     
-        arr.push(rgid);
+        arr.push(rgid.toString());
     }
     
     let key = arr.join('_');

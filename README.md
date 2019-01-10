@@ -107,6 +107,7 @@ yarn test
     * `data.mid`: **(Int64BE)** 消息 id, 当前链接会话内唯一
     * `data.msg`: **(string)** 消息内容
     * `data.attrs`: **(string)** 发送时附加的自定义内容
+    * `data.mtime`: **(Int64BE)**
 
 * `pushgroupmsg`: RTMGate主动推送Group消息
     * `data.from`: **(Int64BE)** 发送者 id
@@ -115,6 +116,7 @@ yarn test
     * `data.mid`: **(Int64BE)** 消息 id, 当前链接会话内唯一
     * `data.msg`: **(string)** 消息内容
     * `data.attrs`: **(string)** 发送时附加的自定义内容
+    * `data.mtime`: **(Int64BE)**
 
 * `pushroommsg`: RTMGate主动推送Room消息
     * `data.from`: **(Int64BE)** 发送者 id
@@ -123,6 +125,7 @@ yarn test
     * `data.mid`: **(Int64BE)** 消息 id, 当前链接会话内唯一
     * `data.msg`: **(string)** 消息内容
     * `data.attrs`: **(string)** 发送时附加的自定义内容
+    * `data.mtime`: **(Int64BE)**
 
 * `pushfile`: RTMGate主动推送P2P文件
     * `data.from`: **(Int64BE)** 发送者 id
@@ -131,6 +134,7 @@ yarn test
     * `data.mid`: **(Int64BE)** 消息 id, 当前链接会话内唯一
     * `data.msg`: **(string)** 文件获取地址(url)
     * `data.attrs`: **(string)** 发送时附加的自定义内容
+    * `data.mtime`: **(Int64BE)**
 
 * `pushgroupfile`: RTMGate主动推送Group文件
     * `data.from`: **(Int64BE)** 发送者 id
@@ -139,6 +143,7 @@ yarn test
     * `data.mid`: **(Int64BE)** 消息 id, 当前链接会话内唯一
     * `data.msg`: **(string)** 文件获取地址(url)
     * `data.attrs`: **(string)** 发送时附加的自定义内容
+    * `data.mtime`: **(Int64BE)**
 
 * `pushroomfile`: RTMGate主动推送Room文件
     * `data.from`: **(Int64BE)** 发送者 id
@@ -147,6 +152,7 @@ yarn test
     * `data.mid`: **(Int64BE)** 消息 id, 当前链接会话内唯一
     * `data.msg`: **(string)** 文件获取地址(url)
     * `data.attrs`: **(string)** 发送时附加的自定义内容
+    * `data.mtime`: **(Int64BE)**
 
 * `pushevent`: RTMGate主动推送事件 
     * `data.pid`: **(number)** 应用编号
