@@ -2585,7 +2585,7 @@ function sendQuest(client, options, callback, timeout) {
         
         if (err) {
 
-            callback && callback(data, null);
+            callback && callback(err, null);
             return;
         }
 
