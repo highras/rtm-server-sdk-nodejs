@@ -29,7 +29,6 @@ class RTMClient {
         this._secretKey = options.secretKey;
 
         this._midSeq = 0;
-        this._saltSeq = 0;
 
         this._baseClient = new FPClient({ 
             host: options.host, 
@@ -72,7 +71,6 @@ class RTMClient {
     destroy() {
 
         this._midSeq = 0;
-        this._saltSeq = 0;
 
         if (this._processor) {
 
@@ -172,7 +170,7 @@ class RTMClient {
      */
     sendMessage(from, to, mtype, msg, attrs, mid, timeout, callback) {
         
-        let salt = genSalt.call(this);
+        let salt = genMid.call(this);
 
         if (!mid || mid.toString() == '0') {
 
@@ -233,7 +231,7 @@ class RTMClient {
      */
     sendMessages(from, tos, mtype, msg, attrs, mid, timeout, callback) {
 
-        let salt = genSalt.call(this);
+        let salt = genMid.call(this);
 
         if (!mid || mid.toString() == '0') {
 
@@ -294,7 +292,7 @@ class RTMClient {
      */
     sendGroupMessage(from, gid, mtype, msg, attrs, mid, timeout, callback) {
 
-        let salt = genSalt.call(this);
+        let salt = genMid.call(this);
 
         if (!mid || mid.toString() == '0') {
 
@@ -355,7 +353,7 @@ class RTMClient {
      */
     sendRoomMessage(from, rid, mtype, msg, attrs, mid, timeout, callback) {
 
-        let salt = genSalt.call(this);
+        let salt = genMid.call(this);
 
         if (!mid || mid.toString() == '0') {
 
@@ -415,7 +413,7 @@ class RTMClient {
      */
     broadcastMessage(from, mtype, msg, attrs, mid, timeout, callback) {
 
-        let salt = genSalt.call(this);
+        let salt = genMid.call(this);
 
         if (!mid || mid.toString() == '0') {
 
@@ -471,7 +469,7 @@ class RTMClient {
      */
     addFriends(uid, friends, timeout, callback) {
 
-        let salt = genSalt.call(this);
+        let salt = genMid.call(this);
 
         let payload = {
             pid: this._pid,
@@ -505,7 +503,7 @@ class RTMClient {
      */
     deleteFriends(uid, friends, timeout, callback) {
 
-        let salt = genSalt.call(this);
+        let salt = genMid.call(this);
 
         let payload = {
             pid: this._pid,
@@ -538,7 +536,7 @@ class RTMClient {
      */
     getFriends(uid, timeout, callback) {
 
-        let salt = genSalt.call(this);
+        let salt = genMid.call(this);
 
         let payload = {
             pid: this._pid,
@@ -593,7 +591,7 @@ class RTMClient {
      */
     isFriend(uid, fuid, timeout, callback) {
 
-        let salt = genSalt.call(this);
+        let salt = genMid.call(this);
 
         let payload = {
             pid: this._pid,
@@ -643,7 +641,7 @@ class RTMClient {
      */
     isFriends(uid, fuids, timeout, callback) {
 
-        let salt = genSalt.call(this);
+        let salt = genMid.call(this);
 
         let payload = {
             pid: this._pid,
@@ -699,7 +697,7 @@ class RTMClient {
      */
     addGroupMembers(gid, uids, timeout, callback) {
 
-        let salt = genSalt.call(this);
+        let salt = genMid.call(this);
 
         let payload = {
             pid: this._pid,
@@ -733,7 +731,7 @@ class RTMClient {
      */
     deleteGroupMembers(gid, uids, timeout, callback) {
 
-        let salt = genSalt.call(this);
+        let salt = genMid.call(this);
 
         let payload = {
             pid: this._pid,
@@ -766,7 +764,7 @@ class RTMClient {
      */
     deleteGroup(gid, timeout, callback) {
 
-        let salt = genSalt.call(this);
+        let salt = genMid.call(this);
 
         let payload = {
             pid: this._pid,
@@ -798,7 +796,7 @@ class RTMClient {
      */
     getGroupMembers(gid, timeout, callback) {
         
-        let salt = genSalt.call(this);
+        let salt = genMid.call(this);
 
         let payload = {
             pid: this._pid,
@@ -853,7 +851,7 @@ class RTMClient {
      */
     isGroupMember(gid, uid, timeout, callback) {
 
-        let salt = genSalt.call(this);
+        let salt = genMid.call(this);
 
         let payload = {
             pid: this._pid,
@@ -902,7 +900,7 @@ class RTMClient {
      */
     getUserGroups(uid, timeout, callback) {
 
-        let salt = genSalt.call(this);
+        let salt = genMid.call(this);
 
         let payload = {
             pid: this._pid,
@@ -956,7 +954,7 @@ class RTMClient {
      */
     getToken(uid, timeout, callback) {
 
-        let salt = genSalt.call(this);
+        let salt = genMid.call(this);
 
         let payload = {
             pid: this._pid,
@@ -1004,7 +1002,7 @@ class RTMClient {
      */
     getOnlineUsers(uids, timeout, callback) {
 
-        let salt = genSalt.call(this);
+        let salt = genMid.call(this);
 
         let payload = {
             pid: this._pid,
@@ -1060,7 +1058,7 @@ class RTMClient {
      */
     addGroupBan(gid, uid, btime, timeout, callback) {
 
-        let salt = genSalt.call(this);
+        let salt = genMid.call(this);
 
         let payload = {
             pid: this._pid,
@@ -1095,7 +1093,7 @@ class RTMClient {
      */
     removeGroupBan(gid, uid, timeout, callback) {
 
-        let salt = genSalt.call(this);
+        let salt = genMid.call(this);
 
         let payload = {
             pid: this._pid,
@@ -1130,7 +1128,7 @@ class RTMClient {
      */
     addRoomBan(rid, uid, btime, timeout, callback) {
 
-        let salt = genSalt.call(this);
+        let salt = genMid.call(this);
 
         let payload = {
             pid: this._pid,
@@ -1165,7 +1163,7 @@ class RTMClient {
      */
     removeRoomBan(rid, uid, timeout, callback) {
 
-        let salt = genSalt.call(this);
+        let salt = genMid.call(this);
 
         let payload = {
             pid: this._pid,
@@ -1199,7 +1197,7 @@ class RTMClient {
      */
     addProjectBlack(uid, btime, timeout, callback) {
 
-        let salt = genSalt.call(this);
+        let salt = genMid.call(this);
 
         let payload = {
             pid: this._pid,
@@ -1232,7 +1230,7 @@ class RTMClient {
      */
     removeProjectBlack(uid, timeout, callback) {
 
-        let salt = genSalt.call(this);
+        let salt = genMid.call(this);
 
         let payload = {
             pid: this._pid,
@@ -1265,7 +1263,7 @@ class RTMClient {
      */
     isBanOfGroup(gid, uid, timeout, callback) {
 
-        let salt = genSalt.call(this);
+        let salt = genMid.call(this);
 
         let payload = {
             pid: this._pid,
@@ -1315,7 +1313,7 @@ class RTMClient {
      */
     isBanOfRoom(rid, uid, timeout, callback) {
 
-        let salt = genSalt.call(this);
+        let salt = genMid.call(this);
 
         let payload = {
             pid: this._pid,
@@ -1364,7 +1362,7 @@ class RTMClient {
      */
     isProjectBlack(uid, timeout, callback) {
 
-        let salt = genSalt.call(this);
+        let salt = genMid.call(this);
 
         let payload = {
             pid: this._pid,
@@ -1474,7 +1472,7 @@ class RTMClient {
      */
     getGroupMessage(gid, desc, num, begin, end, lastid, timeout, callback) {
         
-        let salt = genSalt.call(this);
+        let salt = genMid.call(this);
 
         let payload = {
             pid: this._pid,
@@ -1566,7 +1564,7 @@ class RTMClient {
      */
     getRoomMessage(rid, desc, num, begin, end, lastid, timeout, callback) {
 
-        let salt = genSalt.call(this);
+        let salt = genMid.call(this);
 
         let payload = {
             pid: this._pid,
@@ -1657,7 +1655,7 @@ class RTMClient {
      */
     getBroadcastMessage(desc, num, begin, end, lastid, timeout, callback) {
 
-        let salt = genSalt.call(this);
+        let salt = genMid.call(this);
 
         let payload = {
             pid: this._pid,
@@ -1749,7 +1747,7 @@ class RTMClient {
      */
     getP2PMessage(uid, ouid, desc, num, begin, end, lastid, timeout, callback) {
 
-        let salt = genSalt.call(this);
+        let salt = genMid.call(this);
 
         let payload = {
             pid: this._pid,
@@ -1828,7 +1826,7 @@ class RTMClient {
      */
     addRoomMember(rid, uid, timeout, callback) {
 
-        let salt = genSalt.call(this);
+        let salt = genMid.call(this);
 
         let payload = {
             pid: this._pid,
@@ -1862,7 +1860,7 @@ class RTMClient {
      */
     deleteRoomMember(rid, uid, timeout, callback) {
 
-        let salt = genSalt.call(this);
+        let salt = genMid.call(this);
 
         let payload = {
             pid: this._pid,
@@ -1898,7 +1896,7 @@ class RTMClient {
      */
     addEvtListener(opts, timeout, callback) {
 
-        let salt = genSalt.call(this);
+        let salt = genMid.call(this);
 
         let payload = {
             pid: this._pid,
@@ -1952,7 +1950,7 @@ class RTMClient {
      */
     removeEvtListener(opts, timeout, callback) {
         
-        let salt = genSalt.call(this);
+        let salt = genMid.call(this);
 
         let payload = {
             pid: this._pid,
@@ -2007,7 +2005,7 @@ class RTMClient {
      */
     setEvtListener(opts, timeout, callback) {
 
-        let salt = genSalt.call(this);
+        let salt = genMid.call(this);
 
         let payload = {
             pid: this._pid,
@@ -2050,7 +2048,7 @@ class RTMClient {
      */
     addDevice(uid, apptype, devicetoken, timeout, callback) {
 
-        let salt = genSalt.call(this);
+        let salt = genMid.call(this);
 
         let payload = {
             pid: this._pid,
@@ -2085,7 +2083,7 @@ class RTMClient {
      */
     removeDevice(uid, devicetoken, timeout, callback) {
 
-        let salt = genSalt.call(this);
+        let salt = genMid.call(this);
 
         let payload = {
             pid: this._pid,
@@ -2121,7 +2119,7 @@ class RTMClient {
      */
     deleteMessage(mid, from, xid, type, timeout, callback) {
 
-        let salt = genSalt.call(this);
+        let salt = genMid.call(this);
 
         let payload = {
             pid: this._pid,
@@ -2157,7 +2155,7 @@ class RTMClient {
      */
     kickout(uid, ce, timeout, callback) {
 
-        let salt = genSalt.call(this);
+        let salt = genMid.call(this);
 
         let payload = {
             pid: this._pid,
@@ -2404,7 +2402,7 @@ function fileSendProcess(ops, filePath, mid, callback, timeout) {
 
 function filetoken(ops, callback, timeout) {
 
-    let salt = genSalt.call(this);
+    let salt = genMid.call(this);
 
     let payload = {
         pid: this._pid,
@@ -2491,17 +2489,19 @@ function genMid() {
         this._midSeq = 0;
     }
 
-    return new Int64BE(Date.now().toString() + this._midSeq);
-}
+    let strFix = this._midSeq.toString();
 
-function genSalt() {
+    if (this._midSeq < 100) {
 
-    if (++this._saltSeq >= 999) {
-
-        this._saltSeq = 0;
+        strFix = '0' + strFix;
     }
 
-    return new Int64BE(Date.now().toString() + this._saltSeq);
+    if (this._midSeq < 10) {
+
+        strFix = '0' + strFix;
+    } 
+
+    return new Int64BE(Date.now().toString() + strFix);
 }
 
 function genSign(salt) {
