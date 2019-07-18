@@ -296,7 +296,7 @@ function onConnect() {
     //ServerGate (35)
     t.call(self, function(name, cb) {
 
-        self._client[name].call(self._client, { rids:[self._rid], p2p:true, events:['login', 'logout'] }, self._timeout, cb);
+        self._client[name].call(self._client, { rids:[self._rid], uids:[self._tos], events:['login', 'logout'] }, self._timeout, cb);
     }, 'addEvtListener');
 
     //ServerGate (36)
@@ -308,19 +308,19 @@ function onConnect() {
     //ServerGate (37)
     t.call(self, function(name, cb) {
 
-        self._client[name].call(self._client, true, self._timeout, cb);
+        self._client[name].call(self._client, { p2p:true, group:true, room:true, ev:true } self._timeout, cb);
     }, 'setEvtListener');
 /*
     //ServerGate (37)
     t.call(self, function(name, cb) {
 
-        self._client[name].call(self._client, false, self._timeout, cb);
+        self._client[name].call(self._client, { p2p:false, group:false, room:false, ev:false }, self._timeout, cb);
     }, 'setEvtListener');
 
     //ServerGate (37)
     t.call(self, function(name, cb) {
 
-        self._client[name].call(self._client, { gids:[self._gid], rids:[], p2p:false, events:[] }, self._timeout, cb);
+        self._client[name].call(self._client, { gids:[self._gid], rids:[], uids:[] events:[] }, self._timeout, cb);
     }, 'setEvtListener');
 */
     //ServerGate (38)

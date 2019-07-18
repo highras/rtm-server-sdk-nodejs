@@ -1885,7 +1885,7 @@ class RTMClient {
      * 
      * @param {array<Int64BE>} opts.gids 
      * @param {array<Int64BE>} opts.rids 
-     * @param {bool} opts.p2p 
+     * @param {array<Int64BE>} opts.uids 
      * @param {array<string>} opts.events 
      * @param {number} timeout 
      * @param {function} callback 
@@ -1914,9 +1914,9 @@ class RTMClient {
             payload.rids = opts.rids;
         }
 
-        if (opts.p2p) {
+        if (opts.uids) {
 
-            payload.p2p = true;
+            payload.uids = opts.uids;
         }
 
         if (opts.events) {
@@ -1939,7 +1939,7 @@ class RTMClient {
      * 
      * @param {array<Int64BE>} opts.gids 
      * @param {array<Int64BE>} opts.rids 
-     * @param {bool} opts.p2p 
+     * @param {array<Int64BE>} opts.uids 
      * @param {array<string>} opts.events 
      * @param {number} timeout 
      * @param {function} callback 
@@ -1968,9 +1968,9 @@ class RTMClient {
             payload.rids = opts.rids;
         }
 
-        if (opts.p2p) {
+        if (opts.uids) {
 
-            payload.p2p = true;
+            payload.uids = opts.uids;
         }
 
         if (opts.events) {
@@ -1991,10 +1991,13 @@ class RTMClient {
      *  
      * ServerGate (37)
      * 
-     * @param {bool} opts 
+     * @param {bool} opts.p2p
+     * @param {bool} opts.group
+     * @param {bool} opts.room
+     * @param {bool} opts.ev
      * @param {array<Int64BE>} opts.gids 
      * @param {array<Int64BE>} opts.rids 
-     * @param {bool} opts.p2p 
+     * @param {array<Int64BE>} opts.uids 
      * @param {array<string>} opts.events 
      * @param {number} timeout 
      * @param {function} callback 
@@ -2018,10 +2021,49 @@ class RTMClient {
             payload.all = opts;
         }
 
-        payload.gids = opts.gids || [];
-        payload.rids = opts.rids || [];
-        payload.p2p = opts.p2p || false;
-        payload.events = opts.events || [];
+        if (opts.p2p !== undefined && typeof(opts.p2p) == 'boolean') {
+
+            payload.p2p = opts.p2p;
+        } else {
+
+            if (opts.uids) {
+
+                payload.uids = opts.uids;
+            }
+        }
+
+        if (opts.group !== undefined && typeof(opts.group) == 'boolean') {
+
+            payload.group = opts.group;
+        } else {
+
+            if (opts.gids) {
+            
+                payload.gids = opts.gids;
+            }
+        }
+
+        if (opts.room !== undefined && typeof(opts.room) == 'boolean') {
+
+            payload.room = opts.room;
+        } else {
+
+            if (opts.rids) {
+
+                payload.rids = opts.rids;
+            }
+        }
+
+        if (opts.ev !== undefined && typeof(opts.ev) == 'boolean') {
+
+            payload.ev = opts.ev;
+        } else {
+
+            if (opts.events) {
+
+                payload.events = opts.events;
+            }
+        }
 
         let options = {
             flag: 1,
