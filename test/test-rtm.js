@@ -1,6 +1,7 @@
 'use strict'
 
 const TestCase = require('./TestCase');
+const RTMClient = require('../src/rtm/RTMClient');
 
 RTMClient.RTMRegistration.register();
 baseTest.call(this);
