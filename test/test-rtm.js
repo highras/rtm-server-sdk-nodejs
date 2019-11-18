@@ -2,6 +2,7 @@
 
 const TestCase = require('./TestCase');
 
+RTMClient.RTMRegistration.register();
 baseTest.call(this);
 
 function baseTest() {

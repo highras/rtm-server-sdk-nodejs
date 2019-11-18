@@ -1687,7 +1687,7 @@ class RTMClient {
         if (gid !== undefined) {
             options.gid = gid;
         }
-        filetoken.call(this, options, callback, timeout);
+        filetoken.call(this, options, timeout, callback);
     }
 
     /**
@@ -3290,7 +3290,7 @@ function fileSendProcess(ops, mid, timeout, callback) {
         payload.gid = ops.gid;
     }
     let self = this;
-    filetoken.call(this, payload, function (err, data) {
+    filetoken.call(this, payload, timeout, function (err, data) {
         if (err) {
             callback && callback({
                 mid: mid,
@@ -3341,17 +3341,17 @@ function fileSendProcess(ops, mid, timeout, callback) {
         options.onConnect = function () {
             ops.token = token;
             ops.sign = sign;
-            sendfile.call(self, fileClient, ops, mid, callback, timeout);
+            sendfile.call(self, fileClient, ops, mid, timeout, callback);
         };
         options.onError = function (err) {
             onError.call(self, err);
         };
         let fileClient = new FPClient(options);
         fileClient.connect();
-    }, timeout);
+    });
 }
 
-function filetoken(ops, callback, timeout) {
+function filetoken(ops, timeout, callback) {
     let cmd = 'filetoken';
     let ts = FPManager.instance.timestamp;
     let salt = RTMClient.MidGenerator.gen();
@@ -3372,7 +3372,7 @@ function filetoken(ops, callback, timeout) {
     sendQuest.call(this, this._baseClient, cmd, payload, callback, timeout);
 }
 
-function sendfile(fileClient, ops, mid, callback, timeout) {
+function sendfile(fileClient, ops, mid, timeout, callback) {
     if (ops.cmd === undefined) {
         callback && callback(new Error('wrong cmd!'));
         return;
