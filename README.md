@@ -64,12 +64,12 @@ client.on('close', function() {
 
 //添加推送监听
 let pushName = RTMConfig.SERVER_PUSH.recvMessage;
-client.processor.on(pushName, function(data) {
+client.processor.addPushService(pushName, function(data) {
     console.log('[PUSH] ' + pushName + ': ', data);
 });
 
 // 开启连接
-client.enableConnect();
+client.connect();
 
 //destroy
 //client.destroy();
