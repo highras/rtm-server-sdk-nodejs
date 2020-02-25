@@ -121,6 +121,11 @@ class RTMClient {
         }
         createBaseClient.call(this);
         if (this._baseClient) {
+            if (!peerPubData) {
+                this._encryptInfo = null;
+                this._baseClient.connect(null, options);
+                return;
+            }
             let succ = this._baseClient.encryptor(options.curve, peerPubData, options.streamMode, options.strength);
             if (succ) {
                 this._encryptInfo = new RTMClient.EncryptInfo(peerPubData, options);
