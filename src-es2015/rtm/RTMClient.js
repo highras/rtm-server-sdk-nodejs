@@ -1,4 +1,4 @@
-'use strict'
+'use strict';
 
 const fs = require('fs');
 const msgpack = require("msgpack-lite");
@@ -80,7 +80,7 @@ class RTMClient {
         }
         this.emit('close', !this._isClose && this._reconnect);
         let self = this;
-        FPManager.instance.asyncTask(function(state){
+        FPManager.instance.asyncTask(function (state) {
             self.removeAllListeners();
         }, null);
 
@@ -108,7 +108,7 @@ class RTMClient {
         if (!options) {
             options = {};
         }
-        if (typeof(peerPubData) == 'string') {
+        if (typeof peerPubData == 'string') {
             let self = this;
             fs.readFile(peerPubData, function (err, data) {
                 if (err) {
@@ -134,7 +134,7 @@ class RTMClient {
                         publicKey: fpEncryptor.pubKey,
                         streamMode: fpEncryptor.streamMode,
                         bits: fpEncryptor.strength
-                    })
+                    });
                 });
             } else {
                 this._encryptInfo = null;
@@ -955,7 +955,7 @@ class RTMClient {
             mid: mid,
             from: from,
             xid: to,
-            type: 1 
+            type: 1
         };
         sendQuest.call(this, this._baseClient, cmd, payload, callback, timeout);
     }
@@ -988,7 +988,7 @@ class RTMClient {
             mid: mid,
             from: from,
             xid: gid,
-            type: 2 
+            type: 2
         };
         sendQuest.call(this, this._baseClient, cmd, payload, callback, timeout);
     }
@@ -1021,7 +1021,7 @@ class RTMClient {
             mid: mid,
             from: from,
             xid: rid,
-            type: 3 
+            type: 3
         };
         sendQuest.call(this, this._baseClient, cmd, payload, callback, timeout);
     }
@@ -1052,8 +1052,8 @@ class RTMClient {
             pid: this._pid,
             mid: mid,
             from: from,
-            xid: 0, 
-            type: 4 
+            xid: 0,
+            type: 4
         };
         sendQuest.call(this, this._baseClient, cmd, payload, callback, timeout);
     }
@@ -1382,7 +1382,7 @@ class RTMClient {
      * @param {Int64BE}     GroupMsg.mtime
      */
     getGroupChat(gid, desc, num, begin, end, lastid, timeout, callback) {
-        let mtypes = [ RTMConfig.CHAT_TYPE.text, RTMConfig.CHAT_TYPE.audio, RTMConfig.CHAT_TYPE.cmd ];
+        let mtypes = [RTMConfig.CHAT_TYPE.text, RTMConfig.CHAT_TYPE.audio, RTMConfig.CHAT_TYPE.cmd];
         this.getGroupMessage(gid, desc, num, begin, end, lastid, mtypes, timeout, callback);
     }
 
@@ -1413,7 +1413,7 @@ class RTMClient {
      * @param {Int64BE}     RoomMsg.mtime
      */
     getRoomChat(rid, desc, num, begin, end, lastid, timeout, callback) {
-        let mtypes = [ RTMConfig.CHAT_TYPE.text, RTMConfig.CHAT_TYPE.audio, RTMConfig.CHAT_TYPE.cmd ];
+        let mtypes = [RTMConfig.CHAT_TYPE.text, RTMConfig.CHAT_TYPE.audio, RTMConfig.CHAT_TYPE.cmd];
         this.getRoomMessage(rid, desc, num, begin, end, lastid, mtypes, timeout, callback);
     }
 
@@ -1443,7 +1443,7 @@ class RTMClient {
      * @param {Int64BE}     BroadcastMsg.mtime
      */
     getBroadcastChat(desc, num, begin, end, lastid, timeout, callback) {
-        let mtypes = [ RTMConfig.CHAT_TYPE.text, RTMConfig.CHAT_TYPE.audio, RTMConfig.CHAT_TYPE.cmd ];
+        let mtypes = [RTMConfig.CHAT_TYPE.text, RTMConfig.CHAT_TYPE.audio, RTMConfig.CHAT_TYPE.cmd];
         this.getBroadcastMessage(desc, num, begin, end, lastid, mtypes, timeout, callback);
     }
 
@@ -1475,7 +1475,7 @@ class RTMClient {
      * @param {Int64BE}     P2PMsg.mtime
      */
     getP2PChat(uid, ouid, desc, num, begin, end, lastid, timeout, callback) {
-        let mtypes = [ RTMConfig.CHAT_TYPE.text, RTMConfig.CHAT_TYPE.audio, RTMConfig.CHAT_TYPE.cmd ];
+        let mtypes = [RTMConfig.CHAT_TYPE.text, RTMConfig.CHAT_TYPE.audio, RTMConfig.CHAT_TYPE.cmd];
         this.getP2PMessage(uid, ouid, desc, num, begin, end, lastid, mtypes, timeout, callback);
     }
 
@@ -1664,7 +1664,7 @@ class RTMClient {
             sign: sign,
             pid: this._pid,
             audio: audio,
-            lang: lang 
+            lang: lang
         };
         if (uid !== undefined) {
             payload.uid = uid;
@@ -1699,7 +1699,7 @@ class RTMClient {
         let options = {
             from: from,
             cmd: cmd
-        }
+        };
         if (tos !== undefined) {
             options.tos = tos;
         }
@@ -2824,28 +2824,28 @@ class RTMClient {
             sign: sign,
             pid: this._pid
         };
-        if (opts.p2p !== undefined && typeof(opts.p2p) == 'boolean') {
+        if (opts.p2p !== undefined && typeof opts.p2p == 'boolean') {
             payload.p2p = opts.p2p;
         } else {
             if (opts.uids !== undefined) {
                 payload.uids = opts.uids;
             }
         }
-        if (opts.group !== undefined && typeof(opts.group) == 'boolean') {
+        if (opts.group !== undefined && typeof opts.group == 'boolean') {
             payload.group = opts.group;
         } else {
             if (opts.gids !== undefined) {
                 payload.gids = opts.gids;
             }
         }
-        if (opts.room !== undefined && typeof(opts.room) == 'boolean') {
+        if (opts.room !== undefined && typeof opts.room == 'boolean') {
             payload.room = opts.room;
         } else {
             if (opts.rids !== undefined) {
                 payload.rids = opts.rids;
             }
         }
-        if (opts.ev !== undefined && typeof(opts.ev) == 'boolean') {
+        if (opts.ev !== undefined && typeof opts.ev == 'boolean') {
             payload.ev = opts.ev;
         } else {
             if (opts.events !== undefined) {
@@ -3130,10 +3130,10 @@ function initProcessor() {
     this._processor = new RTMProcessor(this._msgOptions);
     let self = this;
     this._secondListener = function (timestamp) {
-        onSecond.call(self, timestamp)
+        onSecond.call(self, timestamp);
     };
     FPManager.instance.addSecond(this._secondListener);
-    ErrorRecorder.instance.recorder = new RTMClient.RTMErrorRecorder(function(err){
+    ErrorRecorder.instance.recorder = new RTMClient.RTMErrorRecorder(function (err) {
         self.emit('err', err);
     }, this._debug);
 }
@@ -3157,8 +3157,8 @@ function createBaseClient() {
         let options = {
             host: this._host,
             port: this._port,
-            connectionTimeout: this._timeout,
-        }
+            connectionTimeout: this._timeout
+        };
         let self = this;
         options.onConnect = function () {
             onConnect.call(self);
@@ -3360,9 +3360,9 @@ function fileSendProcess(ops, mid, timeout, callback) {
 
         let options = {
             host: ipport[0],
-            port: +(ipport[1]),
+            port: +ipport[1],
             connectionTimeout: timeout
-        }
+        };
         options.onConnect = function () {
             ops.token = token;
             ops.sign = sign;
@@ -3536,3 +3536,4 @@ RTMClient.EncryptInfo = class {
 
 Object.setPrototypeOf(RTMClient.prototype, Emitter.prototype);
 module.exports = RTMClient;
+

@@ -945,3 +945,38 @@
     * `callback`: **(Optional | function)** 回调方法, `callback(err, data)`
         * `err`: **(Error)** 
         * `data`: **(object(mid:Int64BE,payload:object(mtime:Int64BE)))** 
+        
+> 增值服务
+
+* `translate(text, src, dst, type, profanity, postProfanity, uid, timeout, callback)`: 翻译
+    * `text`: **(Required | string)** 文本
+    * `src`: **(Optional | string)** 原始语言类型
+    * `dst`: **(Required | Buffer)** 目标语言类型
+    * `type`: **(Optional | string)** 可选值为chat或mail。如未指定，则默认使用'chat'
+    * `profanity`: **(Optional | string)** 敏感语过滤。设置为以下3项之一: off, stop, censor，默认：off
+    * `postProfanity`: **(Optional | bool)** 是否把翻译后的文本过滤
+    * `uid`: **(Optional | number)** 用户id
+    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
+    * `callback`: **(Optional | function)** 回调方法, `callback(err, data)`
+        * `err`: **(Error)** 
+        * `data`: **(object(source:string,target:string,sourceText:string,targetText:string))** 
+        
+* `profanity(text, classify, uid, timeout, callback)`: 文本检测
+    * `text`: **(Required | string)** 文本
+    * `classify`: **(Optional | bool)** 是否进行文本分类检测
+    * `uid`: **(Optional | number)** 用户id
+    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
+    * `callback`: **(Optional | function)** 回调方法, `callback(err, data)`
+        * `err`: **(Error)** 
+        * `data`: **(object(text:string, classification:list<string>))** 
+        
+* `transcribe(audio, lang, uid, codec, srate, timeout, callback)`: 语音识别
+    * `audio`: **(Required | string)** 声音数据
+    * `lang`: **(Required | string)** 语言
+    * `uid`: **(Optional | number)** 用户id
+    * `codec`: **(Required | string)** 编码类型
+    * `srate`: **(Required | number)** 采样率，默认16000
+    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
+    * `callback`: **(Optional | function)** 回调方法, `callback(err, data)`
+        * `err`: **(Error)** 
+        * `data`: **(object(text:string, classification:list<string>))** 
