@@ -100,7 +100,7 @@ function onConnect() {
 
     //ServerGate (2a) sendMessage
     t.call(self, function(name, cb) {
-        self._client[name].call(self._client, self._from, self._to, 8, 'hello !', '', new Int64BE(0), self._timeout, function(err, data){
+        self._client[name].call(self._client, self._from, self._to, 127, 'hello !', '', new Int64BE(0), self._timeout, function(err, data){
             self._mid = err ? err.mid : data.mid;
             cb && cb(err, data);
         });
@@ -145,6 +145,12 @@ function onConnect() {
     t.call(self, function(name, cb) {
         self._client[name].call(self._client, self._from, self._to, false, 10, 0, 0, 0, [], self._timeout, cb);
     }, 'getP2PMessage');
+    
+    //ServerGate (2j) getMessage
+    t.call(self, function(name, cb) {
+        self._client[name].call(self._client, self._mid, self._from, self._to, 1, self._timeout, cb);
+    }, 'getMessage');
+
 
     //ServerGate (2j) deleteMessage
     t.call(self, function(name, cb) {
@@ -258,12 +264,12 @@ function onConnect() {
 
     //ServerGate (3k) translate
     t.call(self, function(name, cb) {
-        self._client[name].call(self._client, '点数优惠', RTMConfig.TRANS_LANGUAGE.zh_cn, RTMConfig.TRANS_LANGUAGE.en, 'chat', 'censor', self._timeout, cb);
+        self._client[name].call(self._client, '点数优惠', RTMConfig.TRANS_LANGUAGE.zh_cn, RTMConfig.TRANS_LANGUAGE.en, 'chat', 'censor', true, undefined, self._timeout, cb);
     }, 'translate');
 
     //ServerGate (3i) profanity
     t.call(self, function(name, cb) {
-        self._client[name].call(self._client, '点数优惠', 'stop', self._timeout, cb);
+        self._client[name].call(self._client, '点数优惠', true, undefined, self._timeout, cb);
     }, 'profanity');
 
     //ServerGate (3j) transcribe
