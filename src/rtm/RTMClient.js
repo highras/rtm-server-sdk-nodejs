@@ -996,6 +996,59 @@ class RTMClient {
 
     /**
      *
+     * ServerGate (2j)
+     *
+     * @param {Int64BE}         mid
+     * @param {Int64BE}         from
+     * @param {Int64BE}         xid
+     * @param {number}          type 
+     * @param {number}          timeout
+     * @param {function}        callback
+     *
+     * @callback
+     * @param {Error}           err
+     * @param {object}          data
+     */
+    getMessage(mid, from, xid, type, timeout, callback) {
+        let cmd = 'getmsg';
+        let ts = FPManager.instance.timestamp;
+        let salt = RTMClient.MidGenerator.gen();
+        let sign = genSign.call(this, salt, cmd, ts);
+
+        let payload = {
+            ts: ts,
+            salt: salt,
+            sign: sign,
+            pid: this._pid,
+            mid: mid,
+            from: from,
+            xid: xid,
+            type: type 
+        };
+        sendQuest.call(this, this._baseClient, cmd, payload, callback, timeout);
+    }
+
+    /**
+     *
+     * ServerGate (2j)
+     *
+     * @param {Int64BE}         mid
+     * @param {Int64BE}         from
+     * @param {Int64BE}         xid
+     * @param {number}          type 
+     * @param {number}          timeout
+     * @param {function}        callback
+     *
+     * @callback
+     * @param {Error}           err
+     * @param {object}          data
+     */
+    getChat(mid, from, xid, type, timeout, callback) {
+        this.getMessage(mid, from, xid, type, timeout, callback);
+    }
+
+    /**
+     *
      * ServerGate (2j')
      *
      * @param {Int64BE}         mid

@@ -227,6 +227,16 @@
         * `err`: **(Error)** 
         * `data`: **(object)** 
 
+* `getChat(mid, from, xid, type, timeout, callback)`: 获取聊天
+    * `mid`: **(Required | Int64BE)** 业务消息 id
+    * `from`: **(Required | Int64BE)** 发送方 id
+    * `xid`: **(Required | Int64BE)** to/gid/rid
+    * `type`: **(Required | number)** 1,p2p; 2,group; 3, room; 4, broadcast
+    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
+    * `callback`: **(Optional | function)** 回调方法, `callback(err, data)`
+        * `err`: **(Error)** 
+        * `data`: **(object)** 
+
 * `deleteMessage(mid, from, to, timeout, callback)`: 删除P2P业务消息
     * `mid`: **(Required | Int64BE)** 业务消息 id
     * `from`: **(Required | Int64BE)** 发送方 id

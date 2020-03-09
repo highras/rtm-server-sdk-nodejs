@@ -151,6 +151,11 @@ function onConnect() {
         self._client[name].call(self._client, self._mid, self._from, self._to, 1, self._timeout, cb);
     }, 'getMessage');
 
+    //ServerGate (2j) getChat
+    t.call(self, function(name, cb) {
+        self._client[name].call(self._client, self._mid, self._from, self._to, 1, self._timeout, cb);
+    }, 'getChat');
+
 
     //ServerGate (2j) deleteMessage
     t.call(self, function(name, cb) {
