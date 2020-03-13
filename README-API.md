@@ -990,12 +990,9 @@
         * `err`: **(Error)** 
         * `data`: **(object(text:string, classification:list<string>))** 
         
-* `transcribe(audio, lang, uid, codec, srate, timeout, callback)`: 语音识别
+* `transcribe(audio, uid, timeout, callback)`: 语音识别
     * `audio`: **(Required | string)** 声音数据
-    * `lang`: **(Required | string)** 语言
     * `uid`: **(Optional | number)** 用户id
-    * `codec`: **(Required | string)** 编码类型
-    * `srate`: **(Required | number)** 采样率，默认16000
     * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
     * `callback`: **(Optional | function)** 回调方法, `callback(err, data)`
         * `err`: **(Error)** 

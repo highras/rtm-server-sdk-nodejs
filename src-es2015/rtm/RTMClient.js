@@ -1739,7 +1739,7 @@ class RTMClient {
      * @param {Error}   err
      * @param {object(text:string,lang:string)}  data
      */
-    transcribe(audio, lang, uid, codec, srate, timeout, callback) {
+    transcribe(audio, uid, timeout, callback) {
         let cmd = 'transcribe';
         let ts = FPManager.instance.timestamp;
         let salt = RTMClient.MidGenerator.gen();
@@ -1750,17 +1750,10 @@ class RTMClient {
             salt: salt,
             sign: sign,
             pid: this._pid,
-            audio: audio,
-            lang: lang
+            audio: audio
         };
         if (uid !== undefined) {
             payload.uid = uid;
-        }
-        if (codec !== undefined) {
-            payload.codec = codec;
-        }
-        if (srate !== undefined) {
-            payload.srate = srate;
         }
         sendQuest.call(this, this._baseClient, cmd, payload, callback, timeout);
     }
