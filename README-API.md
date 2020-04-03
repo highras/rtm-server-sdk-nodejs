@@ -137,7 +137,8 @@
         * `err`: **(object(mid:Int64BE,error:Error))** 
         * `data`: **(object(mid:Int64BE,payload:object(mtime:Int64BE)))** 
 
-* `getGroupMessage(gid, desc, num, begin, end, lastid, mtypes, timeout, callback)`: 获取Group历史业务消息
+* `getGroupMessage(uid, gid, desc, num, begin, end, lastid, mtypes, timeout, callback)`: 获取Group历史业务消息
+    * `uid`: **(Required | Int64BE)** 用户id
     * `gid`: **(Required | Int64BE)** Group id
     * `desc`: **(Required | bool)** `true`: 则从`end`的时间戳开始倒序翻页, `false`: 则从`begin`的时间戳顺序翻页
     * `num`: **(Required | number)** 获取数量, **一次最多获取20条, 建议10条**
@@ -157,7 +158,8 @@
             * `GroupMsg.attrs` **(string)**
             * `GroupMsg.mtime` **(Int64BE)**
 
-* `getRoomMessage(rid, desc, num, begin, end, lastid, mtypes, timeout, callback)`: 获取Room历史业务消息
+* `getRoomMessage(uid, rid, desc, num, begin, end, lastid, mtypes, timeout, callback)`: 获取Room历史业务消息
+    * `uid`: **(Required | Int64BE)** 用户id
     * `rid`: **(Required | Int64BE)** Room id
     * `desc`: **(Required | bool)** `true`: 则从`end`的时间戳开始倒序翻页, `false`: 则从`begin`的时间戳顺序翻页
     * `num`: **(Required | number)** 获取数量, **一次最多获取20条, 建议10条**
@@ -177,7 +179,8 @@
             * `RoomMsg.attrs` **(string)**
             * `RoomMsg.mtime` **(Int64BE)**
 
-* `getBroadcastMessage(desc, num, begin, end, lastid, mtypes, timeout, callback)`: 获取广播历史业务消息
+* `getBroadcastMessage(uid, desc, num, begin, end, lastid, mtypes, timeout, callback)`: 获取广播历史业务消息
+    * `uid`: **(Required | Int64BE)** 用户id
     * `desc`: **(Required | bool)** `true`: 则从`end`的时间戳开始倒序翻页, `false`: 则从`begin`的时间戳顺序翻页
     * `num`: **(Required | number)** 获取数量, **一次最多获取20条, 建议10条**
     * `begin`: **(Optional | Int64BE)** 开始时间戳, 毫秒, 默认`0`, 条件：`>=`
@@ -436,7 +439,8 @@
         * `err`: **(object(mid:Int64BE,error:Error))** 
         * `data`: **(object(mid:Int64BE,payload:object(mtime:Int64BE)))** 
 
-* `getGroupChat(gid, desc, num, begin, end, lastid, timeout, callback)`: 获取Group历史聊天消息, `mtypes=Arrays.asList((byte)30)`
+* `getGroupChat(uid, gid, desc, num, begin, end, lastid, timeout, callback)`: 获取Group历史聊天消息, `mtypes=Arrays.asList((byte)30)`
+    * `uid`: **(Required | Int64BE)** 用户id
     * `gid`: **(Required | Int64BE)** Group id
     * `desc`: **(Required | bool)** `true`: 则从`end`的时间戳开始倒序翻页, `false`: 则从`begin`的时间戳顺序翻页
     * `num`: **(Required | number)** 获取数量, **一次最多获取20条, 建议10条**
@@ -455,7 +459,8 @@
             * `GroupMsg.attrs` **(string)**
             * `GroupMsg.mtime` **(Int64BE)**
 
-* `getRoomChat(rid, desc, num, begin, end, lastid, timeout, callback)`: 获取Room历史聊天消息, `mtypes=Arrays.asList((byte)30)`
+* `getRoomChat(uid, rid, desc, num, begin, end, lastid, timeout, callback)`: 获取Room历史聊天消息, `mtypes=Arrays.asList((byte)30)`
+    * `uid`: **(Required | Int64BE)** 用户id
     * `rid`: **(Required | Int64BE)** Room id
     * `desc`: **(Required | bool)** `true`: 则从`end`的时间戳开始倒序翻页, `false`: 则从`begin`的时间戳顺序翻页
     * `num`: **(Required | number)** 获取数量, **一次最多获取20条, 建议10条**
@@ -474,7 +479,8 @@
             * `RoomMsg.attrs` **(string)**
             * `RoomMsg.mtime` **(Int64BE)**
 
-* `getBroadcastChat(desc, num, begin, end, lastid, timeout, callback)`: 获取广播历史聊天消息, `mtypes=Arrays.asList((byte)30)`
+* `getBroadcastChat(uid, desc, num, begin, end, lastid, timeout, callback)`: 获取广播历史聊天消息, `mtypes=Arrays.asList((byte)30)`
+    * `uid`: **(Required | Int64BE)** 用户id
     * `desc`: **(Required | bool)** `true`: 则从`end`的时间戳开始倒序翻页, `false`: 则从`begin`的时间戳顺序翻页
     * `num`: **(Required | number)** 获取数量, **一次最多获取20条, 建议10条**
     * `begin`: **(Optional | Int64BE)** 开始时间戳, 毫秒, 默认`0`, 条件：`>=`
@@ -566,10 +572,10 @@
         * `err`: **(Error)** 
         * `data`: **(object(text:string))** 
             
-* `transcribe(audio, lang, action, timeout, callback)`: 语音识别, 返回过滤后的字符串或者以错误形式返回, 需启用翻译服务, 设置超时时间不低于60s
+* `transcribe(audio, uid, profanityFilter, timeout, callback)`: 语音识别, 返回过滤后的字符串或者以错误形式返回, 需启用翻译服务, 设置超时时间不低于60s
     * `audio`: **(Required | Buffer)** 待识别语音数据
-    * `lang`: **(Required | string)** 待识别语音的类型, 参考`RTMConfig.TRANS_LANGUAGE`成员
-    * `action`: **(Required | string)** 检查结果返回形式, `stop`: 以错误形式返回, `censor`: 用`*`替换敏感词
+    * `uid`: **(Optional | Int64BE)** 用户id
+    * `profanityFilter`: **(Optional | bool)** 是否开启过滤
     * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
     * `callback`: **(Optional | function)** 回调方法, `callback(err, data)`
         * `err`: **(Error)** 

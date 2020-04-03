@@ -598,7 +598,7 @@ class RTMClient {
      * @param {string}      GroupMsg.attrs
      * @param {Int64BE}     GroupMsg.mtime
      */
-    getGroupMessage(gid, desc, num, begin, end, lastid, mtypes, timeout, callback) {
+    getGroupMessage(uid, gid, desc, num, begin, end, lastid, mtypes, timeout, callback) {
         let cmd = 'getgroupmsg';
         let ts = FPManager.instance.timestamp;
         let salt = RTMClient.MidGenerator.gen();
@@ -611,7 +611,8 @@ class RTMClient {
             pid: this._pid,
             gid: gid,
             desc: desc,
-            num: num
+            num: num,
+            uid: uid
         };
         if (begin !== undefined) {
             payload.begin = begin;
@@ -687,7 +688,7 @@ class RTMClient {
      * @param {string}      RoomMsg.attrs
      * @param {Int64BE}     RoomMsg.mtime
      */
-    getRoomMessage(rid, desc, num, begin, end, lastid, mtypes, timeout, callback) {
+    getRoomMessage(uid, rid, desc, num, begin, end, lastid, mtypes, timeout, callback) {
         let cmd = 'getroommsg';
         let ts = FPManager.instance.timestamp;
         let salt = RTMClient.MidGenerator.gen();
@@ -700,7 +701,8 @@ class RTMClient {
             pid: this._pid,
             rid: rid,
             desc: desc,
-            num: num
+            num: num,
+            uid: uid
         };
         if (begin !== undefined) {
             payload.begin = begin;
@@ -775,7 +777,7 @@ class RTMClient {
      * @param {string}      BroadcastMsg.attrs
      * @param {Int64BE}     BroadcastMsg.mtime
      */
-    getBroadcastMessage(desc, num, begin, end, lastid, mtypes, timeout, callback) {
+    getBroadcastMessage(uid, desc, num, begin, end, lastid, mtypes, timeout, callback) {
         let cmd = 'getbroadcastmsg';
         let ts = FPManager.instance.timestamp;
         let salt = RTMClient.MidGenerator.gen();
@@ -787,7 +789,8 @@ class RTMClient {
             sign: sign,
             pid: this._pid,
             desc: desc,
-            num: num
+            num: num,
+            uid: uid
         };
         if (begin !== undefined) {
             payload.begin = begin;
@@ -1468,9 +1471,9 @@ class RTMClient {
      * @param {string}      GroupMsg.attrs
      * @param {Int64BE}     GroupMsg.mtime
      */
-    getGroupChat(gid, desc, num, begin, end, lastid, timeout, callback) {
+    getGroupChat(uid, gid, desc, num, begin, end, lastid, timeout, callback) {
         let mtypes = [RTMConfig.CHAT_TYPE.text, RTMConfig.CHAT_TYPE.audio, RTMConfig.CHAT_TYPE.cmd];
-        this.getGroupMessage(gid, desc, num, begin, end, lastid, mtypes, timeout, callback);
+        this.getGroupMessage(uid, gid, desc, num, begin, end, lastid, mtypes, timeout, callback);
     }
 
     /**
@@ -1499,9 +1502,9 @@ class RTMClient {
      * @param {string}      RoomMsg.attrs
      * @param {Int64BE}     RoomMsg.mtime
      */
-    getRoomChat(rid, desc, num, begin, end, lastid, timeout, callback) {
+    getRoomChat(uid, rid, desc, num, begin, end, lastid, timeout, callback) {
         let mtypes = [RTMConfig.CHAT_TYPE.text, RTMConfig.CHAT_TYPE.audio, RTMConfig.CHAT_TYPE.cmd];
-        this.getRoomMessage(rid, desc, num, begin, end, lastid, mtypes, timeout, callback);
+        this.getRoomMessage(uid, rid, desc, num, begin, end, lastid, mtypes, timeout, callback);
     }
 
     /**
@@ -1529,9 +1532,9 @@ class RTMClient {
      * @param {string}      BroadcastMsg.attrs
      * @param {Int64BE}     BroadcastMsg.mtime
      */
-    getBroadcastChat(desc, num, begin, end, lastid, timeout, callback) {
+    getBroadcastChat(uid, desc, num, begin, end, lastid, timeout, callback) {
         let mtypes = [RTMConfig.CHAT_TYPE.text, RTMConfig.CHAT_TYPE.audio, RTMConfig.CHAT_TYPE.cmd];
-        this.getBroadcastMessage(desc, num, begin, end, lastid, mtypes, timeout, callback);
+        this.getBroadcastMessage(uid, desc, num, begin, end, lastid, mtypes, timeout, callback);
     }
 
     /**
@@ -1739,7 +1742,7 @@ class RTMClient {
      * @param {Error}   err
      * @param {object(text:string,lang:string)}  data
      */
-    transcribe(audio, uid, timeout, callback) {
+    transcribe(audio, uid, profanityFilter, timeout, callback) {
         let cmd = 'transcribe';
         let ts = FPManager.instance.timestamp;
         let salt = RTMClient.MidGenerator.gen();
@@ -1755,6 +1758,10 @@ class RTMClient {
         if (uid !== undefined) {
             payload.uid = uid;
         }
+        if (profanityFilter != undefined) {
+            payload.profanityFilter = profanityFilter;
+        }
+
         sendQuest.call(this, this._baseClient, cmd, payload, callback, timeout);
     }
 
