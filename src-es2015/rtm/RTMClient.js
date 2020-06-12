@@ -1658,7 +1658,7 @@ class RTMClient {
      * @param {Error}   err
      * @param {object(source:string,target:string,sourceText:string,targetText:string)}  data
      */
-    translate(text, src, dst, type, profanity, postProfanity, uid, timeout, callback) {
+    translate(text, src, dst, type, profanity, uid, timeout, callback) {
         let cmd = 'translate';
         let ts = FPManager.instance.timestamp;
         let salt = RTMClient.MidGenerator.gen();
@@ -1680,9 +1680,6 @@ class RTMClient {
         }
         if (profanity !== undefined) {
             payload.profanity = profanity;
-        }
-        if (postProfanity !== undefined) {
-            payload.postProfanity = postProfanity;
         }
         if (uid !== undefined) {
             payload.uid = uid;
@@ -2210,6 +2207,182 @@ class RTMClient {
                     bfuids[index] = new Int64BE(item);
                 });
                 callback && callback(null, bfuids);
+                return;
+            }
+            callback && callback(null, data);
+        }, timeout);
+    }
+
+    /**
+     *
+     *
+     * @param {Int64BE}         uid
+     * @param {array<Int64BE>}  blacks
+     * @param {number}          timeout
+     * @param {function}        callback
+     *
+     * @callback
+     * @param {Error}   err
+     * @param {object}  data
+     */
+    addBlacks(uid, blacks, timeout, callback) {
+        let cmd = 'addblacks';
+        let ts = FPManager.instance.timestamp;
+        let salt = RTMClient.MidGenerator.gen();
+        let sign = genSign.call(this, salt, cmd, ts);
+
+        let payload = {
+            ts: ts,
+            salt: salt,
+            sign: sign,
+            pid: this._pid,
+            uid: uid,
+            blacks: blacks
+        };
+        sendQuest.call(this, this._baseClient, cmd, payload, callback, timeout);
+    }
+
+    /**
+     *
+     *
+     * @param {Int64BE}         uid
+     * @param {array<Int64BE>}  blacks
+     * @param {number}          timeout
+     * @param {function}        callback
+     *
+     * @callback
+     * @param {Error}   err
+     * @param {object}  data
+     */
+    deleteBlacks(uid, blacks, timeout, callback) {
+        let cmd = 'delblacks';
+        let ts = FPManager.instance.timestamp;
+        let salt = RTMClient.MidGenerator.gen();
+        let sign = genSign.call(this, salt, cmd, ts);
+
+        let payload = {
+            ts: ts,
+            salt: salt,
+            sign: sign,
+            pid: this._pid,
+            uid: uid,
+            blacks: blacks
+        };
+        sendQuest.call(this, this._baseClient, cmd, payload, callback, timeout);
+    }
+
+    /**
+     *
+     *
+     * @param {Int64BE}         uid
+     * @param {Int64BE}         buid
+     * @param {number}          timeout
+     * @param {function}        callback
+     *
+     * @callback
+     * @param {Error}   err
+     * @param {object(ok:bool)} data
+     */
+    isBlack(uid, buid, timeout, callback) {
+        let cmd = 'isblack';
+        let ts = FPManager.instance.timestamp;
+        let salt = RTMClient.MidGenerator.gen();
+        let sign = genSign.call(this, salt, cmd, ts);
+
+        let payload = {
+            ts: ts,
+            salt: salt,
+            sign: sign,
+            pid: this._pid,
+            uid: uid,
+            buid: buid
+        };
+        sendQuest.call(this, this._baseClient, cmd, payload, callback, timeout);
+    }
+
+    /**
+     *
+     *
+     * @param {Int64BE}         uid
+     * @param {array<Int64BE>}  buids
+     * @param {function}        callback
+     * @param {number}          timeout
+     *
+     * @callback
+     * @param {Error}   err
+     * @param {array<Int64BE>}  data
+     */
+    isBlacks(uid, buids, timeout, callback) {
+        let cmd = 'isblacks';
+        let ts = FPManager.instance.timestamp;
+        let salt = RTMClient.MidGenerator.gen();
+        let sign = genSign.call(this, salt, cmd, ts);
+
+        let payload = {
+            ts: ts,
+            salt: salt,
+            sign: sign,
+            pid: this._pid,
+            uid: uid,
+            buids: buids
+        };
+        sendQuest.call(this, this._baseClient, cmd, payload, function (err, data) {
+            if (err) {
+                callback && callback(err, null);
+                return;
+            }
+
+            let buids = data['buids'];
+            if (buids) {
+                let bfuids = [];
+                buids.forEach(function (item, index) {
+                    bfuids[index] = new Int64BE(item);
+                });
+                callback && callback(null, bfuids);
+                return;
+            }
+            callback && callback(null, data);
+        }, timeout);
+    }
+
+    /**
+     *
+     * ServerGate (6c)
+     *
+     * @param {Int64BE}         uid
+     * @param {number}          timeout
+     * @param {function}        callback
+     *
+     * @callback
+     * @param {Error}   err
+     * @param {array<Int64BE>}  data
+     */
+    getBlacks(uid, timeout, callback) {
+        let cmd = 'getblacks';
+        let ts = FPManager.instance.timestamp;
+        let salt = RTMClient.MidGenerator.gen();
+        let sign = genSign.call(this, salt, cmd, ts);
+
+        let payload = {
+            ts: ts,
+            salt: salt,
+            sign: sign,
+            pid: this._pid,
+            uid: uid
+        };
+        sendQuest.call(this, this._baseClient, cmd, payload, function (err, data) {
+            if (err) {
+                callback && callback(err, null);
+                return;
+            }
+
+            let uids = data['uids'];
+            if (uids) {
+                let buids = [];
+                uids.forEach(function (item, index) {
+                    buids[index] = new Int64BE(item);
+                });
+                callback && callback(null, buids);
                 return;
             }
             callback && callback(null, data);
