@@ -13,6 +13,10 @@
 * 支持部分ES6特性`es-checker` / `babel-cli` / `babel-preset-es2015`, 参考:[node.green](https://node.green/)
 * 支持动态转Promise接口, 参考:[Promise.promisifyAll](http://bluebirdjs.com/docs/api/promise.promisifyall.html)
 
+#### 注意 ####
+
+* 使用之前请确保服务器时间校准，否则可能导致签名失败
+
 #### Events ####
 * `event`:
     * `connect`: 连接成功 
