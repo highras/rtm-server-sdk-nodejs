@@ -6,6 +6,7 @@ const Int64BE = require("int64-buffer").Int64BE;
 const FPManager = require('../fpnn/FPManager');
 const ErrorRecorder = require('../fpnn/ErrorRecorder');
 const RTMConfig = require('./RTMConfig');
+const RTMClient = require('./RTMClient');
 
 const JSON_PAYLOAD = '{}';
 const MSGPACK_PAYLOAD = Buffer.from([0x80]);
@@ -119,18 +120,25 @@ class RTMProcessor {
         this._lastPingTimestamp = FPManager.instance.milliTimestamp;
     }
 
-    /**
-     *
-     * ServerGate (2a)
-     *
-     * @param {Int64BE}         data.from
-     * @param {Int64BE}         data.to
-     * @param {number}          data.mtype
-     * @param {Int64BE}         data.mid
-     * @param {string}          data.msg
-     * @param {string}          data.attrs
-     * @param {Int64BE}         data.mtime
-     */
+    buildPushMessage(data, toId) {
+        let message = {
+            fromUid: new Int64BE(data.from),
+            toId: new Int64BE(toId),
+            messageType: Number(data.mtype),
+            messageId: new Int64BE(data.mid),
+            message: data.msg,
+            attrs: data.attrs,
+            modifiedTime: new Int64BE(data.mtime)
+        };
+
+        if (message.messageType == RTMConfig.CHAT_TYPE.audio) {
+            message.audioInfo = RTMClient.buildAudioInfo(message.message);
+
+            if (message.audioInfo != undefined) message.message = message.audioInfo.recognizedText;
+        }
+        return message;
+    }
+
     pushmsg(data) {
         let mtype = 0;
         let name = RTMConfig.SERVER_PUSH.recvMessage;
@@ -170,21 +178,11 @@ class RTMProcessor {
         if (mtype >= 40 && mtype <= 50) {
             name = RTMConfig.SERVER_PUSH.recvFile;
         }
-        pushService.call(this, name, data);
+
+        let message = this.buildPushMessage(data);
+        pushService.call(this, name, message);
     }
 
-    /**
-     *
-     * ServerGate (2b)
-     *
-     * @param {Int64BE}         data.from
-     * @param {Int64BE}         data.gid
-     * @param {number}          data.mtype
-     * @param {Int64BE}         data.mid
-     * @param {string}          data.msg
-     * @param {string}          data.attrs
-     * @param {Int64BE}         data.mtime
-     */
     pushgroupmsg(data) {
         let mtype = 0;
         let name = RTMConfig.SERVER_PUSH.recvGroupMessage;
@@ -224,21 +222,11 @@ class RTMProcessor {
         if (mtype >= 40 && mtype <= 50) {
             name = RTMConfig.SERVER_PUSH.recvGroupFile;
         }
-        pushService.call(this, name, data);
+
+        let message = this.buildPushMessage(data);
+        pushService.call(this, name, message);
     }
 
-    /**
-     *
-     * ServerGate (2c)
-     *
-     * @param {Int64BE}         data.from
-     * @param {Int64BE}         data.rid
-     * @param {number}          data.mtype
-     * @param {Int64BE}         data.mid
-     * @param {string}          data.msg
-     * @param {string}          data.attrs
-     * @param {Int64BE}         data.mtime
-     */
     pushroommsg(data) {
         let mtype = 0;
         let name = RTMConfig.SERVER_PUSH.recvRoomMessage;
@@ -278,201 +266,37 @@ class RTMProcessor {
         if (mtype >= 40 && mtype <= 50) {
             name = RTMConfig.SERVER_PUSH.recvRoomFile;
         }
-        pushService.call(this, name, data);
+
+        let message = this.buildPushMessage(data);
+        pushService.call(this, name, message);
     }
 
-    /**
-     *
-     * ServerGate (2d)
-     *
-     * @param {string}          data.event
-     * @param {Int64BE}         data.uid
-     * @param {number}          data.time
-     * @param {string}          data.endpoint
-     * @param {string}          data.data
-     */
     pushevent(data) {
         pushService.call(this, RTMConfig.SERVER_PUSH.recvEvent, data);
     }
 
-    /**
-     *
-     * serverPush(a)
-     *
-     * @param {Int64BE}         data.from
-     * @param {Int64BE}         data.to
-     * @param {number}          data.mtype
-     * @param {Int64BE}         data.mid
-     * @param {Url}             data.msg
-     * @param {string}          data.attrs
-     * @param {Int64BE}         data.mtime
-     */
     pushfile(data) {}
 
-    /**
-     *
-     * serverPush(b)
-     *
-     * @param {Int64BE}         data.from
-     * @param {Int64BE}         data.gid
-     * @param {number}          data.mtype
-     * @param {Int64BE}         data.mid
-     * @param {Url}             data.msg
-     * @param {string}          data.attrs
-     * @param {Int64BE}         data.mtime
-     */
     pushgroupfile(data) {}
 
-    /**
-     *
-     * serverPush(c)
-     *
-     * @param {Int64BE}         data.from
-     * @param {Int64BE}         data.rid
-     * @param {number}          data.mtype
-     * @param {Int64BE}         data.mid
-     * @param {Url}             data.msg
-     * @param {string}          data.attrs
-     * @param {Int64BE}         data.mtime
-     */
     pushroomfile(data) {}
 
-    /**
-     *
-     * serverPush (3a)
-     *
-     * @param {Int64BE}         data.from
-     * @param {Int64BE}         data.to
-     * @param {Int64BE}         data.mid
-     * @param {JsonString}      data.msg
-     * @param {string}          data.attrs
-     * @param {Int64BE}         data.mtime
-     *
-     * <JsonString>
-     * @param {string}          source
-     * @param {string}          target
-     * @param {string}          sourceText
-     * @param {string}          targetText
-     * </JsonString>
-     */
     pushchat(data) {}
 
-    /**
-     *
-     * serverPush(3a')
-     *
-     * @param {Int64BE}         data.from
-     * @param {Int64BE}         data.to
-     * @param {Int64BE}         data.mid
-     * @param {Buffer}          data.msg
-     * @param {string}          data.attrs
-     * @param {Int64BE}         data.mtime
-     */
     pushaudio(data) {}
 
-    /**
-     *
-     * serverPush(3a'')
-     *
-     * @param {Int64BE}         data.from
-     * @param {Int64BE}         data.to
-     * @param {Int64BE}         data.mid
-     * @param {string}          data.msg
-     * @param {string}          data.attrs
-     * @param {Int64BE}         data.mtime
-     */
     pushcmd(data) {}
 
-    /**
-     *
-     * ServerGate (3b)
-     *
-     * @param {Int64BE}         data.from
-     * @param {Int64BE}         data.gid
-     * @param {Int64BE}         data.mid
-     * @param {JsonString}      data.msg
-     * @param {string}          data.attrs
-     * @param {Int64BE}         data.mtime
-     *
-     * <JsonString>
-     * @param {string}          source
-     * @param {string}          target
-     * @param {string}          sourceText
-     * @param {string}          targetText
-     * </JsonString>
-     */
     pushgroupchat(data) {}
 
-    /**
-     *
-     * serverPush(3b')
-     *
-     * @param {Int64BE}         data.from
-     * @param {Int64BE}         data.gid
-     * @param {Int64BE}         data.mid
-     * @param {Buffer}          data.msg
-     * @param {string}          data.attrs
-     * @param {Int64BE}         data.mtime
-     */
     pushgroupaudio(data) {}
 
-    /**
-     *
-     * serverPush(3b'')
-     *
-     * @param {Int64BE}         data.from
-     * @param {Int64BE}         data.gid
-     * @param {Int64BE}         data.mid
-     * @param {string}          data.msg
-     * @param {string}          data.attrs
-     * @param {Int64BE}         data.mtime
-     */
     pushgroupcmd(data) {}
 
-    /**
-     *
-     * ServerGate (3c)
-     *
-     * @param {Int64BE}         data.from
-     * @param {Int64BE}         data.rid
-     * @param {Int64BE}         data.mid
-     * @param {JsonString}      data.msg
-     * @param {string}          data.attrs
-     * @param {Int64BE}         data.mtime
-     *
-     * <JsonString>
-     * @param {string}          source
-     * @param {string}          target
-     * @param {string}          sourceText
-     * @param {string}          targetText
-     * </JsonString>
-     */
     pushroomchat(data) {}
 
-    /**
-     *
-     * serverPush(3c')
-     *
-     * @param {Int64BE}         data.from
-     * @param {Int64BE}         data.rid
-     * @param {Int64BE}         data.mid
-     * @param {Buffer}          data.msg
-     * @param {string}          data.attrs
-     * @param {Int64BE}         data.mtime
-     */
     pushroomaudio(data) {}
 
-    /**
-     *
-     * serverPush(3c'')
-     *
-     * @param {Int64BE}         data.from
-     * @param {Int64BE}         data.rid
-     * @param {Int64BE}         data.mid
-     * @param {string}          data.msg
-     * @param {string}          data.attrs
-     * @param {Int64BE}         data.mtime
-     */
     pushroomcmd(data) {}
 
     get pingTimestamp() {

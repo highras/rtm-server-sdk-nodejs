@@ -7,6 +7,7 @@ const Int64BE = require("int64-buffer").Int64BE;
 
 const RTMClient = require('../src/rtm/RTMClient');
 const RTMConfig = require('../src/rtm/RTMConfig');
+const FPError = require('../src/fpnn/FPError');
 
 let step = 2;
 let index = 0;
@@ -41,7 +42,7 @@ class TestCase {
             onConnect.call(self);
         });
         this._client.on('err', function(err) {
-            console.error(err);
+            //console.error(err);
         });
         this._client.on('close', function() {
             console.log('closed!');
@@ -52,10 +53,18 @@ class TestCase {
         this._client.processor.addPushService(pushName, function(data) {
             console.log('\n[PUSH] ' + pushName + ':\n', data);
         });
-        pushName = RTMConfig.SERVER_PUSH.recvPing;
-        this._client.processor.addPushService(pushName, function(data) {
+        let pushName2 = RTMConfig.SERVER_PUSH.recvGroupMessage;
+        this._client.processor.addPushService(pushName2, function(data) {
+            console.log('\n[PUSH] ' + pushName2 + ':\n', data);
+        });
+        let pushName3 = RTMConfig.SERVER_PUSH.recvEvent;
+        this._client.processor.addPushService(pushName3, function(data) {
+            console.log('\n[PUSH] ' + pushName3 + ':\n', data);
+        });
+        let pushName4 = RTMConfig.SERVER_PUSH.recvPing;
+        this._client.processor.addPushService(pushName4, function(data) {
 
-            console.log('\n[PUSH] ' + pushName + ':\n', data);
+            console.log('\n[PUSH] ' + pushName4 + ':\n', data);
         });
     }
 }
@@ -67,7 +76,7 @@ function onConnect() {
     t.call(self, function(name, cb) {
         console.log('---------------begin!-----------------')
     });
-
+/*
     //ServerGate (9c) setEvtListener
     t.call(self, function(name, cb) {
         self._client[name].call(self._client, { p2p:true, group:false, room:true, ev:true }, self._timeout, cb);
@@ -128,24 +137,24 @@ function onConnect() {
 
     //ServerGate (2f) getGroupMessage
     t.call(self, function(name, cb) {
-        self._client[name].call(self._client, self._gid, false, 10, 0, 0, 0, [], self._timeout, cb);
+        self._client[name].call(self._client, 123, self._gid, false, 10, 0, 0, 0, [], self._timeout, cb);
     }, 'getGroupMessage');
 
     //ServerGate (2g) getRoomMessage
     t.call(self, function(name, cb) {
-        self._client[name].call(self._client, self._rid, false, 10, 0, 0, 0, [], self._timeout, cb);
+        self._client[name].call(self._client, 123, self._rid, false, 10, 0, 0, 0, [], self._timeout, cb);
     }, 'getRoomMessage');
 
     //ServerGate (2h) getBroadcastMessage
     t.call(self, function(name, cb) {
-        self._client[name].call(self._client, false, 10, 0, 0, 0, [], self._timeout, cb);
+        self._client[name].call(self._client, 123, false, 10, 0, 0, 0, [], self._timeout, cb);
     }, 'getBroadcastMessage');
 
     //ServerGate (2i) getP2PMessage
     t.call(self, function(name, cb) {
         self._client[name].call(self._client, self._from, self._to, false, 10, 0, 0, 0, [], self._timeout, cb);
     }, 'getP2PMessage');
-    
+
     //ServerGate (2j) getMessage
     t.call(self, function(name, cb) {
         self._client[name].call(self._client, self._mid, self._from, self._to, 1, self._timeout, cb);
@@ -446,7 +455,7 @@ function onConnect() {
 
     //ServerGate (9c') setEvtListener
     t.call(self, function(name, cb) {
-        self._client[name].call(self._client, { gids:[self._gid], rids:[], uids:[], events:[] }, self._timeout, cb);
+        self._client[name].call(self._client, { p2p: true, group: true, room: true, ev: true, gids:[self._gid], rids:[], uids:[], events:[] }, self._timeout, cb);
     }, 'setEvtListener');
 
     //ServerGate (10b) dataSet
@@ -463,12 +472,19 @@ function onConnect() {
     t.call(self, function(name, cb) {
         self._client[name].call(self._client, self._to, 'db-test-key', self._timeout, cb);
     }, 'dataDelete');
+*/
 
     //fileGate (1)
     t.call(self, function(name, cb) {
         self._client[name].call(self._client, self._from, self._to, 50, self._fileBytes, null, null, new Int64BE(0), self._timeout, cb);
     }, 'sendFile');
 
+    setInterval(function() {
+        t.call(self, function(name, cb) {
+            self._client[name].call(self._client, self._from, self._to, 50, self._fileBytes, null, null, new Int64BE(0), self._timeout, cb);
+        }, 'sendFile');
+    }, 5000);
+/*
     //filegate (2)
     t.call(self, function(name, cb) {
         self._client[name].call(self._client, self._from, self._tos, 50, self._fileBytes, "", "", new Int64BE(0), self._timeout, cb);
@@ -488,7 +504,7 @@ function onConnect() {
     t.call(self, function(name, cb) {
         self._client[name].call(self._client, self._from, 50, self._fileBytes, null, null, new Int64BE(0), self._timeout, cb);
     }, 'broadcastFile');
-
+*/
     t.call(self, function(name, cb) {
         console.log('---------------(' + index + ')end!-----------------');
     });
@@ -508,11 +524,7 @@ function t(fn, name) {
 
 function cb(err, data){
     if (err) {
-        let msg = err.message;
-        if (err.error) {
-            msg = err.error.message;
-        }
-        console.error(msg);
+        console.error(err);
     }
     if (data) {
         console.log(data);

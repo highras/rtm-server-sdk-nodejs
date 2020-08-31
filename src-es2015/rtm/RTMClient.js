@@ -11,6 +11,7 @@ const FPManager = require('../fpnn/FPManager');
 const ErrorRecorder = require('../fpnn/ErrorRecorder');
 const RTMConfig = require('./RTMConfig');
 const RTMProcessor = require('./RTMProcessor');
+const FPError = require('../fpnn/FPError');
 
 class RTMClient {
     /**
@@ -58,11 +59,21 @@ class RTMClient {
                 int64: true
             })
         };
+        this._fileGateDict = {};
+        this._regressiveStrategy = {
+            startConnectFailedCount: 5,
+            maxIntervalSeconds: 120,
+            linearRegressiveCount: 5,
+            firstIntervalSeconds: 2
+        };
         this._isClose = false;
         this._secondListener = null;
         this._encryptInfo = null;
         this._delayCount = 0;
         this._delayTimestamp = 0;
+        this._reconnectCount = 0;
+        this._isReconnect = false;
+        this._reconnectInterval = 0;
         initProcessor.call(this);
     }
 
@@ -141,6 +152,13 @@ class RTMClient {
                 this._baseClient.connect();
             }
         }
+    }
+
+    setRegressiveStrategy(strategy) {
+        this._regressiveStrategy.startConnectFailedCount = strategy.startConnectFailedCount || 5;
+        this._regressiveStrategy.maxIntervalSeconds = strategy.maxIntervalSeconds || 120;
+        this._regressiveStrategy.linearRegressiveCount = strategy.linearRegressiveCount || 5;
+        this._regressiveStrategy.firstIntervalSeconds = strategy.firstIntervalSeconds || 2;
     }
 
     /**
@@ -333,19 +351,14 @@ class RTMClient {
         };
         sendQuest.call(this, this._baseClient, cmd, payload, function (err, data) {
             if (err) {
-                callback && callback({
-                    mid: payload.mid,
-                    error: err
-                }, null);
+                callback && callback(err, null);
                 return;
             }
+            var answer = { mid: payload.mid };
             if (data.mtime !== undefined) {
-                data.mtime = new Int64BE(data.mtime);
+                answer.mtime = new Int64BE(data.mtime);
             }
-            callback && callback(null, {
-                mid: payload.mid,
-                payload: data
-            });
+            callback && callback(null, answer);
         }, timeout);
     }
 
@@ -389,19 +402,14 @@ class RTMClient {
         };
         sendQuest.call(this, this._baseClient, cmd, payload, function (err, data) {
             if (err) {
-                callback && callback({
-                    mid: payload.mid,
-                    error: err
-                }, null);
+                callback && callback(err, null);
                 return;
             }
+            var answer = { mid: payload.mid };
             if (data.mtime !== undefined) {
-                data.mtime = new Int64BE(data.mtime);
+                answer.mtime = new Int64BE(data.mtime);
             }
-            callback && callback(null, {
-                mid: payload.mid,
-                payload: data
-            });
+            callback && callback(null, answer);
         }, timeout);
     }
 
@@ -445,19 +453,14 @@ class RTMClient {
         };
         sendQuest.call(this, this._baseClient, cmd, payload, function (err, data) {
             if (err) {
-                callback && callback({
-                    mid: payload.mid,
-                    error: err
-                }, null);
+                callback && callback(err, null);
                 return;
             }
+            var answer = { mid: payload.mid };
             if (data.mtime !== undefined) {
-                data.mtime = new Int64BE(data.mtime);
+                answer.mtime = new Int64BE(data.mtime);
             }
-            callback && callback(null, {
-                mid: payload.mid,
-                payload: data
-            });
+            callback && callback(null, answer);
         }, timeout);
     }
 
@@ -501,19 +504,14 @@ class RTMClient {
         };
         sendQuest.call(this, this._baseClient, cmd, payload, function (err, data) {
             if (err) {
-                callback && callback({
-                    mid: payload.mid,
-                    error: err
-                }, null);
+                callback && callback(err, null);
                 return;
             }
+            var answer = { mid: payload.mid };
             if (data.mtime !== undefined) {
-                data.mtime = new Int64BE(data.mtime);
+                answer.mtime = new Int64BE(data.mtime);
             }
-            callback && callback(null, {
-                mid: payload.mid,
-                payload: data
-            });
+            callback && callback(null, answer);
         }, timeout);
     }
 
@@ -555,49 +553,66 @@ class RTMClient {
         };
         sendQuest.call(this, this._baseClient, cmd, payload, function (err, data) {
             if (err) {
-                callback && callback({
-                    mid: payload.mid,
-                    error: err
-                }, null);
+                callback && callback(err, null);
                 return;
             }
+            var answer = { mid: payload.mid };
             if (data.mtime !== undefined) {
-                data.mtime = new Int64BE(data.mtime);
+                answer.mtime = new Int64BE(data.mtime);
             }
-            callback && callback(null, {
-                mid: payload.mid,
-                payload: data
-            });
+            callback && callback(null, answer);
         }, timeout);
     }
 
-    /**
-     *
-     * ServerGate (2f)
-     *
-     * @param {Int64BE}         gid
-     * @param {bool}            desc
-     * @param {number}          num
-     * @param {Int64BE}         begin
-     * @param {Int64BE}         end
-     * @param {Int64BE}         lastid
-     * @param {array(number)}   mtypes
-     * @param {number}          timeout
-     * @param {function}        callback
-     *
-     * @callback
-     * @param {Error}       err
-     * @param {object(num:number,lastid:Int64BE,begin:Int64BE,end:Int64BE,msgs:array(GroupMsg))}    data
-     *
-     * <GroupMsg>
-     * @param {Int64BE}     GroupMsg.id
-     * @param {Int64BE}     GroupMsg.from
-     * @param {number}      GroupMsg.mtype
-     * @param {Int64BE}     GroupMsg.mid
-     * @param {string}      GroupMsg.msg
-     * @param {string}      GroupMsg.attrs
-     * @param {Int64BE}     GroupMsg.mtime
-     */
+    static buildAudioInfo(message) {
+        try {
+            let audioObject = JSON.parse(message);
+            let audioInfo = {
+                sourceLanguage: audioObject.sl || "",
+                recognizedLanguage: audioObject.rl || "",
+                duration: audioObject.du || 0,
+                recognizedText: audioObject.rt || 0
+            };
+            return audioInfo;
+        } catch (er) {
+            return undefined;
+        }
+    }
+
+    buildHistoryMessageResult(data, toId) {
+        let historyMessages = {};
+        historyMessages.count = Number(data['num']);
+        historyMessages.lastCursorId = new Int64BE(data['lastid']);
+        historyMessages.beginMsec = new Int64BE(data['begin']);
+        historyMessages.endMsec = new Int64BE(data['end']);
+        historyMessages.messages = [];
+
+        let msgs = data['msgs'];
+        if (msgs) {
+            msgs.forEach(function (item, index) {
+
+                let message = {
+                    cursorId: new Int64BE(item[0]),
+                    fromUid: new Int64BE(item[1]),
+                    toId: toId,
+                    messageType: Number(item[2]),
+                    messageId: new Int64BE(item[3]),
+                    message: item[5],
+                    attrs: item[6],
+                    modifiedTime: new Int64BE(item[7])
+                };
+
+                if (message.messageType == RTMConfig.CHAT_TYPE.audio) {
+                    message.audioInfo = RTMClient.buildAudioInfo(message.message);
+
+                    if (message.audioInfo != undefined) message.message = message.audioInfo.recognizedText;
+                }
+                historyMessages.messages[index] = message;
+            });
+        }
+        return historyMessages;
+    }
+
     getGroupMessage(uid, gid, desc, num, begin, end, lastid, mtypes, timeout, callback) {
         let cmd = 'getgroupmsg';
         let ts = FPManager.instance.timestamp;
@@ -626,68 +641,17 @@ class RTMClient {
         if (mtypes !== undefined) {
             payload.mtypes = mtypes;
         }
+        let self = this;
         sendQuest.call(this, this._baseClient, cmd, payload, function (err, data) {
             if (err) {
                 callback && callback(err, null);
                 return;
             }
-
-            let msgs = data['msgs'];
-            if (msgs) {
-                msgs.forEach(function (item, index) {
-                    let groupMsg = {
-                        id: new Int64BE(item[0]),
-                        from: new Int64BE(item[1]),
-                        mtype: Number(item[2]),
-                        mid: new Int64BE(item[3]),
-                        deleted: item[4],
-                        msg: item[5],
-                        attrs: item[6],
-                        mtime: new Int64BE(item[7])
-                    };
-                    if (groupMsg.hasOwnProperty('deleted')) {
-                        delete groupMsg.deleted;
-                    }
-                    if (groupMsg.mtype == RTMConfig.CHAT_TYPE.audio) {
-                        if (groupMsg.hasOwnProperty('msg') && groupMsg.msg instanceof String) {
-                            let buf = Buffer.from(groupMsg.msg, 'utf8');
-                            groupMsg.msg = buf;
-                        }
-                    }
-                    msgs[index] = groupMsg;
-                });
-            }
-            callback && callback(null, data);
+            let historyMessage = self.buildHistoryMessageResult.call(this, data, gid);
+            callback && callback(null, historyMessage);
         }, timeout);
     }
 
-    /**
-     *
-     * ServerGate (2g)
-     *
-     * @param {Int64BE}         rid
-     * @param {bool}            desc
-     * @param {number}          num
-     * @param {Int64BE}         begin
-     * @param {Int64BE}         end
-     * @param {Int64BE}         lastid
-     * @param {array(number)}   mtypes
-     * @param {number}          timeout
-     * @param {function}        callback
-     *
-     * @callback
-     * @param {Error}   err
-     * @param {object(num:number,lastid:Int64BE,begin:Int64BE,end:Int64BE,msgs:array(RoomMsg))}     data
-     *
-     * <RoomMsg>
-     * @param {Int64BE}     RoomMsg.id
-     * @param {Int64BE}     RoomMsg.from
-     * @param {number}      RoomMsg.mtype
-     * @param {Int64BE}     RoomMsg.mid
-     * @param {string}      RoomMsg.msg
-     * @param {string}      RoomMsg.attrs
-     * @param {Int64BE}     RoomMsg.mtime
-     */
     getRoomMessage(uid, rid, desc, num, begin, end, lastid, mtypes, timeout, callback) {
         let cmd = 'getroommsg';
         let ts = FPManager.instance.timestamp;
@@ -716,67 +680,18 @@ class RTMClient {
         if (mtypes !== undefined) {
             payload.mtypes = mtypes;
         }
+        let self = this;
         sendQuest.call(this, this._baseClient, cmd, payload, function (err, data) {
             if (err) {
                 callback && callback(err, null);
                 return;
             }
 
-            let msgs = data['msgs'];
-            if (msgs) {
-                msgs.forEach(function (item, index) {
-                    let roomMsg = {
-                        id: new Int64BE(item[0]),
-                        from: new Int64BE(item[1]),
-                        mtype: Number(item[2]),
-                        mid: new Int64BE(item[3]),
-                        deleted: item[4],
-                        msg: item[5],
-                        attrs: item[6],
-                        mtime: new Int64BE(item[7])
-                    };
-                    if (roomMsg.hasOwnProperty('deleted')) {
-                        delete roomMsg.deleted;
-                    }
-                    if (roomMsg.mtype == RTMConfig.CHAT_TYPE.audio) {
-                        if (roomMsg.hasOwnProperty('msg') && roomMsg.msg instanceof String) {
-                            let buf = Buffer.from(roomMsg.msg, 'utf8');
-                            roomMsg.msg = buf;
-                        }
-                    }
-                    msgs[index] = roomMsg;
-                });
-            }
-            callback && callback(null, data);
+            let historyMessage = self.buildHistoryMessageResult.call(this, data, rid);
+            callback && callback(null, historyMessage);
         }, timeout);
     }
 
-    /**
-     *
-     * ServerGate (2h)
-     *
-     * @param {bool}            desc
-     * @param {number}          num
-     * @param {Int64BE}         begin
-     * @param {Int64BE}         end
-     * @param {Int64BE}         lastid
-     * @param {array(number)}   mtypes
-     * @param {number}          timeout
-     * @param {function}        callback
-     *
-     * @callback
-     * @param {Error}   err
-     * @param {object(num:number,lastid:Int64BE,begin:Int64BE,end:Int64BE,msgs:array(BroadcastMsg))}    data
-     *
-     * <BroadcastMsg>
-     * @param {Int64BE}     BroadcastMsg.id
-     * @param {Int64BE}     BroadcastMsg.from
-     * @param {number}      BroadcastMsg.mtype
-     * @param {Int64BE}     BroadcastMsg.mid
-     * @param {string}      BroadcastMsg.msg
-     * @param {string}      BroadcastMsg.attrs
-     * @param {Int64BE}     BroadcastMsg.mtime
-     */
     getBroadcastMessage(uid, desc, num, begin, end, lastid, mtypes, timeout, callback) {
         let cmd = 'getbroadcastmsg';
         let ts = FPManager.instance.timestamp;
@@ -804,69 +719,31 @@ class RTMClient {
         if (mtypes !== undefined) {
             payload.mtypes = mtypes;
         }
+        let self = this;
         sendQuest.call(this, this._baseClient, cmd, payload, function (err, data) {
             if (err) {
                 callback && callback(err, null);
                 return;
             }
 
-            let msgs = data['msgs'];
-            if (msgs) {
-                msgs.forEach(function (item, index) {
-                    let broadcastMsg = {
-                        id: new Int64BE(item[0]),
-                        from: new Int64BE(item[1]),
-                        mtype: Number(item[2]),
-                        mid: new Int64BE(item[3]),
-                        deleted: item[4],
-                        msg: item[5],
-                        attrs: item[6],
-                        mtime: new Int64BE(item[7])
-                    };
-                    if (broadcastMsg.hasOwnProperty('deleted')) {
-                        delete broadcastMsg.deleted;
-                    }
-                    if (broadcastMsg.mtype == RTMConfig.CHAT_TYPE.audio) {
-                        if (broadcastMsg.hasOwnProperty('msg') && broadcastMsg.msg instanceof String) {
-                            let buf = Buffer.from(broadcastMsg.msg, 'utf8');
-                            broadcastMsg.msg = buf;
-                        }
-                    }
-                    msgs[index] = broadcastMsg;
-                });
-            }
-            callback && callback(null, data);
+            let historyMessage = self.buildHistoryMessageResult.call(this, data, 0);
+            callback && callback(null, historyMessage);
         }, timeout);
     }
 
-    /**
-     *
-     * ServerGate (2i)
-     *
-     * @param {Int64BE}         uid
-     * @param {Int64BE}         ouid
-     * @param {bool}            desc
-     * @param {number}          num
-     * @param {Int64BE}         begin
-     * @param {Int64BE}         end
-     * @param {Int64BE}         lastid
-     * @param {array(number)}   mtypes
-     * @param {number}          timeout
-     * @param {function}        callback
-     *
-     * @callback
-     * @param {Error}   err
-     * @param {object(num:number,lastid:Int64BE,begin:Int64BE,end:Int64BE,msgs:array(P2PMsg))}  data
-     *
-     * <P2PMsg>
-     * @param {Int64BE}     P2PMsg.id
-     * @param {number}      P2PMsg.direction
-     * @param {number}      P2PMsg.mtype
-     * @param {Int64BE}     P2PMsg.mid
-     * @param {string}      P2PMsg.msg
-     * @param {string}      P2PMsg.attrs
-     * @param {Int64BE}     P2PMsg.mtime
-     */
+    adjustHistoryMessageResultForP2PMessage(uid, ouid, historyMessage) {
+        let selfDirection = new Int64BE(1);
+        historyMessage.messages.forEach(function (item, index) {
+            if (item.fromUid == selfDirection) {
+                historyMessage.messages[index].fromUid = uid;
+                historyMessage.messages[index].toId = ouid;
+            } else {
+                historyMessage.messages[index].fromUid = ouid;
+                historyMessage.messages[index].toId = uid;
+            }
+        });
+    }
+
     getP2PMessage(uid, ouid, desc, num, begin, end, lastid, mtypes, timeout, callback) {
         let cmd = 'getp2pmsg';
         let ts = FPManager.instance.timestamp;
@@ -895,38 +772,16 @@ class RTMClient {
         if (mtypes !== undefined) {
             payload.mtypes = mtypes;
         }
+        let self = this;
         sendQuest.call(this, this._baseClient, cmd, payload, function (err, data) {
             if (err) {
                 callback && callback(err, null);
                 return;
             }
 
-            let msgs = data['msgs'];
-            if (msgs) {
-                msgs.forEach(function (item, index) {
-                    let p2pMsg = {
-                        id: new Int64BE(item[0]),
-                        direction: Number(item[1]),
-                        mtype: Number(item[2]),
-                        mid: new Int64BE(item[3]),
-                        deleted: item[4],
-                        msg: item[5],
-                        attrs: item[6],
-                        mtime: new Int64BE(item[7])
-                    };
-                    if (p2pMsg.hasOwnProperty('deleted')) {
-                        delete p2pMsg.deleted;
-                    }
-                    if (p2pMsg.mtype == RTMConfig.CHAT_TYPE.audio) {
-                        if (p2pMsg.hasOwnProperty('msg') && p2pMsg.msg instanceof String) {
-                            let buf = Buffer.from(p2pMsg.msg, 'utf8');
-                            p2pMsg.msg = buf;
-                        }
-                    }
-                    msgs[index] = p2pMsg;
-                });
-            }
-            callback && callback(null, data);
+            let historyMessage = self.buildHistoryMessageResult.call(this, data, 0);
+            self.adjustHistoryMessageResultForP2PMessage.call(this, uid, ouid, historyMessage);
+            callback && callback(null, historyMessage);
         }, timeout);
     }
 
@@ -994,41 +849,34 @@ class RTMClient {
             xid: xid,
             type: type
         };
-        sendQuest.call(this, this._baseClient, cmd, payload, callback, timeout);
-    }
+        let self = this;
+        sendQuest.call(this, this._baseClient, cmd, payload, function (err, data) {
+            if (err) {
+                callback && callback(err, null);
+                return;
+            }
 
-    /**
-     *
-     * ServerGate (2j)
-     *
-     * @param {Int64BE}         mid
-     * @param {Int64BE}         from
-     * @param {Int64BE}         xid
-     * @param {number}          type 
-     * @param {number}          timeout
-     * @param {function}        callback
-     *
-     * @callback
-     * @param {Error}           err
-     * @param {object}          data
-     */
-    getMessage(mid, from, xid, type, timeout, callback) {
-        let cmd = 'getmsg';
-        let ts = FPManager.instance.timestamp;
-        let salt = RTMClient.MidGenerator.gen();
-        let sign = genSign.call(this, salt, cmd, ts);
+            if (!data.hasOwnProperty("id")) {
+                callback && callback(null, {});
+                return;
+            }
 
-        let payload = {
-            ts: ts,
-            salt: salt,
-            sign: sign,
-            pid: this._pid,
-            mid: mid,
-            from: from,
-            xid: xid,
-            type: type
-        };
-        sendQuest.call(this, this._baseClient, cmd, payload, callback, timeout);
+            let message = {
+                cursorId: new Int64BE(data.id),
+                messageType: Number(data.mtype),
+                message: data.msg,
+                attrs: data.attrs,
+                modifiedTime: new Int64BE(data.mtime)
+            };
+
+            if (message.messageType == RTMConfig.CHAT_TYPE.audio) {
+                if (message.message instanceof String) {
+                    let buf = Buffer.from(message.message, 'utf8');
+                    message.message = buf;
+                }
+            }
+            callback && callback(null, message);
+        }, timeout);
     }
 
     /**
@@ -1755,6 +1603,28 @@ class RTMClient {
         if (uid !== undefined) {
             payload.uid = uid;
         }
+        if (profanityFilter != undefined) {
+            payload.profanityFilter = profanityFilter;
+        }
+
+        sendQuest.call(this, this._baseClient, cmd, payload, callback, timeout);
+    }
+
+    transcribeMessage(mid, toId, type, profanityFilter, timeout, callback) {
+        let cmd = 'stranscribe';
+        let ts = FPManager.instance.timestamp;
+        let salt = RTMClient.MidGenerator.gen();
+        let sign = genSign.call(this, salt, cmd, ts);
+
+        let payload = {
+            ts: ts,
+            salt: salt,
+            sign: sign,
+            pid: this._pid,
+            mid: mid,
+            xid: toId,
+            type: type
+        };
         if (profanityFilter != undefined) {
             payload.profanityFilter = profanityFilter;
         }
@@ -2842,7 +2712,7 @@ class RTMClient {
         };
         sendQuest.call(this, this._baseClient, cmd, payload, callback, timeout);
     }
-
+    5;
     /**
      *
      * ServerGate (8d)
@@ -2912,7 +2782,7 @@ class RTMClient {
      * @param {string}          pinfo
      * @param {number}          timeout
      * @param {function}        callback
-     *
+     * 
      * @callback
      * @param {Error}   err
      * @param {object}  data
@@ -3227,7 +3097,7 @@ class RTMClient {
      */
     sendFile(from, to, mtype, fileBytes, fileExt, fileName, mid, timeout, callback) {
         if (fileBytes === undefined || !fileBytes) {
-            callback && callback(new Error('empty file bytes!'));
+            callback && callback(new FPError('empty file bytes!', FPConfig.ERROR_CODE.FPNN_EC_CORE_UNKNOWN_ERROR));
             return;
         }
 
@@ -3263,7 +3133,7 @@ class RTMClient {
      */
     sendFiles(from, tos, mtype, fileBytes, fileExt, fileName, mid, timeout, callback) {
         if (fileBytes === undefined || !fileBytes) {
-            callback && callback(new Error('empty file bytes!'));
+            callback && callback(new FPError('empty file bytes!', FPConfig.ERROR_CODE.FPNN_EC_CORE_UNKNOWN_ERROR));
             return;
         }
 
@@ -3299,7 +3169,7 @@ class RTMClient {
      */
     sendGroupFile(from, gid, mtype, fileBytes, fileExt, fileName, mid, timeout, callback) {
         if (fileBytes === undefined || !fileBytes) {
-            callback && callback(new Error('empty file bytes!'));
+            callback && callback(new FPError('empty file bytes!', FPConfig.ERROR_CODE.FPNN_EC_CORE_UNKNOWN_ERROR));
             return;
         }
 
@@ -3335,7 +3205,7 @@ class RTMClient {
      */
     sendRoomFile(from, rid, mtype, fileBytes, fileExt, fileName, mid, timeout, callback) {
         if (fileBytes === undefined || !fileBytes) {
-            callback && callback(new Error('empty file bytes!'));
+            callback && callback(new FPError('empty file bytes!', FPConfig.ERROR_CODE.FPNN_EC_CORE_UNKNOWN_ERROR));
             return;
         }
 
@@ -3370,7 +3240,7 @@ class RTMClient {
      */
     broadcastFile(from, mtype, fileBytes, fileExt, fileName, mid, timeout, callback) {
         if (fileBytes === undefined || !fileBytes) {
-            callback && callback(new Error('empty file bytes!'));
+            callback && callback(new FPError('empty file bytes!', FPConfig.ERROR_CODE.FPNN_EC_CORE_UNKNOWN_ERROR));
             return;
         }
 
@@ -3405,7 +3275,7 @@ function onSecond(timestamp) {
     }
     if (lastPingTimestamp > 0 && timestamp - lastPingTimestamp > RTMConfig.RECV_PING_TIMEOUT) {
         if (this._baseClient != null && this._baseClient.isOpen) {
-            this._baseClient.close(new Error("ping timeout"));
+            this._baseClient.close(new FPError("ping timeout", FPConfig.ERROR_CODE.FPNN_EC_CORE_TIMEOUT));
         }
     }
     delayConnect.call(this, timestamp);
@@ -3436,6 +3306,8 @@ function createBaseClient() {
 
 function onConnect() {
     this._delayCount = 0;
+    this._reconnectCount = 0;
+    this._reconnectInterval = 0;
     this.emit('connect');
 }
 
@@ -3469,20 +3341,36 @@ function reconnect() {
     if (this._processor) {
         this._processor.clearPingTimestamp();
     }
-    if (++this._delayCount >= RTMConfig.RECONN_COUNT_ONCE) {
+
+    this._isReconnect = true;
+    if (++this._reconnectCount <= this._regressiveStrategy.startConnectFailedCount) {
         this.connect(this._encryptInfo);
         return;
+    } else {
+        if (!this._isClose && this._reconnect) updateDelayReconnectInterval.call(this);
+        this._delayTimestamp = FPManager.instance.milliTimestamp;
     }
-    this._delayTimestamp = FPManager.instance.milliTimestamp;
+}
+
+function updateDelayReconnectInterval() {
+
+    let interval = this._regressiveStrategy.maxIntervalSeconds / this._regressiveStrategy.linearRegressiveCount;
+
+    if (this._reconnectInterval == 0) this._reconnectInterval = this._regressiveStrategy.firstIntervalSeconds;else {
+        this._reconnectInterval += interval;
+        if (this._reconnectInterval > this._regressiveStrategy.maxIntervalSeconds) this._reconnectInterval = this._regressiveStrategy.maxIntervalSeconds;
+    }
 }
 
 function delayConnect(timestamp) {
     if (this._delayTimestamp == 0) {
         return;
     }
-    if (timestamp - this._delayTimestamp < RTMConfig.CONNCT_INTERVAL) {
-        return;
-    }
+
+    let interval = this._reconnectInterval;
+
+    if (timestamp - this._delayTimestamp < 1000 * interval) return;
+
     this._delayCount = 0;
     this._delayTimestamp = 0;
     this.connect(this._encryptInfo);
@@ -3490,7 +3378,7 @@ function delayConnect(timestamp) {
 
 function sendQuest(client, cmd, payload, callback, timeout) {
     if (!client) {
-        callback && callback(new Error('client has been destroyed!'), null);
+        callback && callback(new FPError('client has been destroyed!', FPConfig.ERROR_CODE.FPNN_EC_CORE_INVALID_CONNECTION), null);
         return;
     }
 
@@ -3533,19 +3421,17 @@ function sendQuest(client, cmd, payload, callback, timeout) {
 
 function isException(isAnswerErr, data) {
     if (!data) {
-        return new Error('data is null!');
+        return new FPError('data is null!', FPConfig.ERROR_CODE.FPNN_EC_CORE_UNKNOWN_ERROR);
+    }
+    if (data instanceof FPError) {
+        return data;
     }
     if (data instanceof Error) {
-        return data;
+        return new FPError(data.message, FPConfig.ERROR_CODE.FPNN_EC_CORE_UNKNOWN_ERROR);
     }
     if (isAnswerErr) {
         if (data.hasOwnProperty('code') && data.hasOwnProperty('ex')) {
-            let sb = [];
-            sb.push('code: ');
-            sb.push(data.code);
-            sb.push(', ex: ');
-            sb.push(data.ex);
-            return new Error(sb.join(''));
+            return new FPError(data.ex, data.code);
         }
     }
     return null;
@@ -3586,7 +3472,7 @@ function fileSendProcess(ops, mid, timeout, callback) {
         if (!data) {
             callback && callback({
                 mid: mid,
-                error: new Error('file token error')
+                error: new FPError('file token error', FPConfig.ERROR_CODE.FPNN_EC_PROTO_FILE_SIGN)
             }, null);
             return;
         }
@@ -3602,14 +3488,14 @@ function fileSendProcess(ops, mid, timeout, callback) {
         if (!token) {
             callback && callback({
                 mid: mid,
-                error: new Error('file token is null or empty')
+                error: new FPError('file token is null or empty', FPConfig.ERROR_CODE.FPNN_EC_PROTO_FILE_SIGN)
             }, null);
             return;
         }
         if (!endpoint) {
             callback && callback({
                 mid: mid,
-                error: new Error('file endpoint is null or empty')
+                error: new FPError('file endpoint is null or empty', FPConfig.ERROR_CODE.FPNN_EC_CORE_UNKNOWN_ERROR)
             }, null);
             return;
         }
@@ -3618,21 +3504,45 @@ function fileSendProcess(ops, mid, timeout, callback) {
         let fileMd5 = FPManager.instance.md5(ops.file).toLowerCase();
         let sign = FPManager.instance.md5(fileMd5 + ':' + token).toLowerCase();
 
-        let options = {
-            host: ipport[0],
-            port: +ipport[1],
-            connectionTimeout: timeout
-        };
-        options.onConnect = function () {
-            ops.token = token;
-            ops.sign = sign;
-            sendfile.call(self, fileClient, ops, mid, timeout, callback);
-        };
-        options.onError = function (err) {
-            onError.call(self, err);
-        };
-        let fileClient = new FPClient(options);
-        fileClient.connect();
+        let fileClient = undefined;
+        let key = ipport[0] + ":" + ipport[1];
+        if (self._fileGateDict.hasOwnProperty(key)) {
+            let fileClientInfo = self._fileGateDict[key];
+            let time = fileClientInfo.time;
+            if (FPManager.instance.timestamp - time < RTMConfig.FILE_GATE_CLIENT_HOLDING_SECONDS) {
+                fileClient = fileClientInfo.client;
+                if (fileClient.hasConnect) {
+                    ops.token = token;
+                    ops.sign = sign;
+                    sendfile.call(self, fileClient, ops, mid, timeout, callback);
+                    self._fileGateDict[key].time = FPManager.instance.timestamp;
+                } else {
+                    delete self._fileGateDict[key];
+                }
+            }
+        }
+
+        if (fileClient == undefined) {
+            let options = {
+                host: ipport[0],
+                port: +ipport[1],
+                connectionTimeout: timeout
+            };
+            options.onConnect = function () {
+                ops.token = token;
+                ops.sign = sign;
+                sendfile.call(self, fileClient, ops, mid, timeout, callback);
+            };
+            options.onError = function (err) {
+                onError.call(self, err);
+            };
+            options.onClose = function () {
+                delete self._fileGateDict[key];
+            };
+            let fileClient = new FPClient(options);
+            self._fileGateDict[key] = { client: fileClient, time: FPManager.instance.timestamp };
+            fileClient.connect();
+        }
     });
 }
 
@@ -3659,7 +3569,7 @@ function filetoken(ops, timeout, callback) {
 
 function sendfile(fileClient, ops, mid, timeout, callback) {
     if (ops.cmd === undefined) {
-        callback && callback(new Error('wrong cmd!'));
+        callback && callback(new FPError('wrong cmd!', FPConfig.ERROR_CODE.FPNN_EC_CORE_UNKNOWN_METHOD));
         return;
     }
 
@@ -3701,7 +3611,6 @@ function sendfile(fileClient, ops, mid, timeout, callback) {
     }
     payload.attrs = JSON.stringify(attrs);
     sendQuest.call(this, fileClient, ops.cmd, payload, function (err, data) {
-        fileClient.close();
         if (err) {
             callback && callback({
                 mid: payload.mid,
