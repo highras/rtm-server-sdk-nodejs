@@ -56,3 +56,17 @@
     * `callback`: **(Optional | function)** 回调方法, `callback(err, data)`
         * `err`: **(FPError)** 
         * `data`: **(object(oinfo:string,pinfo:string))** 
+
+* `getRoomMembers(rid, timeout, callback)`: 获取Room成员列表
+    * `rid`: **(Required | Int64BE)** room id
+    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
+    * `callback`: **(Optional | function)** 回调方法, `callback(err, data)`
+        * `err`: **(FPError)** 
+        * `data`: **([Int64BE])** 
+
+* `getRoomCount(rids, timeout, callback)`: 获取房间中的用户数量
+    * `rids`: **(Required | [Int64BE])** room id list
+    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
+    * `callback`: **(Optional | function)** 回调方法, `callback(err, data)`
+        * `err`: **(FPError)** 
+        * `data`: **(cn:map<string, int32>)** 

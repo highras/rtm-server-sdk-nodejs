@@ -1,7 +1,7 @@
 # FPNN RTM Node.js SDK #
 
 #### API ####
-* `RTMClient::RTMRegistration::register()`: 注册服务
+* `RTMServerClient::RTMRegistration::register()`: 注册服务
 
 > constructor
 

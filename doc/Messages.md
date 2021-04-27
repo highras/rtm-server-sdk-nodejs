@@ -200,3 +200,14 @@
     * `callback`: **(Optional | function)** 回调方法, `callback(err, data)`
         * `err`: **(FPError)** 
         * `data`: **(object)** 
+
+* `getMessageNum(type, xid, mtypes, begin, end, timeout, callback)`: 获取消息数
+    * `type`: **(Required | number)** 2,group; 3, room;
+    * `xid`: **(Required | Int64BE)** gid/rid
+    * `mtypes`: **(Required | number)** 消息类型列表，为空则返回所有
+    * `begin`: **(Required | number)** 毫秒级时间戳，返回此区间内数量，为0则忽略
+    * `end`: **(Required | number)** 毫秒级时间戳，返回此区间内数量，为0则忽略
+    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
+    * `callback`: **(Optional | function)** 回调方法, `callback(err, data)`
+        * `err`: **(FPError)** 
+        * `data`: **(object)** 

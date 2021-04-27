@@ -2,11 +2,11 @@
 
 class RTMConfig {
 	static get VERSION() {
-		return '2.0.0';
+		return '2.1.0';
 	}
 
 	static get API_VERSION() {
-		return '2.2.0';
+		return '2.7.0';
 	}
 
 	static get MID_TTL() {

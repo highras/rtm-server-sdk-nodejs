@@ -6,7 +6,7 @@ const Int64BE = require("int64-buffer").Int64BE;
 const FPManager = require('../fpnn/FPManager');
 const ErrorRecorder = require('../fpnn/ErrorRecorder');
 const RTMConfig = require('./RTMConfig');
-const RTMClient = require('./RTMClient');
+const RTMServerClient = require('./RTMServerClient');
 
 const JSON_PAYLOAD = '{}';
 const MSGPACK_PAYLOAD = Buffer.from([0x80]);
@@ -131,11 +131,11 @@ class RTMProcessor {
             modifiedTime: new Int64BE(data.mtime)
         };
 
-        if (message.messageType == RTMConfig.CHAT_TYPE.audio) {
-            message.audioInfo = RTMClient.buildAudioInfo(message.message);
+        if (message.messageType >= 40 && message.messageType <= 50) {
+            message = RTMServerClient.buildFileInfo(message);
 
-            if (message.audioInfo != undefined)
-                message.message = message.audioInfo.recognizedText;
+            if (message.fileInfo != undefined)
+                message.message = undefined;
         }
         return message;
     }
@@ -155,32 +155,22 @@ class RTMProcessor {
             }
         }
 
+        let message = this.buildPushMessage(data);
+
         if (data.hasOwnProperty('mtype')) {
             mtype = data.mtype;
         }
         if (mtype == RTMConfig.CHAT_TYPE.text) {
-            delete data.mtype;
             name = RTMConfig.SERVER_PUSH.recvChat;
         }
 
-        if (mtype == RTMConfig.CHAT_TYPE.audio) {
-            if (data.hasOwnProperty("msg") && data.msg instanceof String) {
-                let buf = Buffer.from(data.msg, 'utf8');
-                data.msg = buf;
-            }
-            delete data.mtype;
-            name = RTMConfig.SERVER_PUSH.recvAudio;
-        }
-
         if (mtype == RTMConfig.CHAT_TYPE.cmd) {
-            delete data.mtype;
             name = RTMConfig.SERVER_PUSH.recvCmd;
         }
         if (mtype >= 40 && mtype <= 50) {
             name = RTMConfig.SERVER_PUSH.recvFile;
         }
 
-        let message = this.buildPushMessage(data);
         pushService.call(this, name, message);
     }
 
@@ -199,32 +189,22 @@ class RTMProcessor {
             }
         }
 
+        let message = this.buildPushMessage(data);
+
         if (data.hasOwnProperty('mtype')) {
             mtype = data.mtype;
         }
         if (mtype == RTMConfig.CHAT_TYPE.text) {
-            delete data.mtype;
             name = RTMConfig.SERVER_PUSH.recvGroupChat;
         }
 
-        if (mtype == RTMConfig.CHAT_TYPE.audio) {
-            if (data.hasOwnProperty("msg") && data.msg instanceof String) {
-                let buf = Buffer.from(data.msg, 'utf8');
-                data.msg = buf;
-            }
-            delete data.mtype;
-            name = RTMConfig.SERVER_PUSH.recvGroupAudio;
-        }
-
         if (mtype == RTMConfig.CHAT_TYPE.cmd) {
-            delete data.mtype;
             name = RTMConfig.SERVER_PUSH.recvGroupCmd;
         }
         if (mtype >= 40 && mtype <= 50) {
             name = RTMConfig.SERVER_PUSH.recvGroupFile;
         }
 
-        let message = this.buildPushMessage(data);
         pushService.call(this, name, message);
     }
 
@@ -243,32 +223,22 @@ class RTMProcessor {
             }
         }
 
+        let message = this.buildPushMessage(data);
+
         if (data.hasOwnProperty('mtype')) {
             mtype = data.mtype;
         }
         if (mtype == RTMConfig.CHAT_TYPE.text) {
-            delete data.mtype;
             name = RTMConfig.SERVER_PUSH.recvRoomChat;
         }
 
-        if (mtype == RTMConfig.CHAT_TYPE.audio) {
-            if (data.hasOwnProperty("msg") && data.msg instanceof String) {
-                let buf = Buffer.from(data.msg, 'utf8');
-                data.msg = buf;
-            }
-            delete data.mtype;
-            name = RTMConfig.SERVER_PUSH.recvRoomAudio;
-        }
-
         if (mtype == RTMConfig.CHAT_TYPE.cmd) {
-            delete data.mtype;
             name = RTMConfig.SERVER_PUSH.recvRoomCmd;
         }
         if (mtype >= 40 && mtype <= 50) {
             name = RTMConfig.SERVER_PUSH.recvRoomFile;
         }
 
-        let message = this.buildPushMessage(data);
         pushService.call(this, name, message);
     }
 
@@ -284,19 +254,13 @@ class RTMProcessor {
 
     pushchat(data) {}
 
-    pushaudio(data) {}
-
     pushcmd(data) {}
 
     pushgroupchat(data) {}
 
-    pushgroupaudio(data) {}
-
     pushgroupcmd(data) {}
 
     pushroomchat(data) {}
-
-    pushroomaudio(data) {}
 
     pushroomcmd(data) {}
 

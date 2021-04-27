@@ -11,17 +11,6 @@
         * `err`: **(object(mid:Int64BE,error:FPError))** 
         * `data`: **(object(mid:Int64BE,mtime:Int64BE))**
 
-* `sendAudio(from, to, audio, attrs, mid, timeout, callback)`: 发送聊天语音, 消息类型`RTMConfig.CHAT_TYPE.audio`
-    * `from`: **(Required | Int64BE)** 发送方 id
-    * `to`: **(Required | Int64BE)** 接收方uid
-    * `audio`: **(Required | Buffer)** 语音数据
-    * `attrs`: **(Required | string)** 附加信息, `Json`字符串, 至少带两个参数(`lang`: 语言类型, `duration`: 语音长度 ms)
-    * `mid`: **(Optional | Int64BE)** 语音消息 id, 用于过滤重复聊天语音, 非重发时为`Int64BE(0)`
-    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
-    * `callback`: **(Optional | function)** 回调方法, `callback(err, data)`
-        * `err`: **(object(mid:Int64BE,error:FPError))** 
-        * `data`: **(object(mid:Int64BE,mtime:Int64BE))**
-
 * `sendCmd(from, to, msg, attrs, mid, timeout, callback)`: 发送聊天命令, 消息类型`RTMConfig.CHAT_TYPE.cmd`
     * `from`: **(Required | Int64BE)** 发送方 id
     * `to`: **(Required | Int64BE)** 接收方uid
@@ -44,17 +33,6 @@
         * `err`: **(object(mid:Int64BE,error:FPError))** 
         * `data`: **(object(mid:Int64BE,mtime:Int64BE))**
 
-* `sendAudios(from, tos, audio, attrs, mid, timeout, callback)`: 发送多人聊天语音, 消息类型`RTMConfig.CHAT_TYPE.audio`
-    * `from`: **(Required | Int64BE)** 发送方 id
-    * `tos`: **(Required | array[Int64BE])** 接收方uids
-    * `audio`: **(Required | Buffer)** 语音数据
-    * `attrs`: **(Required | string)** 附加信息, `Json`字符串, 至少带两个参数(`lang`: 语言类型, `duration`: 语音长度 ms)
-    * `mid`: **(Optional | Int64BE)** 语音消息 id, 用于过滤重复聊天语音, 非重发时为`Int64BE(0)`
-    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
-    * `callback`: **(Optional | function)** 回调方法, `callback(err, data)`
-        * `err`: **(object(mid:Int64BE,error:FPError))** 
-        * `data`: **(object(mid:Int64BE,mtime:Int64BE))** 
-
 * `sendCmds(from, tos, msg, attrs, mid, timeout, callback)`: 发送多人聊天命令, 消息类型`RTMConfig.CHAT_TYPE.cmd`
     * `from`: **(Required | Int64BE)** 发送方 id
     * `tos`: **(Required | array[Int64BE])** 接收方uids
@@ -72,17 +50,6 @@
     * `msg`: **(Required | string)** 聊天消息内容，附加修饰信息不要放这里，方便后继的操作，比如翻译，敏感词过滤等等
     * `attrs`: **(Required | string)** 聊天消息附加信息, 可传`''`
     * `mid`: **(Optional | Int64BE)**聊天消息 id, 用于过滤重复聊天消息, 非重发时为`Int64BE(0)`
-    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
-    * `callback`: **(Optional | function)** 回调方法, `callback(err, data)`
-        * `err`: **(object(mid:Int64BE,error:FPError))** 
-        * `data`: **(object(mid:Int64BE,mtime:Int64BE))** 
-
-* `sendGroupAudio(from, gid, audio, attrs, mid, timeout, callback)`: 发送group聊天语音, 消息类型`RTMConfig.CHAT_TYPE.audio`
-    * `from`: **(Required | Int64BE)** 发送方 id
-    * `gid`: **(Required | Int64BE)** Group id
-    * `audio`: **(Required | Buffer)** 语音数据
-    * `attrs`: **(Required | string)** 附加信息, `Json`字符串, 至少带两个参数(`lang`: 语言类型, `duration`: 语音长度 ms)
-    * `mid`: **(Optional | Int64BE)** 语音消息 id, 用于过滤重复聊天语音, 非重发时为`Int64BE(0)`
     * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
     * `callback`: **(Optional | function)** 回调方法, `callback(err, data)`
         * `err`: **(object(mid:Int64BE,error:FPError))** 
@@ -110,17 +77,6 @@
         * `err`: **(object(mid:Int64BE,error:FPError))** 
         * `data`: **(object(mid:Int64BE,mtime:Int64BE))** 
 
-* `sendRoomAudio(from, rid, audio, attrs, timeout, callback)`: 发送room聊天语音, 消息类型`RTMConfig.CHAT_TYPE.audio`
-    * `from`: **(Required | Int64BE)** 发送方 id
-    * `rid`: **(Required | Int64BE)** Room id
-    * `audio`: **(Required | Buffer)** 语音数据
-    * `attrs`: **(Required | string)** 附加信息, `Json`字符串, 至少带两个参数(`lang`: 语言类型, `duration`: 语音长度 ms)
-    * `mid`: **(Optional | Int64BE)** 语音消息 id, 用于过滤重复聊天语音, 非重发时为`Int64BE(0)`
-    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
-    * `callback`: **(Optional | function)** 回调方法, `callback(err, data)`
-        * `err`: **(object(mid:Int64BE,error:FPError))** 
-        * `data`: **(object(mid:Int64BE,mtime:Int64BE))** 
-
 * `sendRoomCmd(from, rid, msg, attrs, timeout, callback)`: 发送room聊天命令, 消息类型`RTMConfig.CHAT_TYPE.cmd`
     * `from`: **(Required | Int64BE)** 发送方 id
     * `rid`: **(Required | Int64BE)** Room id
@@ -137,16 +93,6 @@
     * `msg`: **(Required | string)** 聊天消息内容，附加修饰信息不要放这里，方便后继的操作，比如翻译，敏感词过滤等等
     * `attrs`: **(Required | string)** 聊天消息附加信息, 可传`''`
     * `mid`: **(Optional | Int64BE)** 聊天消息 id, 用于过滤重复聊天消息, 非重发时为`Int64BE(0)`
-    * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
-    * `callback`: **(Optional | function)** 回调方法, `callback(err, data)`
-        * `err`: **(object(mid:Int64BE,error:FPError))** 
-        * `data`: **(object(mid:Int64BE,mtime:Int64BE))** 
-
-* `broadcastAudio(from, audio, attrs, timeout, callback)`: 广播聊天语音(andmin id), 消息类型`RTMConfig.CHAT_TYPE.audio`
-    * `from`: **(Required | Int64BE)** admin id
-    * `audio`: **(Required | Buffer)** 语音数据
-    * `attrs`: **(Required | string)** 附加信息, `Json`字符串, 至少带两个参数(`lang`: 语言类型, `duration`: 语音长度 ms)
-    * `mid`: **(Optional | Int64BE)** 语音消息 id, 用于过滤重复聊天语音, 非重发时为`Int64BE(0)`
     * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
     * `callback`: **(Optional | function)** 回调方法, `callback(err, data)`
         * `err`: **(object(mid:Int64BE,error:FPError))** 

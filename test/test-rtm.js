@@ -1,11 +1,11 @@
 'use strict'
 
 const TestCase = require('./TestCase');
-const RTMClient = require('../src/rtm/RTMClient');
+const RTMServerClient = require('../src/rtm/RTMServerClient');
 
 const FPError = require('../src/fpnn/FPError');
 
-RTMClient.RTMRegistration.register();
+RTMServerClient.RTMRegistration.register();
 baseTest.call(this);
 
 function baseTest() {

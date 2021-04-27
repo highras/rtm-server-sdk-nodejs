@@ -65,7 +65,7 @@
 	    * `data.to`: **(Int64BE)** 接收者 id
 	    * `data.mtype`: **(number)** 文件类型, 请参考`RTMConfig.FILE_TYPE`成员
 	    * `data.mid`: **(Int64BE)** 业务文件消息 id, 当前链接会话内唯一
-	    * `data.msg`: **(string)** 文件获取地址(url)
+	    * `data.fileInfo`: **(object)** 为文件/语音消息时存在
 	    * `data.attrs`: **(string)** 发送时附加的自定义内容
 	    * `data.mtime`: **(Int64BE)**
 
@@ -75,7 +75,7 @@
 	    * `data.gid`: **(Int64BE)** Group id
 	    * `data.mtype`: **(number)** 文件类型, 请参考`RTMConfig.FILE_TYPE`成员
 	    * `data.mid`: **(Int64BE)** 业务文件消息 id, 当前链接会话内唯一
-	    * `data.msg`: **(string)** 文件获取地址(url)
+	    * `data.fileInfo`: **(object)** 为文件/语音消息时存在
 	    * `data.attrs`: **(string)** 发送时附加的自定义内容
 	    * `data.mtime`: **(Int64BE)**
 
@@ -85,7 +85,7 @@
 	    * `data.rid`: **(Int64BE)** Room id
 	    * `data.mtype`: **(number)** 文件类型, 请参考`RTMConfig.FILE_TYPE`成员
 	    * `data.mid`: **(Int64BE)** 业务文件消息 id, 当前链接会话内唯一
-	    * `data.msg`: **(string)** 文件获取地址(url)
+	    * `data.fileInfo`: **(object)** 为文件/语音消息时存在
 	    * `data.attrs`: **(string)** 发送时附加的自定义内容
 	    * `data.mtime`: **(Int64BE)**
 
@@ -129,35 +129,6 @@
             * `target`: **(string)** 翻译后的语言类型, 参考`RTMConfig.TRANS_LANGUAGE`成员
             * `sourceText`: **(string)** 原始聊天消息
             * `targetText`: **(string)** 翻译后的聊天消息 
-
-> audio push
-
-* `pushaudio`: RTM主动推送P2P聊天语音
-	* `data`: **(object)**
-    	* `data.from`: **(Int64BE)** 发送者 id
-	    * `data.to`: **(Int64BE)** 接收者 id
-	    * `data.mid`: **(Int64BE)** 语音消息 id, 当前链接会话内唯一
-	    * `data.msg`: **(Buffer)** 聊天语音数据
-	    * `data.attrs`: **(string)** 发送时附加的自定义内容
-	    * `data.mtime`: **(Int64BE)**
-
-* `pushgroupaudio`: RTM主动推送Group聊天语音
-	* `data`: **(object)**
-	    * `data.from`: **(Int64BE)** 发送者 id
-	    * `data.gid`: **(Int64BE)** Group id
-	    * `data.mid`: **(Int64BE)** 语音消息 id, 当前链接会话内唯一
-	    * `data.msg`: **(Buffer)** 聊天语音数据
-	    * `data.attrs`: **(string)** 发送时附加的自定义内容
-	    * `data.mtime`: **(Int64BE)**
-
-* `pushroomaudio`: RTM主动推送Room聊天语音
-	* `data`: **(object)**
-	    * `data.from`: **(Int64BE)** 发送者 id
-	    * `data.rid`: **(Int64BE)** Room id
-	    * `data.mid`: **(Int64BE)** 语音消息 id, 当前链接会话内唯一
-	    * `data.msg`: **(Buffer)** 聊天语音数据
-	    * `data.attrs`: **(string)** 发送时附加的自定义内容
-	    * `data.mtime`: **(Int64BE)**
 
 > cmd push
 

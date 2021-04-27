@@ -2,7 +2,7 @@
   "name": "rtm-fpnn-nodejs-sdk",
   "version": "1.0.0",
   "description": "Node.js SDK with RTM",
-  "main": "src/RTMClient.js",
+  "main": "src/RTMServerClient.js",
   "scripts": {
     "test": "node test/test-rtm.js"
   },

@@ -5,7 +5,7 @@ const fs = require('fs');
 const msgpack = require("msgpack-lite");
 const Int64BE = require("int64-buffer").Int64BE;
 
-const RTMClient = require('../src/rtm/RTMClient');
+const RTMServerClient = require('../src/rtm/RTMServerClient');
 const RTMConfig = require('../src/rtm/RTMConfig');
 const FPError = require('../src/fpnn/FPError');
 
@@ -34,7 +34,7 @@ class TestCase {
             streamMode: false
         };
 
-        this._client = new RTMClient(options);
+        this._client = new RTMServerClient(options);
         this._client.connect(this._filePath, this._options);
 
         let self = this;
@@ -76,7 +76,7 @@ function onConnect() {
     t.call(self, function(name, cb) {
         console.log('---------------begin!-----------------')
     });
-/*
+
     //ServerGate (9c) setEvtListener
     t.call(self, function(name, cb) {
         self._client[name].call(self._client, { p2p:true, group:false, room:true, ev:true }, self._timeout, cb);
@@ -89,7 +89,7 @@ function onConnect() {
 
     //ServerGate (1b) kickout
     t.call(self, function(name, cb) {
-        self._client[name].call(self._client, self._to, null, self._timeout, cb);
+        self._client[name].call(self._client, self._to, self._timeout, cb);
     }, 'kickout');
 
     //ServerGate (1c) addDevice
@@ -472,7 +472,6 @@ function onConnect() {
     t.call(self, function(name, cb) {
         self._client[name].call(self._client, self._to, 'db-test-key', self._timeout, cb);
     }, 'dataDelete');
-*/
 
     //fileGate (1)
     t.call(self, function(name, cb) {
