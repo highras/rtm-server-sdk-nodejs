@@ -10,29 +10,12 @@ baseTest.call(this);
 
 function baseTest() {
 
-    /*let tester = new TestCase({
-        pid: 11000001,
-        secret: 'ef3617e5-e886-4a4e-9eef-7263c0320628',
-        host: '52.83.245.22',
-        port: 13315,
-        reconnect: true,
-        timeout: 20 * 1000,
-        debug: true
-        
-        pid: 11000002,
-		secret: '9afcfe97-cf25-40fc-ba73-307ed732dcf8',
-		host: 'rtm-intl-backgate.ilivedata.com',
-		port: 13315,
-		reconnect: true,
-		timeout: 20 * 1000,
-		debug: true
-
-    });*/
+  
 
 	//构造
 	let client = new RTMServerClient({
 		pid: 11000002,
-		secret: '9afcfe97-cf25-40fc-ba73-307ed732dcf8',
+		secret: 'xxxx-xxxx-xxxx-xxxx-xxxxxxxxxxx',
 		host: 'rtm-intl-backgate.ilivedata.com',
 		port: 13315,
 		reconnect: true,
