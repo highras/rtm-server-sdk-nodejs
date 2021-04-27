@@ -2,7 +2,7 @@
 
 class RTMConfig {
 	static get VERSION() {
-		return '2.1.0';
+		return '1.1.0';
 	}
 
 	static get API_VERSION() {
