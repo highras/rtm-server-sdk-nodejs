@@ -33,10 +33,10 @@ const Int64BE = require("int64-buffer").Int64BE;
 RTMClient.RTMRegistration.register();
 
 //构造
-let client = new RTMClient({
+let client = new RTMServerClient({
     pid: 11000001,
     secret: 'ef3617e5-e886-4a4e-9eef-7263c0320628',
-    host: 'rtm-nx-front.ifunplus.cn',
+    host: 'rtm-test.ilivedata.com',
     port: 13315,
     reconnect: true,
     timeout: 20 * 1000,
