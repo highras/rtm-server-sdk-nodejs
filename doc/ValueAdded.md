@@ -5,7 +5,7 @@
     * `src`: **(Required | string)** 待翻译的聊天消息的语言类型, 参考RTMConfig.TRANS_LANGUAGE成员
     * `dst`: **(Required | string)** 本次翻译的目标语言类型, 参考RTMConfig.TRANS_LANGUAGE成员
     * `type`: **(Required | string)** 可选值为`chat`或`mail`, 默认:`chat`
-    * `profanity`: **(Required | string)** 敏感语过滤, 设置为以下三项之一: `off` `stop` `censor`
+    * `profanity`: **(Required | string)** 敏感语过滤, 设置为以下项之一: `off`  `censor`
     * `uid`: **(Optional | number)** 用户ID
     * `timeout`: **(Optional | number)** 超时时间(ms), 默认: `20 * 1000`
     * `callback`: **(Optional | function)** 回调方法, `callback(err, data)`
